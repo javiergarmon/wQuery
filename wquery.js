@@ -1,13 +1,14 @@
 /*!
- * wQuery JavaScript Library v2.0.3
- * http://www.weezeel.com/
+ * wQuery JavaScript Library v1.0.0 alpha
+ * https://www.weezeel.com/
+ * 
+ * Based on: jQuery 
  *
  * Includes Sizzle.js
  * http://sizzlejs.com/
  *
  * Copyright 2013 weeZeel Foundation, Inc. and other contributors
  * Released under the MIT license
- * http://jquery.org/license
  *
  */
 (function( window, undefined ) {
@@ -117,29 +118,30 @@ jQuery.fn = jQuery.prototype = {
 
 		    	var node = document.getElementById(name.split('#')[1]).parentNode;
 
+		    	while (node != null) {
+		
+			        if (node.id && node.id == this.context.split('#')[1]) {
+			        	
+			            return true;
+			        
+			        }  else if (node.id && node.id.indexOf('wz-') > 0) {
+
+			        	node = null;
+
+			        }
+			        
+			        node = node.parentNode;
+			
+			    }
+			
+		    	return false;
+
 		    } else if (name.charAt(0) == '.') {
 
-		    	var node = document.getElementsByClassName(name.split('.')[0]).parentNode;
+		    	var context  = document.getElementById(this.context.split('#')[1])
+		    	var elements = context.getElementsByClassName(name.split('.')[1]);
 
 		    }
-
-		    while (node != null) {
-		
-		        if (node.id && node.id == this.context.split('#')[1]) {
-		        	
-		            return true;
-		        
-		        }  else if (node.id && node.id.indexOf('wz-') > 0) {
-
-		        	node = null;
-
-		        }
-		        
-		        node = node.parentNode;
-		
-		    }
-		
-		    return false;
 
 		}
 	
@@ -157,7 +159,7 @@ jQuery.fn = jQuery.prototype = {
 
 		// Handle HTML strings
 
-		if ( this.checkContext(selector) ) {
+		if ( !this.context || this.checkContext(selector) ) {
 
 			if ( typeof selector === "string" ) {
 				
@@ -213,7 +215,7 @@ jQuery.fn = jQuery.prototype = {
 							this[0] = elem;
 						}
 
-						this.context = document;
+						this.context  = document;
 						this.selector = selector;
 						return this;
 					}

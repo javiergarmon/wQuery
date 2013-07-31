@@ -11,17 +11,10 @@
 
 			$(function() {
 
-				function change11 () {
+				jQuery.fn.context = '#major'
 
-					jQuery.fn.context = '#content'
-
-					return $('#sub1_1');
-
-				}	
-
-				var ele = change11();
-
-				console.log(ele);
+				console.log($('#sub1_1'));
+				console.log($('#sub2_1'));
 
 			});
 		
@@ -113,13 +106,13 @@
 		<div id="wz">
 
 			<div id="major" class="app">
-				<div id="sub1_1"></div>
-				<div id="sub1_2"></div>
+				<div id="sub1_1" class="mama"></div>
+				<div id="sub1_2" class="mama"></div>
 				<div id="sub1_3"></div>
 			</div>
 
 			<div id="content" class="app">
-				<div id="sub2_1"></div>
+				<div id="sub2_1" class="mama"></div>
 				<div id="sub2_2"></div>
 				<div id="sub2_3"></div>
 			</div>	
