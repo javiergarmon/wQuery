@@ -61,6 +61,7 @@ var
 	jQuery = function( selector, context ) {
 		// The jQuery object is actually just the init constructor 'enhanced'
 		return new jQuery.fn.init( selector, context, rootjQuery );
+		
 	},
 
 	// Used for matching numbers
@@ -98,6 +99,7 @@ jQuery.fn = jQuery.prototype = {
 	jquery: core_version,
 
 	constructor: jQuery,
+
 	init: function( selector, context, rootjQuery ) {
 		var match, elem;
 
@@ -108,15 +110,18 @@ jQuery.fn = jQuery.prototype = {
 
 		// Handle HTML strings
 		if ( typeof selector === "string" ) {
+			
 			if ( selector.charAt(0) === "<" && selector.charAt( selector.length - 1 ) === ">" && selector.length >= 3 ) {
 				// Assume that strings that start and end with <> are HTML and skip the regex check
 				match = [ null, selector, null ];
 
 			} else {
+				
 				match = rquickExpr.exec( selector );
+
 			}
 
-			// Match html or make sure no context is specified for #id
+			// Match html or make sure no context is specified for #idº
 			if ( match && (match[1] || !context) ) {
 
 				// HANDLE: $(html) -> $(array)
