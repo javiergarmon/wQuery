@@ -1,15 +1,14 @@
 /*!
- * jQuery JavaScript Library v2.0.3
- * http://jquery.com/
+ * wQuery JavaScript Library v2.0.3
+ * http://www.weezeel.com/
  *
  * Includes Sizzle.js
  * http://sizzlejs.com/
  *
- * Copyright 2005, 2013 jQuery Foundation, Inc. and other contributors
+ * Copyright 2013 weeZeel Foundation, Inc. and other contributors
  * Released under the MIT license
  * http://jquery.org/license
  *
- * Date: 2013-07-03T13:30Z
  */
 (function( window, undefined ) {
 
@@ -104,6 +103,48 @@ jQuery.fn = jQuery.prototype = {
 
 	setCtx:  function ( context ) { this.context = context },
 
+	checkContext: function ( name ) {
+	
+	    //var node = name.parentNode;
+
+	    if (typeof name !== 'string') {
+
+	    	return true;
+
+	    } else {
+
+		    if (name.charAt(0) == '#') {
+
+		    	var node = document.getElementById(name.split('#')[1]).parentNode;
+
+		    } else if (name.charAt(0) == '.') {
+
+		    	var node = document.getElementsByClassName(name.split('.')[0]).parentNode;
+
+		    }
+
+		    while (node != null) {
+		
+		        if (node.id && node.id == this.context.split('#')[1]) {
+		        	
+		            return true;
+		        
+		        }  else if (node.id && node.id.indexOf('wz-') > 0) {
+
+		        	node = null;
+
+		        }
+		        
+		        node = node.parentNode;
+		
+		    }
+		
+		    return false;
+
+		}
+	
+	},
+
 	init: function( selector, context, rootjQuery ) {
 		var match, elem;
 
@@ -115,95 +156,105 @@ jQuery.fn = jQuery.prototype = {
 		}
 
 		// Handle HTML strings
-		if ( typeof selector === "string" ) {
-			
-			if ( selector.charAt(0) === "<" && selector.charAt( selector.length - 1 ) === ">" && selector.length >= 3 ) {
-				// Assume that strings that start and end with <> are HTML and skip the regex check
-				match = [ null, selector, null ];
 
-			} else {
+		if ( this.checkContext(selector) ) {
+
+			if ( typeof selector === "string" ) {
 				
-				match = rquickExpr.exec( selector );
+				if ( selector.charAt(0) === "<" && selector.charAt( selector.length - 1 ) === ">" && selector.length >= 3 ) {
+					// Assume that strings that start and end with <> are HTML and skip the regex check
+					match = [ null, selector, null ];
 
-			}
-
-			// Match html or make sure no context is specified for #idº
-			if ( match && (match[1] || !context) ) {
-
-				// HANDLE: $(html) -> $(array)
-				if ( match[1] ) {
-					context = context instanceof jQuery ? context[0] : context;
-
-					// scripts is true for back-compat
-					jQuery.merge( this, jQuery.parseHTML(
-						match[1],
-						context && context.nodeType ? context.ownerDocument || context : document,
-						true
-					) );
-
-					// HANDLE: $(html, props)
-					if ( rsingleTag.test( match[1] ) && jQuery.isPlainObject( context ) ) {
-						for ( match in context ) {
-							// Properties of context are called as methods if possible
-							if ( jQuery.isFunction( this[ match ] ) ) {
-								this[ match ]( context[ match ] );
-
-							// ...and otherwise set as attributes
-							} else {
-								this.attr( match, context[ match ] );
-							}
-						}
-					}
-
-					return this;
-
-				// HANDLE: $(#id)
 				} else {
-					elem = document.getElementById( match[2] );
+					
+					match = rquickExpr.exec( selector );
 
-					// Check parentNode to catch when Blackberry 4.6 returns
-					// nodes that are no longer in the document #6963
-					if ( elem && elem.parentNode ) {
-						// Inject the element directly into the jQuery object
-						this.length = 1;
-						this[0] = elem;
-					}
-
-					this.context = document;
-					this.selector = selector;
-					return this;
 				}
 
-			// HANDLE: $(expr, $(...))
-			} else if ( !context || context.jquery ) {
-				return ( context || rootjQuery ).find( selector );
+				// Match html or make sure no context is specified for #idº
+				if ( match && (match[1] || !context) ) {
 
-			// HANDLE: $(expr, context)
-			// (which is just equivalent to: $(context).find(expr)
-			} else if (context || this.context) {
-			
-				return this.constructor( this.context ).find( selector );
-			
+					// HANDLE: $(html) -> $(array)
+					if ( match[1] ) {
+						context = context instanceof jQuery ? context[0] : context;
+
+						// scripts is true for back-compat
+						jQuery.merge( this, jQuery.parseHTML(
+							match[1],
+							context && context.nodeType ? context.ownerDocument || context : document,
+							true
+						) );
+
+						// HANDLE: $(html, props)
+						if ( rsingleTag.test( match[1] ) && jQuery.isPlainObject( context ) ) {
+							for ( match in context ) {
+								// Properties of context are called as methods if possible
+								if ( jQuery.isFunction( this[ match ] ) ) {
+									this[ match ]( context[ match ] );
+
+								// ...and otherwise set as attributes
+								} else {
+									this.attr( match, context[ match ] );
+								}
+							}
+						}
+
+						return this;
+
+					// HANDLE: $(#id)
+					} else {
+						elem = document.getElementById( match[2] );
+
+						// Check parentNode to catch when Blackberry 4.6 returns
+						// nodes that are no longer in the document #6963
+						if ( elem && elem.parentNode ) {
+							// Inject the element directly into the jQuery object
+							this.length = 1;
+							this[0] = elem;
+						}
+
+						this.context = document;
+						this.selector = selector;
+						return this;
+					}
+
+				// HANDLE: $(expr, $(...))
+				} else if ( !context || context.jquery ) {
+					return ( context || rootjQuery ).find( selector );
+
+				// HANDLE: $(expr, context)
+				// (which is just equivalent to: $(context).find(expr)
+				} else if (context || this.context) {
+				
+					return this.constructor( this.context ).find( selector );
+				
+				}
+
+			// HANDLE: $(DOMElement)
+			} else if ( selector.nodeType ) {
+				this.context = this[0] = selector;
+				this.length = 1;
+				return this;
+
+			// HANDLE: $(function)
+			// Shortcut for document ready
+			} else if ( jQuery.isFunction( selector ) ) {
+				return rootjQuery.ready( selector );
 			}
 
-		// HANDLE: $(DOMElement)
-		} else if ( selector.nodeType ) {
-			this.context = this[0] = selector;
-			this.length = 1;
-			return this;
+			if ( selector.selector !== undefined ) {
+				this.selector = selector.selector;
+				this.context = selector.context;
+			}
 
-		// HANDLE: $(function)
-		// Shortcut for document ready
-		} else if ( jQuery.isFunction( selector ) ) {
-			return rootjQuery.ready( selector );
+			return jQuery.makeArray( selector, this );
+
+		} else {
+
+			return [];
+
 		}
 
-		if ( selector.selector !== undefined ) {
-			this.selector = selector.selector;
-			this.context = selector.context;
-		}
-
-		return jQuery.makeArray( selector, this );
 	},
 
 	// Start with an empty selector
@@ -5323,7 +5374,9 @@ jQuery.each({
 		return elem.contentDocument || jQuery.merge( [], elem.childNodes );
 	}
 }, function( name, fn ) {
+
 	jQuery.fn[ name ] = function( until, selector ) {
+		
 		var matched = jQuery.map( this, fn, until );
 
 		if ( name.slice( -5 ) !== "Until" ) {
@@ -5344,10 +5397,13 @@ jQuery.each({
 			if ( rparentsprev.test( name ) ) {
 				matched.reverse();
 			}
+		
 		}
 
 		return this.pushStack( matched );
+
 	};
+
 });
 
 jQuery.extend({
@@ -5381,12 +5437,17 @@ jQuery.extend({
 	},
 
 	sibling: function( n, elem ) {
+		
 		var matched = [];
 
 		for ( ; n; n = n.nextSibling ) {
+		
 			if ( n.nodeType === 1 && n !== elem ) {
+		
 				matched.push( n );
+		
 			}
+		
 		}
 
 		return matched;

@@ -1,0 +1,132 @@
+<html>
+	
+	<head>
+	
+		<title>wQuery test</title>
+
+		<script type="text/javascript" src="wquery.js"></script>
+		<script type="text/javascript">
+	
+			console.log('##Testing wQuery##');
+
+			$(function() {
+
+				function change11 () {
+
+					jQuery.fn.context = '#content'
+
+					return $('#sub1_1');
+
+				}	
+
+				var ele = change11();
+
+				console.log(ele);
+
+			});
+		
+		</script>
+
+		<style type="text/css">
+		
+			body {
+				background: #000;
+			}
+
+			h3 {
+				color: #FFF;
+			}
+
+			.app {
+
+				height: 18em;
+				width:  18em;
+				margin: 1em 0.5em 0em 0.5em;
+				background: #FFF;
+				padding-top: 1em; 
+
+			}
+
+			#sub1_1 {
+	
+				height: 4em;		
+				width:  4em;
+				margin: 1em;
+				background: red;
+
+			}
+
+			#sub1_2 {
+			
+				height: 4em;
+				width:  4em;
+				margin: 1em;
+				background: blue;				
+			
+			}
+
+			#sub1_3 {
+
+				height: 4em;
+				width:  4em;
+				margin: 1em;
+				background: green;		
+
+			}
+
+			#sub2_1 {
+				
+				height: 4em;
+				width:  4em;
+				margin: 1em;
+				background: pink;
+			
+			}
+
+			#sub2_2 {
+			
+				height: 4em;
+				width:  4em;
+				margin: 1em;
+				background: orange;	
+			
+			}
+
+			#sub2_3 {
+
+				height: 4em;
+				width:  4em;
+				margin: 1em;
+				background: grey;
+
+			}
+
+		
+		</style>
+	
+	</head>
+
+	<body>
+		
+		<h3>Title</h3>
+	
+		<div id="wz">
+
+			<div id="major" class="app">
+				<div id="sub1_1"></div>
+				<div id="sub1_2"></div>
+				<div id="sub1_3"></div>
+			</div>
+
+			<div id="content" class="app">
+				<div id="sub2_1"></div>
+				<div id="sub2_2"></div>
+				<div id="sub2_3"></div>
+			</div>	
+		
+		</div>
+
+	</body>
+
+</html>
+
