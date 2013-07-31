@@ -46,7 +46,7 @@ var
 	// List of deleted data cache ids, so we can reuse them
 	core_deletedIds = [],
 
-	core_version = "2.0.3",
+	core_version = "1.0.0 alpha",
 
 	// Save a reference to some core methods
 	core_concat = core_deletedIds.concat,
@@ -100,12 +100,18 @@ jQuery.fn = jQuery.prototype = {
 
 	constructor: jQuery,
 
+	context: undefined,
+
+	setCtx:  function ( context ) { this.context = context },
+
 	init: function( selector, context, rootjQuery ) {
 		var match, elem;
 
 		// HANDLE: $(""), $(null), $(undefined), $(false)
 		if ( !selector ) {
+
 			return this;
+
 		}
 
 		// Handle HTML strings
@@ -174,8 +180,10 @@ jQuery.fn = jQuery.prototype = {
 
 			// HANDLE: $(expr, context)
 			// (which is just equivalent to: $(context).find(expr)
-			} else {
-				return this.constructor( context ).find( selector );
+			} else if (context || this.context) {
+			
+				return this.constructor( this.context ).find( selector );
+			
 			}
 
 		// HANDLE: $(DOMElement)
