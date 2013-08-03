@@ -5189,7 +5189,7 @@ wQuery.fn.extend({
 	
 	find: function( selector ) {
 		
-		/*var ret = [],
+		var ret = [],
 			self = this,
 			len = this.length;
 
@@ -5211,27 +5211,69 @@ wQuery.fn.extend({
 			
 			}) );
 		
-		}*/
+		}
+		
+		if (this.context == undefined) {
+		
+			var rel = self[0].querySelectorAll(selector);
 
-		if (this.context) {
-
-			var rel = this.context.querySelectorAll(selector);
-
+			for (var i = 0; i < rel.length; i++) {
+		
+				this[i] = rel[i];
+		
+			};
+		
+			return this;
+		
 		} else {
 
-			var rel = document.querySelectorAll(selector);
+			if ( this.context == document.getElementsByTagName('body') ) {
 
+				var rel = self[0].querySelectorAll(selector);
+
+				for (var i = 0; i < rel.length; i++) {
+			
+					this[i] = rel[i];
+			
+				};
+			
+				return this;
+
+			}
+		
+			var limit   = this.context;
+			var context = self[0];
+
+			while( context == null ) {
+
+				if ( context == limit ) {
+
+					var rel = self[0].querySelectorAll(selector);
+					context = null;
+
+				} else if ( context == document.getElementsByTagName('body') ) {
+
+					var rel = limit.querySelectorAll(selector);
+					context =  null;
+
+				} else {
+
+					context = context.parentNode;
+
+				}
+
+			}
+
+
+			for (var i = 0; i < rel.length; i++) {
+			
+				this[i] = rel[i];
+			
+			};
+			
+			return this;
+		
 		}
-
-		for (var i = 0; i < rel.length; i++) {
-		
-			this[i] = rel[i];
-		
-		};
-
-		// Needed because $( selector, context ) becomes $( context ).find( selector )
-		
-		return this;
 
 	},
 
