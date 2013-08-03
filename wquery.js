@@ -5138,10 +5138,11 @@ wQuery.fn.extend({
 	
 	find: function( selector ) {
 		
-		var i,
-			ret = [],
+		/*var ret = [],
 			self = this,
 			len = this.length;
+
+		// DESCONOZCO EJEMPLO PARA PRUEBA, SOLO SÉ QUE GENERA UN NUEVO OBJETO WQUERY EN LA FUNCIÓN PUSHSTACK, PASANDOLE COMO ARGUMENTO
 
 		if ( typeof selector !== "string" ) {
 		
@@ -5150,27 +5151,36 @@ wQuery.fn.extend({
 				for ( i = 0; i < len; i++ ) {
 			
 					if ( wQuery.contains( self[ i ], this ) ) {
+					
 						return true;
+					
 					}
 			
 				}
 			
 			}) );
 		
+		}*/
+
+		if (this.context) {
+
+			var rel = this.context.querySelectorAll(selector);
+
+		} else {
+
+			var rel = document.querySelectorAll(selector);
+
 		}
 
-		for ( i = 0; i < len; i++ ) {
-
-			wQuery.find( selector, this[i], ret );
+		for (var i = 0; i < rel.length; i++) {
 		
-		}
+			this[i] = rel[i];
+		
+		};
 
 		// Needed because $( selector, context ) becomes $( context ).find( selector )
-
-		ret = this.pushStack( len > 1 ? wQuery.unique( ret ) : ret );
-		ret.selector = this.selector ? this.selector + " " + selector : selector;
 		
-		return ret;
+		return this;
 
 	},
 
