@@ -4,17 +4,23 @@
 	
 		<title>wQuery test</title>
 
-		<script type="text/javascript" src="wquery.js"></script>
+		<!--<script type="text/javascript" src="wquery.js"></script>-->
 		<script type="text/javascript">
 	
 			console.log('##Testing wQuery##');
 
 			$(function() {
 
-				jQuery.fn.context = '#major'
+				console.time(1);
 
-				console.log($('#sub1_1'));
-				console.log($('#sub2_1'));
+				for (var i = 0; i <= 1000; i++) {
+				
+					$('#sub1_1');
+
+				};
+
+				console.timeEnd(1);
+
 
 			});
 		
@@ -108,12 +114,12 @@
 			<div id="major" class="app">
 				<div id="sub1_1" class="mama"></div>
 				<div id="sub1_2" class="mama"></div>
-				<div id="sub1_3"></div>
+				<div id="sub1_3" class="pupi"></div>
 			</div>
 
 			<div id="content" class="app">
 				<div id="sub2_1" class="mama"></div>
-				<div id="sub2_2"></div>
+				<div id="sub2_2" class="pupi"></div>
 				<div id="sub2_3"></div>
 			</div>	
 		

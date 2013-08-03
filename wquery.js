@@ -102,49 +102,10 @@ jQuery.fn = jQuery.prototype = {
 
 	context: undefined,
 
-	setCtx:  function ( context ) { this.context = context },
+	setCtx:  function ( context ) { 
 
-	checkContext: function ( name ) {
-	
-	    //var node = name.parentNode;
+		this.context = document.getElementById(context.split('#')[1]);
 
-	    if (typeof name !== 'string') {
-
-	    	return true;
-
-	    } else {
-
-		    if (name.charAt(0) == '#') {
-
-		    	var node = document.getElementById(name.split('#')[1]).parentNode;
-
-		    	while (node != null) {
-		
-			        if (node.id && node.id == this.context.split('#')[1]) {
-			        	
-			            return true;
-			        
-			        }  else if (node.id && node.id.indexOf('wz-') > 0) {
-
-			        	node = null;
-
-			        }
-			        
-			        node = node.parentNode;
-			
-			    }
-			
-		    	return false;
-
-		    } else if (name.charAt(0) == '.') {
-
-		    	var context  = document.getElementById(this.context.split('#')[1])
-		    	var elements = context.getElementsByClassName(name.split('.')[1]);
-
-		    }
-
-		}
-	
 	},
 
 	init: function( selector, context, rootjQuery ) {
@@ -159,103 +120,44 @@ jQuery.fn = jQuery.prototype = {
 
 		// Handle HTML strings
 
-		if ( !this.context || this.checkContext(selector) ) {
+		if ( typeof selector === "string" ) {
 
-			if ( typeof selector === "string" ) {
-				
-				if ( selector.charAt(0) === "<" && selector.charAt( selector.length - 1 ) === ">" && selector.length >= 3 ) {
-					// Assume that strings that start and end with <> are HTML and skip the regex check
-					match = [ null, selector, null ];
+			if (this.context == undefined) {
 
-				} else {
-					
-					match = rquickExpr.exec( selector );
+				var rel = document.querySelectorAll(selector);
 
-				}
+			} else {
 
-				// Match html or make sure no context is specified for #idº
-				if ( match && (match[1] || !context) ) {
+				var rel = this.context.querySelectorAll(selector);
 
-					// HANDLE: $(html) -> $(array)
-					if ( match[1] ) {
-						context = context instanceof jQuery ? context[0] : context;
-
-						// scripts is true for back-compat
-						jQuery.merge( this, jQuery.parseHTML(
-							match[1],
-							context && context.nodeType ? context.ownerDocument || context : document,
-							true
-						) );
-
-						// HANDLE: $(html, props)
-						if ( rsingleTag.test( match[1] ) && jQuery.isPlainObject( context ) ) {
-							for ( match in context ) {
-								// Properties of context are called as methods if possible
-								if ( jQuery.isFunction( this[ match ] ) ) {
-									this[ match ]( context[ match ] );
-
-								// ...and otherwise set as attributes
-								} else {
-									this.attr( match, context[ match ] );
-								}
-							}
-						}
-
-						return this;
-
-					// HANDLE: $(#id)
-					} else {
-						elem = document.getElementById( match[2] );
-
-						// Check parentNode to catch when Blackberry 4.6 returns
-						// nodes that are no longer in the document #6963
-						if ( elem && elem.parentNode ) {
-							// Inject the element directly into the jQuery object
-							this.length = 1;
-							this[0] = elem;
-						}
-
-						this.context  = document;
-						this.selector = selector;
-						return this;
-					}
-
-				// HANDLE: $(expr, $(...))
-				} else if ( !context || context.jquery ) {
-					return ( context || rootjQuery ).find( selector );
-
-				// HANDLE: $(expr, context)
-				// (which is just equivalent to: $(context).find(expr)
-				} else if (context || this.context) {
-				
-					return this.constructor( this.context ).find( selector );
-				
-				}
-
-			// HANDLE: $(DOMElement)
-			} else if ( selector.nodeType ) {
-				this.context = this[0] = selector;
-				this.length = 1;
-				return this;
-
-			// HANDLE: $(function)
-			// Shortcut for document ready
-			} else if ( jQuery.isFunction( selector ) ) {
-				return rootjQuery.ready( selector );
 			}
 
-			if ( selector.selector !== undefined ) {
-				this.selector = selector.selector;
-				this.context = selector.context;
+			for (var i = 0; i < rel.length; i++) {
+
+				this[i] = rel[i];
+
 			}
 
-			return jQuery.makeArray( selector, this );
+			return this;
 
-		} else {
+		// HANDLE: $(DOMElement)
+		} else if ( selector.nodeType ) {
+			this.context = this[0] = selector;
+			this.length = 1;
+			return this;
 
-			return [];
-
+		// HANDLE: $(function)
+		// Shortcut for document ready
+		} else if ( jQuery.isFunction( selector ) ) {
+			return rootjQuery.ready( selector );
 		}
+
+		if ( selector.selector !== undefined ) {
+			this.selector = selector.selector;
+			this.context = selector.context;
+		}
+
+		return jQuery.makeArray( selector, this );
 
 	},
 
@@ -880,9 +782,11 @@ jQuery.extend({
 
 		return ret;
 	}
+
 });
 
 jQuery.ready.promise = function( obj ) {
+	
 	if ( !readyList ) {
 
 		readyList = jQuery.Deferred();
@@ -904,14 +808,18 @@ jQuery.ready.promise = function( obj ) {
 		}
 	}
 	return readyList.promise( obj );
+
 };
 
 // Populate the class2type map
 jQuery.each("Boolean Number String Function Array Date RegExp Object Error".split(" "), function(i, name) {
+
 	class2type[ "[object " + name + "]" ] = name.toLowerCase();
+
 });
 
 function isArraylike( obj ) {
+	
 	var length = obj.length,
 		type = jQuery.type( obj );
 
@@ -925,7 +833,8 @@ function isArraylike( obj ) {
 
 	return type === "array" || type !== "function" &&
 		( length === 0 ||
-		typeof length === "number" && length > 0 && ( length - 1 ) in obj );
+			typeof length === "number" && length > 0 && ( length - 1 ) in obj );
+
 }
 
 // All jQuery objects should point back to these
@@ -1084,6 +993,7 @@ var i,
 
 // Optimize for push.apply( _, NodeList )
 try {
+	
 	push.apply(
 		(arr = slice.call( preferredDoc.childNodes )),
 		preferredDoc.childNodes
@@ -1091,7 +1001,9 @@ try {
 	// Support: Android<4.0
 	// Detect silently failing push.apply
 	arr[ preferredDoc.childNodes.length ].nodeType;
+
 } catch ( e ) {
+	
 	push = { apply: arr.length ?
 
 		// Leverage slice if possible
@@ -1109,15 +1021,19 @@ try {
 			target.length = j - 1;
 		}
 	};
+
 }
 
 function Sizzle( selector, context, results, seed ) {
+
 	var match, elem, m, nodeType,
 		// QSA vars
 		i, groups, old, nid, newContext, newSelector;
 
 	if ( ( context ? context.ownerDocument || context : preferredDoc ) !== document ) {
+
 		setDocument( context );
+
 	}
 
 	context = context || document;
@@ -1167,8 +1083,10 @@ function Sizzle( selector, context, results, seed ) {
 
 			// Speed-up: Sizzle(".CLASS")
 			} else if ( (m = match[3]) && support.getElementsByClassName && context.getElementsByClassName ) {
+				
 				push.apply( results, context.getElementsByClassName( m ) );
 				return results;
+			
 			}
 		}
 
@@ -1716,7 +1634,9 @@ setDocument = Sizzle.setDocument = function( node ) {
 };
 
 Sizzle.matches = function( expr, elements ) {
+
 	return Sizzle( expr, null, null, elements );
+
 };
 
 Sizzle.matchesSelector = function( elem, expr ) {
@@ -5204,30 +5124,43 @@ var isSimple = /^.[^:#\[\.,]*$/,
 	};
 
 jQuery.fn.extend({
+	
 	find: function( selector ) {
+		
 		var i,
 			ret = [],
 			self = this,
-			len = self.length;
+			len = this.length;
 
 		if ( typeof selector !== "string" ) {
+		
 			return this.pushStack( jQuery( selector ).filter(function() {
+			
 				for ( i = 0; i < len; i++ ) {
+			
 					if ( jQuery.contains( self[ i ], this ) ) {
 						return true;
 					}
+			
 				}
+			
 			}) );
+		
 		}
 
 		for ( i = 0; i < len; i++ ) {
-			jQuery.find( selector, self[ i ], ret );
+
+			jQuery.find( selector, this[i], ret );
+		
 		}
 
 		// Needed because $( selector, context ) becomes $( context ).find( selector )
+
 		ret = this.pushStack( len > 1 ? jQuery.unique( ret ) : ret );
 		ret.selector = this.selector ? this.selector + " " + selector : selector;
+		
 		return ret;
+
 	},
 
 	has: function( target ) {
@@ -5409,7 +5342,9 @@ jQuery.each({
 });
 
 jQuery.extend({
+	
 	filter: function( expr, elems, not ) {
+		
 		var elem = elems[ 0 ];
 
 		if ( not ) {
@@ -5417,10 +5352,12 @@ jQuery.extend({
 		}
 
 		return elems.length === 1 && elem.nodeType === 1 ?
+			
 			jQuery.find.matchesSelector( elem, expr ) ? [ elem ] : [] :
 			jQuery.find.matches( expr, jQuery.grep( elems, function( elem ) {
 				return elem.nodeType === 1;
 			}));
+	
 	},
 
 	dir: function( elem, dir, until ) {
@@ -5517,6 +5454,7 @@ wrapMap.tbody = wrapMap.tfoot = wrapMap.colgroup = wrapMap.caption = wrapMap.the
 wrapMap.th = wrapMap.td;
 
 jQuery.fn.extend({
+	
 	text: function( value ) {
 		return jQuery.access( this, function( value ) {
 			return value === undefined ?
@@ -6869,13 +6807,16 @@ var
 // #8138, IE may throw an exception when accessing
 // a field from window.location if document.domain has been set
 try {
+
 	ajaxLocation = location.href;
+
 } catch( e ) {
 	// Use the href attribute of an A element
 	// since IE will modify it given document.location
 	ajaxLocation = document.createElement( "a" );
 	ajaxLocation.href = "";
 	ajaxLocation = ajaxLocation.href;
+
 }
 
 // Segment location into parts
