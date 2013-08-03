@@ -102,20 +102,71 @@ wQuery.fn = wQuery.prototype = {
 
 	setCtx:  function ( context ) { 
 
-		context = document.getElementById(context.split('#')[1]);
+		if ( this.context == undefined ) {
 
-		this.__defineGetter__('context', function () {
+			context = document.getElementById(context.split('#')[1]);
 
-			return context;	
+			this.__defineGetter__('context', function () {
+				return context;	
+			});
 
-		});
+
+			this.__defineSetter__('context', function () {
+				return context;
+			});
+
+		} else {
+
+			var ctx  = this.context;
+			var node = document.getElementById( context.split('#')[1] );
+
+			if ( ctx == node ) {
+
+				this.__defineGetter__('context', function () {
+
+					return node;	
+
+				});
 
 
-		this.__defineSetter__('context', function () {
+				this.__defineSetter__('context', function () {
 
-			return context;
+					return node;
 
-		});
+				});
+
+			} else {
+
+				node = node.parentNode;
+
+				while ( node != null ) {
+
+					if (node == ctx) {
+
+						this.__defineGetter__('context', function () {
+							return node;	
+						});
+
+
+						this.__defineSetter__('context', function () {
+							return node;
+						});
+
+					} else if (node == document.getElementsByTagName('body')) {
+
+						var err = "ERROR: Impossible modify jail!";
+
+					} else {
+
+						node = node.parentNode;
+
+					}
+
+				}
+
+			}
+
+		}
 
 	},
 
