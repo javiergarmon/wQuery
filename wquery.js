@@ -5384,7 +5384,7 @@ function sibling( cur, dir ) {
 	return cur;
 }
 
-wQuery.each({
+/*wQuery.each({
 	parent: function( elem ) {
 		var parent = elem.parentNode;
 		return parent && parent.nodeType !== 11 ? parent : null;
@@ -5423,7 +5423,6 @@ wQuery.each({
 		return elem.contentDocument || wQuery.merge( [], elem.childNodes );
 	}
 }, function( name, fn ) {
-
 	wQuery.fn[ name ] = function( until, selector ) {
 		
 		var matched = wQuery.map( this, fn, until );
@@ -5446,14 +5445,54 @@ wQuery.each({
 			if ( rparentsprev.test( name ) ) {
 				matched.reverse();
 			}
-		
 		}
 
+
 		return this.pushStack( matched );
+	};
+});*/
+
+
+//mamawebo
+wQuery.prototype.parent = function () {
+
+	var parent = this[0].parentNode;
+
+	if (this.context == undefined) {
+
+		this[0] = parent;
+
+		return this;
+
+	} else {
+
+		var copy = parent;
+
+		while( copy != undefined ) {
+
+			if ( copy == document.getElementsByTagName('body') ) {
+
+				this[0] = undefined;
+				copy    = null;
+				return this;
+
+			} else if ( copy == this.context ) {
+
+				this[0] = parent;
+				copy    = null;
+				return this;
+
+			} else {
+
+				copy = copy.parentNode;
+
+			};
+
+		}
 
 	};
 
-});
+}
 
 wQuery.extend({
 	
