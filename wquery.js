@@ -109,6 +109,39 @@ var WQConstructor;
 			throw err;
 		});
 
+		/* each method
+		 * Loop over the collection
+		 */
+		this.__defineGetter__('each', function () {
+
+			var self = this;
+
+			return function ( fn ) {
+
+				var length = a.length;
+				var stop   = false;
+
+				for( var i = 0; i < length; i++ ){
+
+					stop = false === fn.call( a[ i ], i, a[ i ] );
+
+					if( stop ){
+						break;
+					}
+
+				}
+
+				return a;
+
+			};
+
+		});
+
+		this.__defineSetter__('each', function () {
+			var err = "wQuery ERR: You can't modify this function";
+			throw err;
+		});
+
 	}
 
 	WQConstructor = new wQuery();
