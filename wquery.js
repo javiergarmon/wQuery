@@ -12,6 +12,10 @@ var WQConstructor;
 
 	wQuery = function () {
 
+		var a = [];
+
+		a.__proto__ = this;
+
 		this.version = version;
 
 		/* SetContext process
@@ -70,12 +74,12 @@ var WQConstructor;
 						if ( !self.context ) {
 
 							match = document.querySelectorAll('#wz');
-							
+
 							for (var i = 0; i < match.length; i++) {
-								self[i] = match[i]
+								a[i] = match[i]
 							};
 
-							return self;
+							return a;
 
 						} else if ( context ) {
 
@@ -91,7 +95,8 @@ var WQConstructor;
 
 					} else if ( typeof selector === "function") {
 
-						window.onload = selector();
+						console.log(1);
+						document.getElementTagName('body').onload = selector();
 
 					}
 
@@ -111,5 +116,7 @@ var WQConstructor;
 }();
 
 var wQuery = function ( selector ) {
+
 	return new WQConstructor.init( selector );
+
 }

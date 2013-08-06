@@ -9,12 +9,10 @@
 	
 			console.log('##Testing wQuery##');
 
-			$(function() {
+			function now () {
+				console.log(wQuery('#wz'));
+			}
 
-				console.log($('body').find('div'));
-
-			});
-		
 		</script>
 
 		<style type="text/css">
@@ -91,12 +89,11 @@
 
 			}
 
-		
 		</style>
 	
 	</head>
 
-	<body>
+	<body onload="now()">
 		
 		<h3>Title</h3>
 	
