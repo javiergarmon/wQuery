@@ -45,7 +45,7 @@ var WQConstructor;
 					var err = "wQuery ERR: You can't modify this property";
 				});
 
-			}
+			};
 
 		});
 
@@ -138,6 +138,40 @@ var WQConstructor;
 		});
 
 		this.__defineSetter__('each', function () {
+			var err = "wQuery ERR: You can't modify this function";
+			throw err;
+		});
+
+		/* css method
+		 * Get or set CSS properties
+		 */
+		this.__defineGetter__('css', function () {
+
+			var self = this;
+
+			return function ( name, value ) {
+
+				if( typeof name === 'string' ){
+
+					if( typeof value === 'undefined' ){
+
+						value = window.getComputedStyle( a[ 0 ] );
+
+						return value[ name ];
+
+					}else{
+						console.log('Not implemented');
+					}
+
+				}else{
+					console.log('Not implemented');
+				}
+				
+			};
+
+		});
+
+		this.__defineSetter__('css', function () {
 			var err = "wQuery ERR: You can't modify this function";
 			throw err;
 		});
