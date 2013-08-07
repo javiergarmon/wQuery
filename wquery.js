@@ -38,7 +38,7 @@ var WQConstructor;
 
 		this.version = version;
 
-	   /*  SetContext process
+	   /*  `setContext` process
 		*  Set the property context of the future wQuery objects
 		*/
 		this.__defineGetter__('setContext', function () {
@@ -74,7 +74,7 @@ var WQConstructor;
 			throw err;
 		});
 
-	   /*  init function
+	   /*  `init` function
 		*  Create a new wQuery object with the same syntax 
 		*/
 		this.__defineGetter__('init', function () {
@@ -155,7 +155,7 @@ var WQConstructor;
 			throw err;
 		});
 
-	   /*  parent function
+	   /*  `parent` function
 		*  Returns the parent of the current element
 		*/
 
@@ -255,7 +255,7 @@ var WQConstructor;
 			throw err;
 		});
 
-	   /* parents function
+	   /* `parents` function
 		* Returns all the parents for the selected elements
 		*/
 
@@ -370,7 +370,7 @@ var WQConstructor;
 			throw err;
 		});
 
-		/* each function
+		/* `each` function
 		 * Loop over the collection
 		 */
 		this.__defineGetter__('each', function () {
@@ -402,7 +402,7 @@ var WQConstructor;
 			throw err;
 		});
 
-		/* css method
+		/* `css` method
 		 * Get or set CSS properties
 		 */
 		this.__defineGetter__('css', function () {
@@ -435,6 +435,120 @@ var WQConstructor;
 			var err = "wQuery ERR: You can't modify this function";
 			throw err;
 		});
+
+		/* `add` function
+		 * Make an union of 2 collection
+		 */
+
+		this.__defineGetter__('add', function () {
+
+		 	var self = this;
+
+		 	return function ( coll2 ) {
+
+		 		var result = [];
+		 		result.concat(self);
+
+		 		if ( typeof coll2 === 'string' ) {
+
+		 			var 2ndColl;
+
+		 			if ( self.context ) {
+		 				2ndColl = self.context.querySelectorAll(coll2);
+		 			} else {
+		 				2ndColl = document.querySelectorAll(coll2);
+		 			}
+
+		 			for (var i = 0; i < 2ndColl.length; i++) {
+		 				if ( result.indexOf(2ndColl[i]) < 0 ) {
+		 					result.push(2ndColl[i]);
+		 				}
+		 			};
+
+		 		} else {
+
+			 		for (var i = 0; i < coll2.length; i++) {
+			 			if (result.indexOf( coll2[i] ) < 0) {
+			 				coll2[i];
+			 			}
+			 		};
+
+			 	}
+
+		 		result.__proto__ = new wQuery();
+			 	self = result;
+			 	return result;
+
+		 	}
+
+		});
+
+		this.__defineSetter__('add', function () {
+		 	var err = "wQuery ERR: You can't modify this function";
+		 	throw err;
+		});
+
+		/* `hasClass` function 
+		 * Check if an element(s) has a class(es)
+		 */
+
+		this.__defineGetter__('hasClass', function () {
+
+			var self = this;
+
+			return function ( classSearched ) {
+
+				var classes = "";
+
+				for (var i = 0; i < self.length; i++) {
+					classes.concat(self[i].className + " ");
+				};
+
+				if (classes.indexOf( classSearched ) < 0 ) {
+					return false;
+				} else {
+					return true;
+				}
+
+			}
+
+		});
+
+		this.__defineSetter__('hasClass', function () {
+			var err = "wQuery ERR: You can't modify this function";
+			throw err;
+		});
+
+		/* `addClass` process
+		 * add the class(es) to the whole collection of elements
+		 */
+
+		this.__defineGetter__('addClass', function () {
+
+			var self = this;
+
+			return function ( classNames ) {
+
+				var classArray = classNames.split(' ');
+
+				for (var i = 0; i < self.length; i++) {
+					for (var x = 0; i < classArray.length; x++) {
+						if (self[i].indexOf( classArray[x] ) < 0) {
+							self[i].className = self[i].className + " " + classArray[x];
+						};
+					};
+				};
+
+				return self;
+
+			}
+
+		});
+
+		this.__defineSetter__('addClass', function () {
+			var err = "wQuery ERR: You can't modify this process";
+			throw err;
+		})
 
 	}
 
