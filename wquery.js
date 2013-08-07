@@ -141,7 +141,7 @@ var WQConstructor;
 					}
 
 				} else if ( typeof selector === "function") {
-					
+
 					window.onload = selector;
 				
 				}
@@ -255,6 +255,121 @@ var WQConstructor;
 			throw err;
 		});
 
+	   /* parents function
+		* Returns all the parents for the selected elements
+		*/
+
+		this.__defineGetter__('parents', function () {
+
+			var self = this;
+
+			return function () {
+
+				if ( !self.context ) {
+
+					var parents = [];
+
+					for (var i = 0; i < self.length; i++) {
+						
+						var node = self[0].parentNode;
+
+						while ( node != null ) {
+
+							if ( node == document.getElementById('body') ) {
+
+								parents.push(node);
+								node = null;
+
+							} else {
+
+								parents.push(node);
+								node = node.parentNode;
+
+							};
+
+						}
+
+					};
+
+					self.__defineGetter__('elements', function () {
+						var array = [];
+
+						for (var i = 0; i < parents.length; i++) {
+							array.push(parents[i]);
+						};
+
+						return array;
+
+					});
+
+					self.__defineSetter__('elements', function () {
+						var err = "wQuery ERR: You can't modify this property";
+						throw err;
+					});
+
+					parents = WQTools.removeDuplicated(parents);
+					parents.__proto__ = new wQuery();
+
+					self = parents;
+
+					return parents;
+
+				} else {
+
+					var parents = [];
+					var eachPar = [];
+
+					for (var i = 0; i < self.length; i++) {
+						
+						var node = self[i].parentNode;
+
+						while ( node != null ) {
+
+							if ( node == document.getElementsByTagName('body') ) {
+
+								eachPar = [];
+								node = null;
+
+							} else if ( node == self.context ) {
+
+								parents.push( node );
+								eachPar = [];
+
+								for (var i = 0; i < eachPar.length; i++) {
+									parents.push( eachPar[i] );
+								};
+
+								node = null;
+
+							} else {
+
+								parents.push( self[i] );
+								node = node.parentNode;
+
+							}
+
+						}
+
+					};
+
+					parents = WQTools.removeDuplicated( parents );
+					parents.__proto__ = new wQuery();
+
+					self = parents;
+
+					return parents;
+
+				}
+
+			}
+
+		});
+
+		this.__defineSetter__('parents', function () {
+			var err = "wQuery ERR: You can't modify this function";
+			throw err;
+		});
+
 		/* each function
 		 * Loop over the collection
 		 */
@@ -263,21 +378,20 @@ var WQConstructor;
 			var self = this;
 
 			return function ( fn ) {
-
-				var length = a.length;
-				var stop   = false;
+				
+				var length = self.length,
+				    stop   = false;
 
 				for( var i = 0; i < length; i++ ){
 
-					stop = false === fn.call( a[ i ], i, a[ i ] );
+					stop = false === fn.call( self[ i ], i, self[ i ] );
 
 					if( stop ){
 						break;
 					}
 
-				}
-
-				return a;
+				} 
+				return self;
 
 			};
 
@@ -329,7 +443,5 @@ var WQConstructor;
 }();
 
 var wQuery = function ( selector ) {
-
 	return new WQConstructor.init( selector );
-
 }
