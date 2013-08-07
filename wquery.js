@@ -8,9 +8,16 @@ var WQConstructor;
 !function () {
 
 	var version = "1.0.0 alpha",
-		wQuery = {};
+		wQuery  = {},
+		WQTools = {};
 
-	wQuery = function () {
+	WQTools = function () {
+
+		
+		
+	}
+
+	wQuery  = function () {
 
 		var a = [];
 
@@ -31,19 +38,18 @@ var WQConstructor;
 
 					ctx = document.getElementById( id.split('#')[0] );
 
-				} else if ( id.atChar(0) != '<' && id.atChar(0) != '.' ) {
+					this.__defineGetter__('context', function () {
+						return ctx;
+					});
 
-					ctx = document.getElementById( id );
+					this.__defineSetter__('context', function () {
+						var err = "wQuery ERR: You can't modify this property";
+					});
 
+				} else {
+					var err = "wQuery ERR: Context declaration is wrong";
+					throw err;
 				}
-
-				this.__defineGetter__('context', function () {
-					return ctx;
-				});
-
-				this.__defineSetter__('context', function () {
-					var err = "wQuery ERR: You can't modify this property";
-				});
 
 			}
 
@@ -55,7 +61,7 @@ var WQConstructor;
 		});
 
 		/* init function
-		// Create a new wQuery object with the same sintax 
+		// Create a new wQuery object with the same syntax 
 		*/
 		this.__defineGetter__('init', function () {
 
@@ -95,8 +101,9 @@ var WQConstructor;
 
 					} else if ( typeof selector === "function") {
 
-						console.log(1);
-						document.getElementTagName('body').onload = selector();
+						console.log(selector);
+						window.onload = selector;
+
 
 					}
 
@@ -105,6 +112,43 @@ var WQConstructor;
 		});
 
 		this.__defineSetter__('init', function () {
+			var err = "wQuery ERR: You can't modify this function";
+			throw err;
+		});
+
+		/* parent function
+		// Returns the parent of the current element
+		*/
+
+		this.__defineGetter__('parent', function () {
+
+			var self = this;
+
+			return function () {
+
+				var parents;
+
+				if ( !self.context ) {
+
+					for (var i = 0; i < self.length; i++) {
+						self[i] = self[i].parentNode;
+					};
+
+					return self;
+
+				} else {
+
+					for (var i = 0; i < self.length; i++) {
+						self[i] = self[i].parentNode;
+					};
+
+				}
+
+			}
+
+		});
+
+		this.__defineSetter__('parent', function () {
 			var err = "wQuery ERR: You can't modify this function";
 			throw err;
 		});
