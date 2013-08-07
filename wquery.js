@@ -36,6 +36,13 @@ var WQConstructor;
 
 	wQuery  = function () {
 
+
+		/*	  _____________________________________________________
+			 |													   |
+			 |			SETTTING UP THE WQUERY OBJECT 			   |
+			 |_____________________________________________________|
+		*/
+
 		this.version = version;
 
 	   /*  `setContext` process
@@ -154,6 +161,118 @@ var WQConstructor;
 			var err = "wQuery ERR: You can't modify this function";
 			throw err;
 		});
+
+		/*	  _____________________________________________________
+			 |													   |
+			 |			      ATTRIBUTES CATTEGORY  			   |
+			 |_____________________________________________________|
+		*/
+
+		/* `hasClass` function 
+		 * Check if an element(s) has a class(es)
+		 */
+
+		this.__defineGetter__('hasClass', function () {
+
+			var self = this;
+
+			return function ( classSearched ) {
+
+				var classes = "";
+
+				for (var i = 0; i < self.length; i++) {
+					classes.concat(self[i].className + " ");
+				};
+
+				if (classes.indexOf( classSearched ) < 0 ) {
+					return false;
+				} else {
+					return true;
+				}
+
+			}
+
+		});
+
+		this.__defineSetter__('hasClass', function () {
+			var err = "wQuery ERR: You can't modify this function";
+			throw err;
+		});
+
+		/* `attr` process
+		 * Check if an element(s) has a class(es)
+		 */
+
+		this.__defineGetter__('attr', function () {
+
+		});
+
+		this.__defineSetter__('attr', function () {
+			var err = "wQuery ERR: You can't modify this function";
+			throw err;
+		});
+
+		/* `addClass` process
+		 * Add the class(es) to the whole collection of elements
+		 */
+
+		this.__defineGetter__('addClass', function () {
+
+			var self = this;
+
+			return function ( classNames ) {
+
+				var classArray = classNames.split(' ');
+
+				for (var i = 0; i < self.length; i++) {
+					for (var x = 0; i < classArray.length; x++) {
+						if (self[i].indexOf( classArray[x] ) < 0) {
+							self[i].className = self[i].className + " " + classArray[x];
+						};
+					};
+				};
+
+				return self;
+
+			}
+
+		});
+
+		this.__defineSetter__('addClass', function () {
+			var err = "wQuery ERR: You can't modify this process";
+			throw err;
+		});
+
+		/* `addClass` process
+		 * Add the class(es) to the whole collection of elements
+		 */
+
+		this.__defineGetter__('html', function () {
+			
+			return function ( HTMLInner ) {
+
+				if ( !HTMLInner ) {
+					return self[0].innerHTML;
+				} else {
+					for (var i = 0; i < self.length; i++) {
+						self[i].innerHTML = HTMLInner;
+					};
+				}
+
+			}
+
+		});
+
+		this.__defineSetter__('html', function () {
+			var err = "wQuery ERR: You can't modify this process";
+			throw err;
+		});
+
+		/*	  _____________________________________________________
+			 |													   |
+			 |			               XXX  	         		   |
+			 |_____________________________________________________|
+		*/
 
 	   /*  `parent` function
 		*  Returns the parent of the current element
@@ -488,67 +607,6 @@ var WQConstructor;
 		 	throw err;
 		});
 
-		/* `hasClass` function 
-		 * Check if an element(s) has a class(es)
-		 */
-
-		this.__defineGetter__('hasClass', function () {
-
-			var self = this;
-
-			return function ( classSearched ) {
-
-				var classes = "";
-
-				for (var i = 0; i < self.length; i++) {
-					classes.concat(self[i].className + " ");
-				};
-
-				if (classes.indexOf( classSearched ) < 0 ) {
-					return false;
-				} else {
-					return true;
-				}
-
-			}
-
-		});
-
-		this.__defineSetter__('hasClass', function () {
-			var err = "wQuery ERR: You can't modify this function";
-			throw err;
-		});
-
-		/* `addClass` process
-		 * add the class(es) to the whole collection of elements
-		 */
-
-		this.__defineGetter__('addClass', function () {
-
-			var self = this;
-
-			return function ( classNames ) {
-
-				var classArray = classNames.split(' ');
-
-				for (var i = 0; i < self.length; i++) {
-					for (var x = 0; i < classArray.length; x++) {
-						if (self[i].indexOf( classArray[x] ) < 0) {
-							self[i].className = self[i].className + " " + classArray[x];
-						};
-					};
-				};
-
-				return self;
-
-			}
-
-		});
-
-		this.__defineSetter__('addClass', function () {
-			var err = "wQuery ERR: You can't modify this process";
-			throw err;
-		})
 
 	}
 
