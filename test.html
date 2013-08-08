@@ -1,0 +1,95 @@
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+<script src="./wquery.js"></script>
+<body>
+	<div></div>
+	<div></div>
+	<div></div>
+	<div class="tic"></div>
+	<a></a>
+	<div></div>
+	<a class="tic"></a>
+	<div class="toc"></div>
+	<a></a>
+	<div id="test"></div>
+	<a></a>
+</body>
+<script>
+jQuery.noConflict();
+
+jQuery( function(){
+
+	var a1 = 0;
+	var a2 = 0;
+
+	var tests = [
+
+		[
+
+			'select tag',
+			10000,
+
+			function(){
+				a1 = jQuery('div');
+			},
+
+			function(){
+				a1 = wQuery('div');
+			}
+
+		],
+
+		[
+
+			'select id',
+			10000,
+
+			function(){
+				a1 = jQuery('#test');
+			},
+
+			function(){
+				a1 = wQuery('#test');
+			}
+
+		]
+
+	];
+
+	var step  = 0;
+	var steps = tests.length;
+
+	var next = function(){
+
+		var fn1 = tests[ step ][ 2 ];
+		var fn2 = tests[ step ][ 3 ];
+
+		var t10 = window.performance.now();
+
+		for( var i = 0, j = tests[ step ][ 1 ]; i < j ; i++ ){
+			fn1();
+		}
+
+		var t11 = window.performance.now();
+		var t20 = window.performance.now();
+
+		for( var k = 0, l = tests[ step ][ 1 ]; k < l ; k++ ){
+			fn2();
+		}
+
+		var t21 = window.performance.now();
+
+		console.log( tests[ step ][ 0 ] + ' | ' + tests[ step ][ 1 ] + ' samples | ' + 'jQuery: ' + ( t11 - t10 ) + 'ms | wQuery: ' + ( t21 - t20 ) + 'ms' );
+
+		if( ++step < steps ){
+			setTimeout( next, 50 );
+		}else{
+			console.log('Test end');
+		}
+
+	}
+
+	next();
+
+});
+
+</script>
