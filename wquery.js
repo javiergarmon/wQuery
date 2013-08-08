@@ -32,7 +32,7 @@ var WQConstructor;
 
 			}
 
-		};
+		},
 
 	wQuery  = function () {
 
@@ -205,6 +205,35 @@ var WQConstructor;
 
 		this.__defineGetter__('attr', function () {
 
+			var self = this
+
+			return function ( attr, value ) {
+
+				if (attr) {
+
+					if ( !value ) {
+
+						return self[0].getAttribute( attr );
+
+					} else {
+
+						for (var i = 0; i < self.length; i++) {
+							self[i].setAttribute( attr, value );
+						};
+
+						return self;
+
+					}
+
+				} else {
+
+					var err = "wQuery ERR: `.attr` function needs an attribute";
+					throw err;
+
+				}
+
+			}
+
 		});
 
 		this.__defineSetter__('attr', function () {
@@ -268,6 +297,181 @@ var WQConstructor;
 			throw err;
 		});
 
+		/* `prop` process
+		 * UNCOMPLETE
+		 */
+
+		this.__defineGetter__('prop', function () {
+
+			return function () {};
+
+		});
+
+		this.__defineSetter__('prop', function () {
+			var err = "You can't modify this process";
+			throw err;
+		});
+
+		/* `removeAttr` process
+		 * Remove the attribute form the current elements
+		 */
+
+		this.__defineGetter__('removeAttr', function () {
+
+			var self = this;
+
+			return function ( attr ) {
+
+				if ( attr ) {
+
+					for (var i = 0; i < self.length; i++) {
+						self[i].removeAttribute( attr );
+					};
+
+					return self;
+
+				} else {
+					var err = "wQuery ERR: This function needs a parameter";
+					throw err;
+				}
+
+			}
+
+		});
+
+		this.__defineSetter__('removeAttr', function () {
+			var err = "wQuery ERR: You can't modify this process";
+			throw err;
+		})
+
+		/* `removeClass` process
+		 * Remove the class(es) form the current elements
+		 */
+
+		this.__defineGetter__('removeClass', function () {
+
+			return function ( classes ) {
+
+				if ( classes ) {
+
+					var classCollection = classes.split(' ');
+
+					for (var i = 0; i < self.length; i++) {
+
+						var actClasses = self[i].className.split(' ');
+
+						for (var x = 0; x < classCollection.length; x++) {
+						
+							if ( actClasses.indexOf( classCollection[x] ) > 0 ) {
+
+								actClasses.splice( actClasses.indexOf( classCollection[x] ), 1 );
+
+							}
+						
+						};
+
+						self[i].className = actClasses.join(' ');
+
+					};
+
+					return self;
+
+				} else {
+					var err = "wQuery ERR: This function needs a parameter";
+					throw err;
+				}
+
+			}
+
+		});
+
+		this.__defineSetter__('removeClass', function () {
+			var err = "wQuery ERR: You can't modify this process";
+			throw err;
+		});
+
+		/* `removeProp` process
+		 *  UNCOMPLETE
+		 */
+
+		this.__defineSetter__('removeProp', function () {
+
+			return function () {};
+
+		});
+
+		this.__defineSetter__('removeProp', function () {
+			var err = "wQuery ERR: You can't modify this process";
+			throw err;
+		})
+
+		/* `toggleClass` process
+		 * 	Add or remove the class(es) passed in the arguments
+		 */
+
+		this.__defineGetter__('toggleClass', function () {
+
+			var self = this;
+
+			return function ( classes ) {
+
+				if ( classes ) {
+
+					var classCollection = classes.split(' ');
+
+					for (var i = 0; i < self.length; i++) {
+
+						var actClasses = self[i].className.split(' ');
+						
+						for (var x = 0; x < classCollection.length; x++) {
+
+							if ( actClasses.indexOf( classCollection[ x ] ) < 0 ) {
+
+								actClasses.push( classCollection[ x ] );
+
+							} else {
+
+								actClasses.splice( actClasses.indexOf( classCollection[ x ] ), 1 );
+
+							}
+
+						};
+
+						self[i].className = actClasses.join(' ');
+
+					};
+
+					return self;
+
+				} else {
+					var err = 'wQuery ERR: This function needs a parameter';
+					throw err;
+				}
+
+			}
+
+		});
+
+		this.__defineSetter__('toggleClass', function () {
+			var err = "wQuery ERR: You can't modify this process";
+			throw err;
+		});
+
+		/* `val` process
+		 * 	UNCOMPLETE
+		 */
+
+		this.__defineGetter__('val', function () {
+
+			return function () {};
+
+		});
+
+		this.__defineSetter__('val', function () {
+			var err = "wQuery ERR: You can't modify this process";
+			throw err;
+		});
+		
 		/*	  _____________________________________________________
 			 |													   |
 			 |			               XXX  	         		   |
@@ -379,7 +583,7 @@ var WQConstructor;
 		*/
 
 		this.__defineGetter__('parents', function () {
-
+			
 			var self = this;
 
 			return function () {
@@ -392,19 +596,10 @@ var WQConstructor;
 						
 						var node = self[0].parentNode;
 
-						while ( node != null ) {
+						while ( node != document.getElementsByTagName('html')[0] ) {
 
-							if ( node == document.getElementById('body') ) {
-
-								parents.push(node);
-								node = null;
-
-							} else {
-
-								parents.push(node);
-								node = node.parentNode;
-
-							};
+							parents.push(node);
+							node = node.parentNode;
 
 						}
 
@@ -570,18 +765,18 @@ var WQConstructor;
 
 		 		if ( typeof coll2 === 'string' ) {
 
-		 			var 2ndColl;
+		 			var added;
 
-		 			if ( self.context ) {
-		 				2ndColl = self.context.querySelectorAll(coll2);
+		 			if ( !self.context ) {
+		 				added = document.querySelectorAll(coll2);
 		 			} else {
-		 				2ndColl = document.querySelectorAll(coll2);
-		 			}
+		 				added = self.context.querySelectorAll(coll2);
+		 			};
 
-		 			for (var i = 0; i < 2ndColl.length; i++) {
-		 				if ( result.indexOf(2ndColl[i]) < 0 ) {
-		 					result.push(2ndColl[i]);
-		 				}
+		 			for (var i = 0; i < added.length; i++) {
+		 				if ( result.indexOf(added[i]) < 0 ) {
+		 					result.push(added[i]);
+		 				};
 		 			};
 
 		 		} else {

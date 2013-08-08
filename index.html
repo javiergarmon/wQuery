@@ -5,14 +5,15 @@
 		<title>wQuery test</title>
 
 		<script type="text/javascript" src="wquery.js"></script>
+		<script type="text/javascript" src="jQuery.js"></script>
 		<script type="text/javascript">
 	
 			console.log('##Testing wQuery##');
 
 			wQuery(function () {
-				
-				WQConstructor.setContext('#major');
-			
+
+				console.log($('#wz').val());
+
 			});
 
 		</script>
@@ -102,7 +103,7 @@
 		<div id="wz">
 
 			<div id="major" class="app">
-				<div id="sub1_1" class="mama"></div>
+				<div id="sub1_1" class="mama">rata</div>
 				<div id="sub1_2" class="mama"></div>
 				<div id="sub1_3" class="pupi"></div>
 			</div>
