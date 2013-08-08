@@ -1,5 +1,5 @@
 /*!
- * wQuery JavaScript Library v1.0.0 alpha
+ * wQuery JavaScript Library v2.0.0 alpha
  * https://www.weezeel.com/
  */
 
@@ -104,21 +104,6 @@ var WQConstructor;
 					if ( !self.context ) {
 
 						match = document.querySelectorAll(selector);
-
-						self.__defineGetter__('elements', function () {
-							var array = [];
-
-							for (var i = 0; i < match.length; i++) {
-								array.push(match[i]);
-							};
-
-							return array;
-						});
-
-						self.__defineSetter__('elements', function () {
-							var err = "You can't modify this property";
-							throw err;
-						});
 
 						for (var i = 0; i < match.length; i++) {
 							a[i] = match[i]
@@ -471,7 +456,7 @@ var WQConstructor;
 			var err = "wQuery ERR: You can't modify this process";
 			throw err;
 		});
-		
+
 		/*	  _____________________________________________________
 			 |													   |
 			 |			               XXX  	         		   |
@@ -683,6 +668,61 @@ var WQConstructor;
 			var err = "wQuery ERR: You can't modify this function";
 			throw err;
 		});
+
+	   /* `is` function
+		* Returns true if one of the elements comply the function
+		*/
+
+		this.__defineGetter__('is', function () {
+
+			return function ( check ) {
+				
+				if ( check.atChar(0) == '#' ) {
+
+					for (var i = 0; i < self.length; i++) {
+						
+						if ( self[i].id == check.split('#')[1] ) return true;
+
+						if (i === self.length - 1 && self[i].id != check.split('#')[1] ) {
+							return false;
+						};
+
+					};
+
+				} else if ( check.atChar(0) == '.' ) {
+
+					for (var i = 0; i < self.length; i++) {
+						
+						if ( self[i].className == check.split('.')[1] ) return true;
+
+						if (i === self.length - 1 && self[i].className != check.split('.')[1] ) {
+							return false;
+						};
+
+					};
+
+				} else {
+
+					for (var i = 0; i < self.length; i++) {
+						
+						if ( self[i].nodeName == check.toLowerCase() ) return true;
+
+						if (i === self.length - 1 && self[i].nodeName != check.toLowerCase() ) {
+							return false;
+						};
+
+					};
+
+				}
+
+			}
+
+		});
+
+		this.__defineSetter__('is', function () {
+			var err = "wQuery ERR: You can't modify this function";
+			throw err;
+		})
 
 		/* `each` function
 		 * Loop over the collection
