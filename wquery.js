@@ -99,16 +99,16 @@ var WQConstructor;
 				} else if ( typeof selector === "string" ) {
 
 					var a = [];
-					a.__proto__= new wQuery();
 
 					if ( !self.context ) {
 
 						match = document.querySelectorAll(selector);
 
 						for (var i = 0; i < match.length; i++) {
-							a[i] = match[i]
+							a.push(match[i]);
 						};
 
+						a.__proto__ = new wQuery();
 						return a;
 
 					} else if ( self.context ) {

@@ -5,15 +5,14 @@
 		<title>wQuery test</title>
 
 		<script type="text/javascript" src="wquery.js"></script>
-		<script type="text/javascript" src="jQuery.js"></script>
+		
 		<script type="text/javascript">
 	
 			console.log('##Testing wQuery##');
-
 			wQuery(function () {
-
-				console.log(wQuery('div').parents());
-
+				console.time(1);
+					wQuery('div');
+				console.timeEnd(1);
 			});
 
 		</script>
