@@ -11,6 +11,22 @@ var WQConstructor;
 		wQuery  = {},
 		WQTools = {
 
+			setterErrorMessage : function(){
+				throw "wQuery ERR: You can't modify this method";
+			},
+
+			fnOrFn : function( fn1, fn2 ){
+
+				if( typeof fn1 === 'function' ){
+					return fn1;
+				}else if( typeof fn2 === 'function' ){
+					return fn2;
+				}else{
+					throw "wQuery ERR: Params are not valid";
+				}
+
+			},
+
 			/* removeDuplicated function
 			// Remove duplicated elements from an array
 			*/
@@ -45,10 +61,32 @@ var WQConstructor;
 
 		this.version = version;
 
+		/* defineMethod function
+		// Define Getter and Setter of a method
+		*/
+		this.__defineGetter__('defineMethod', function () {
+
+			return function ( name, getter, setter ) {
+
+				if( typeof getter !== 'function' ){
+					throw 'wQuery ERR: Getter is not a valid function';
+				}
+
+				name = name.toString();
+
+				this.__defineGetter__( name, getter );
+				this.__defineSetter__( name, WQTools.fnOrFn( setter, WQTools.setterErrorMessage ) );
+
+			}
+
+		});
+
+		this.__defineSetter__( 'defineMethod', WQTools.setterErrorMessage );
+
 	   /*  `setContext` process
 		*  Set the property context of the future wQuery objects
 		*/
-		this.__defineGetter__('setContext', function () {
+		this.defineMethod( 'setContext', function () {
 
 			return function ( id ) {
 
@@ -76,15 +114,10 @@ var WQConstructor;
 
 		});
 
-		this.__defineSetter__('setContext', function () {
-			var err = "wQuery ERR: You can't modify this method";
-			throw err;
-		});
-
 	   /*  `init` function
 		*  Create a new wQuery object with the same syntax 
 		*/
-		this.__defineGetter__('init', function () {
+		this.defineMethod( 'init', function () {
 
 			var self = this;
 
@@ -157,11 +190,6 @@ var WQConstructor;
 
 		});
 
-		this.__defineSetter__('init', function () {
-			var err = "wQuery ERR: You can't modify this function";
-			throw err;
-		});
-
 		/*	  _____________________________________________________
 			 |													   |
 			 |			      ATTRIBUTES CATTEGORY  			   |
@@ -172,7 +200,7 @@ var WQConstructor;
 		 * Check if an element(s) has a class(es)
 		 */
 
-		this.__defineGetter__('hasClass', function () {
+		this.defineMethod( 'hasClass', function () {
 
 			var self = this;
 
@@ -194,16 +222,11 @@ var WQConstructor;
 
 		});
 
-		this.__defineSetter__('hasClass', function () {
-			var err = "wQuery ERR: You can't modify this function";
-			throw err;
-		});
-
 		/* `attr` process
 		 * Check if an element(s) has a class(es)
 		 */
 
-		this.__defineGetter__('attr', function () {
+		this.defineMethod( 'attr', function () {
 
 			var self = this
 
@@ -236,16 +259,11 @@ var WQConstructor;
 
 		});
 
-		this.__defineSetter__('attr', function () {
-			var err = "wQuery ERR: You can't modify this function";
-			throw err;
-		});
-
 		/* `addClass` process
 		 * Add the class(es) to the whole collection of elements
 		 */
 
-		this.__defineGetter__('addClass', function () {
+		this.defineMethod( 'addClass', function () {
 
 			var self = this;
 
@@ -267,16 +285,11 @@ var WQConstructor;
 
 		});
 
-		this.__defineSetter__('addClass', function () {
-			var err = "wQuery ERR: You can't modify this process";
-			throw err;
-		});
-
 		/* `addClass` process
 		 * Add the class(es) to the whole collection of elements
 		 */
 
-		this.__defineGetter__('html', function () {
+		this.defineMethod( 'html', function () {
 			
 			return function ( HTMLInner ) {
 
@@ -292,31 +305,21 @@ var WQConstructor;
 
 		});
 
-		this.__defineSetter__('html', function () {
-			var err = "wQuery ERR: You can't modify this process";
-			throw err;
-		});
-
 		/* `prop` process
 		 * UNCOMPLETE
 		 */
 
-		this.__defineGetter__('prop', function () {
+		this.defineMethod( 'prop', function () {
 
 			return function () {};
 
-		});
-
-		this.__defineSetter__('prop', function () {
-			var err = "You can't modify this process";
-			throw err;
 		});
 
 		/* `removeAttr` process
 		 * Remove the attribute form the current elements
 		 */
 
-		this.__defineGetter__('removeAttr', function () {
+		this.defineMethod( 'removeAttr', function () {
 
 			var self = this;
 
@@ -339,16 +342,11 @@ var WQConstructor;
 
 		});
 
-		this.__defineSetter__('removeAttr', function () {
-			var err = "wQuery ERR: You can't modify this process";
-			throw err;
-		})
-
 		/* `removeClass` process
 		 * Remove the class(es) form the current elements
 		 */
 
-		this.__defineGetter__('removeClass', function () {
+		this.defineMethod( 'removeClass', function () {
 
 			return function ( classes ) {
 
@@ -385,31 +383,21 @@ var WQConstructor;
 
 		});
 
-		this.__defineSetter__('removeClass', function () {
-			var err = "wQuery ERR: You can't modify this process";
-			throw err;
-		});
-
 		/* `removeProp` process
 		 *  UNCOMPLETE
 		 */
 
-		this.__defineSetter__('removeProp', function () {
+		this.defineMethod( 'removeProp', function () {
 
 			return function () {};
 
 		});
 
-		this.__defineSetter__('removeProp', function () {
-			var err = "wQuery ERR: You can't modify this process";
-			throw err;
-		})
-
 		/* `toggleClass` process
 		 * 	Add or remove the class(es) passed in the arguments
 		 */
 
-		this.__defineGetter__('toggleClass', function () {
+		this.defineMethod( 'toggleClass', function () {
 
 			var self = this;
 
@@ -452,24 +440,14 @@ var WQConstructor;
 
 		});
 
-		this.__defineSetter__('toggleClass', function () {
-			var err = "wQuery ERR: You can't modify this process";
-			throw err;
-		});
-
 		/* `val` process
 		 * 	UNCOMPLETE
 		 */
 
-		this.__defineGetter__('val', function () {
+		this.defineMethod( 'val', function () {
 
 			return function () {};
 
-		});
-
-		this.__defineSetter__('val', function () {
-			var err = "wQuery ERR: You can't modify this process";
-			throw err;
 		});
 		
 		/*	  _____________________________________________________
@@ -482,7 +460,7 @@ var WQConstructor;
 		*  Returns the parent of the current element
 		*/
 
-		this.__defineGetter__('parent', function () {
+		this.defineMethod( 'parent', function () {
 
 			var self = this;
 
@@ -573,16 +551,11 @@ var WQConstructor;
 
 		});
 
-		this.__defineSetter__('parent', function () {
-			var err = "wQuery ERR: You can't modify this function";
-			throw err;
-		});
-
 	   /* `parents` function
 		* Returns all the parents for the selected elements
 		*/
 
-		this.__defineGetter__('parents', function () {
+		this.defineMethod( 'parents', function () {
 			
 			var self = this;
 
@@ -679,15 +652,10 @@ var WQConstructor;
 
 		});
 
-		this.__defineSetter__('parents', function () {
-			var err = "wQuery ERR: You can't modify this function";
-			throw err;
-		});
-
 		/* `each` function
 		 * Loop over the collection
 		 */
-		this.__defineGetter__('each', function () {
+		this.defineMethod( 'each', function () {
 
 			var self = this;
 
@@ -711,15 +679,10 @@ var WQConstructor;
 
 		});
 
-		this.__defineSetter__('each', function () {
-			var err = "wQuery ERR: You can't modify this function";
-			throw err;
-		});
-
 		/* `css` method
 		 * Get or set CSS properties
 		 */
-		this.__defineGetter__('css', function () {
+		this.defineMethod( 'css', function () {
 
 			var self = this;
 
@@ -745,16 +708,11 @@ var WQConstructor;
 
 		});
 
-		this.__defineSetter__('css', function () {
-			var err = "wQuery ERR: You can't modify this function";
-			throw err;
-		});
-
 		/* `add` function
 		 * Make an union of 2 collection
 		 */
 
-		this.__defineGetter__('add', function () {
+		this.defineMethod( 'add', function () {
 
 		 	var self = this;
 
@@ -795,11 +753,6 @@ var WQConstructor;
 
 		 	}
 
-		});
-
-		this.__defineSetter__('add', function () {
-		 	var err = "wQuery ERR: You can't modify this function";
-		 	throw err;
 		});
 
 
