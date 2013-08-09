@@ -1,5 +1,5 @@
 /*!
- * wQuery JavaScript Library v2.0.0 alpha
+ * wQueryObj JavaScript Library v2.0.0 alpha
  * https://www.weezeel.com/
  */
 
@@ -8,7 +8,7 @@ var WQConstructor;
 !function () {
 
 	var version = "2.0.0 alpha",
-		wQuery  = {},
+		wQueryObj  = {},
 		WQTools = {
 
 			/* removeDuplicated function
@@ -34,22 +34,22 @@ var WQConstructor;
 
 		},
 
-	wQuery  = function () {
+	wQueryObj = function () {
 		this.version = version;
 	};
 
 	/*	  _____________________________________________________
 		 |													   |
-		 |			SETTTING UP THE WQUERY OBJECT 			   |
+		 |			SETTTING UP THE wQueryObj OBJECT 			   |
 		 |_____________________________________________________|
 	*/
 
 
    /*  `setContext` process
-	*  Set the property context of the future wQuery objects
+	*  Set the property context of the future wQueryObj objects
 	*/
 
-	wQuery.prototype.setContext = function ( id ) {
+	wQueryObj.prototype.setContext = function ( id ) {
 
 		var ctx;
 
@@ -62,12 +62,12 @@ var WQConstructor;
 			});
 
 			this.__defineSetter__('context' = function () {
-				var err = "wQuery ERR: You can't modify this property";
+				var err = "wQueryObj ERR: You can't modify this property";
 				throw err;
 			});
 
 		} else {
-			var err = "wQuery ERR: Context declaration is wrong";
+			var err = "wQueryObj ERR: Context declaration is wrong";
 			throw err;
 		}
 
@@ -75,9 +75,9 @@ var WQConstructor;
 
 
    /*  `init` function
-	*  Create a new wQuery object with the same syntax 
+	*  Create a new wQueryObj object with the same syntax 
 	*/
-	wQuery.prototype.init = function ( selector ) {
+	wQueryObj.prototype.init = function ( selector ) {
 
 		var match, elem;
 
@@ -87,19 +87,17 @@ var WQConstructor;
 		
 		} else if ( typeof selector === "string" ) {
 
-			var a = [];
-
 			if ( !this.context ) {
 
 				match = document.querySelectorAll(selector);
-				this.elements = match;
+				match.__proto__ = new wQueryObj();
 				return this;
 
 			} else if ( this.context ) {
 
 				match = this.context.querySelectorAll(selector);
 				this.elements = match;
-				return a;
+				return this;
 
 			}
 
@@ -121,7 +119,7 @@ var WQConstructor;
 	 * Check if an element(s) has a class(es)
 	 */
 
-	wQuery.prototype.hasClass = function ( classSearched ) {
+	wQueryObj.prototype.hasClass = function ( classSearched ) {
 
 		var classes = "";
 
@@ -141,7 +139,7 @@ var WQConstructor;
 	 * Check if an element(s) has a class(es)
 	 */
 
-	wQuery.prototype.attr = function ( attr, value ) {
+	wQueryObj.prototype.attr = function ( attr, value ) {
 
 		if ( attr ) {
 
@@ -161,7 +159,7 @@ var WQConstructor;
 
 		} else {
 
-			var err = "wQuery ERR: `.attr` function needs an attribute";
+			var err = "wQueryObj ERR: `.attr` function needs an attribute";
 			throw err;
 
 		}
@@ -172,7 +170,7 @@ var WQConstructor;
 	 * Add the class(es) to the whole collection of elements
 	 */
 
-	wQuery.prototype.addClass = function (  classNames  ) {
+	wQueryObj.prototype.addClass = function (  classNames  ) {
 
 		var classArray = classNames.split(' ');
 
@@ -192,7 +190,7 @@ var WQConstructor;
 	 * Add the class(es) to the whole collection of elements
 	 */
 
-	wQuery.prototype.html = function ( HTMLInner ) {
+	wQueryObj.prototype.html = function ( HTMLInner ) {
 
 		if ( !HTMLInner ) {
 			return this[0].innerHTML;
@@ -208,7 +206,7 @@ var WQConstructor;
 	 * UNCOMPLETE
 	 */
 
-	wQuery.prototype.prop = function () {
+	wQueryObj.prototype.prop = function () {
 
 		return function () {};
 
@@ -218,7 +216,7 @@ var WQConstructor;
 	 * Remove the attribute form the current elements
 	 */
 
-	wQuery.prototype.removeAttr = function ( attr ) {
+	wQueryObj.prototype.removeAttr = function ( attr ) {
 
 		if ( attr ) {
 
@@ -229,7 +227,7 @@ var WQConstructor;
 			return this;
 
 		} else {
-			var err = "wQuery ERR: This function needs a parameter";
+			var err = "wQueryObj ERR: This function needs a parameter";
 			throw err;
 		}
 
@@ -239,7 +237,7 @@ var WQConstructor;
 	 * Remove the class(es) form the current elements
 	 */
 
-	wQuery.prototype.removeClass = function ( classes ) {
+	wQueryObj.prototype.removeClass = function ( classes ) {
 
 		if ( classes ) {
 
@@ -266,7 +264,7 @@ var WQConstructor;
 			return this;
 
 		} else {
-			var err = "wQuery ERR: This function needs a parameter";
+			var err = "wQueryObj ERR: This function needs a parameter";
 			throw err;
 		}
 
@@ -276,7 +274,7 @@ var WQConstructor;
 	 *  UNCOMPLETE
 	 */
 
-	wQuery.prototype.removeProp = function () {
+	wQueryObj.prototype.removeProp = function () {
 
 		return function () {};
 
@@ -286,7 +284,7 @@ var WQConstructor;
 	 * 	Add or remove the class(es) passed in the arguments
 	 */
 
-	wQuery.prototype.toggleClass = function ( classes ) {
+	wQueryObj.prototype.toggleClass = function ( classes ) {
 
 		if ( classes ) {
 
@@ -317,7 +315,7 @@ var WQConstructor;
 			return this;
 
 		} else {
-			var err = 'wQuery ERR: This function needs a parameter';
+			var err = 'wQueryObj ERR: This function needs a parameter';
 			throw err;
 		}
 
@@ -327,7 +325,7 @@ var WQConstructor;
 	 * 	UNCOMPLETE
 	 */
 
-	wQuery.prototype.val = function () {
+	wQueryObj.prototype.val = function () {
 
 		return function () {};
 
@@ -343,7 +341,7 @@ var WQConstructor;
 	*  Returns the parent of the current element
 	*/
 
-	wQuery.prototype.parent = function () {
+	wQueryObj.prototype.parent = function () {
 
 		if ( !this.context ) {
 
@@ -353,7 +351,7 @@ var WQConstructor;
 
 			var parents = WQTools.removeDuplicated(this);
 
-			parents.__proto__ = new wQuery();
+			parents.__proto__ = new wQueryObj();
 			this = parents;
 
 			return parents;
@@ -389,7 +387,7 @@ var WQConstructor;
 
 			parents = WQTools.removeDuplicated(parents);
 
-			parents.__proto__ = new wQuery();
+			parents.__proto__ = new wQueryObj();
 			this = parents;
 
 			return parents;
@@ -402,7 +400,7 @@ var WQConstructor;
 	* Returns all the parents for the selected elements
 	*/
 
-	wQuery.prototype.parents = function () {
+	wQueryObj.prototype.parents = function () {
 
 		if ( !this.context ) {
 
@@ -433,12 +431,12 @@ var WQConstructor;
 			});
 
 			this.__defineSetter__('elements' = function () {
-				var err = "wQuery ERR: You can't modify this property";
+				var err = "wQueryObj ERR: You can't modify this property";
 				throw err;
 			});
 
 			parents = WQTools.removeDuplicated(parents);
-			parents.__proto__ = new wQuery();
+			parents.__proto__ = new wQueryObj();
 
 			this = parents;
 
@@ -483,7 +481,7 @@ var WQConstructor;
 			};
 
 			parents = WQTools.removeDuplicated( parents );
-			parents.__proto__ = new wQuery();
+			parents.__proto__ = new wQueryObj();
 
 			this = parents;
 
@@ -497,7 +495,7 @@ var WQConstructor;
 	* Returns true if one of the elements comply the function
 	*/
 
-	wQuery.prototype.is = function ( check ) {
+	wQueryObj.prototype.is = function ( check ) {
 			
 		if ( check.atChar(0) == '#' ) {
 
@@ -543,7 +541,7 @@ var WQConstructor;
 	 * Loop over the collection
 	 */
 
-	wQuery.prototype.each = function ( fn ) {
+	wQueryObj.prototype.each = function ( fn ) {
 			
 		var length = this.length,
 		    stop   = false;
@@ -564,7 +562,7 @@ var WQConstructor;
 	/* `css` method
 	 * Get or set CSS properties
 	 */
-	wQuery.prototype.css = function ( name, value ) {
+	wQueryObj.prototype.css = function ( name, value ) {
 
 			if( typeof name === 'string' ){
 
@@ -588,7 +586,7 @@ var WQConstructor;
 	 * Make an union of 2 collection
 	 */
 
-	wQuery.prototype.add = function ( coll2 ) {
+	wQueryObj.prototype.add = function ( coll2 ) {
 
 	 		var result = [];
 	 		result.concat(this);
@@ -619,13 +617,13 @@ var WQConstructor;
 
 		 	}
 
-	 		result.__proto__ = new wQuery();
+	 		result.__proto__ = new wQueryObj();
 		 	this = result;
 		 	return result;
 
 	};
 
-	WQConstructor = new wQuery();
+	WQConstructor = new wQueryObj();
 
 }();
 
