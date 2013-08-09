@@ -345,7 +345,6 @@ var WQConstructor;
 			var parents = WQTools.removeDuplicated(this);
 
 			parents.__proto__ = new wQueryObj();
-			this = parents;
 
 			return parents;
 
