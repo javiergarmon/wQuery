@@ -34,7 +34,7 @@ var WQConstructor;
 
 		},
 
-	wQueryObjObj  = function () {
+	wQueryObj = function () {
 		this.version = version;
 	};
 
