@@ -57,15 +57,8 @@ var WQConstructor;
 
 			ctx = document.getElementById( id.split('#')[1] );
 
-			this.__defineGetter__('context' = function () {
-				return ctx;
-			});
-
-			this.__defineSetter__('context' = function () {
-				var err = "wQueryObj ERR: You can't modify this property";
-				throw err;
-			});
-
+			this.context = ctx;
+			
 		} else {
 			var err = "wQueryObj ERR: Context declaration is wrong";
 			throw err;
@@ -91,7 +84,7 @@ var WQConstructor;
 
 				match = document.querySelectorAll(selector);
 				match.__proto__ = new wQueryObj();
-				return this;
+				return match;
 
 			} else if ( this.context ) {
 
