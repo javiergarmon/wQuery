@@ -104,12 +104,9 @@ var WQConstructor;
 
 						match = document.querySelectorAll(selector);
 
-						for (var i = 0; i < match.length; i++) {
-							a.push(match[i]);
-						};
-
-						a.__proto__ = new wQuery();
-						return a;
+						self.elements = match
+						
+						return self;
 
 					} else if ( self.context ) {
 
