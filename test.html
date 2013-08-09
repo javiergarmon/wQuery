@@ -25,7 +25,7 @@ jQuery( function(){
 
 		[
 
-			'select tag',
+			'select tag  ',
 			10000,
 
 			function(){
@@ -40,7 +40,7 @@ jQuery( function(){
 
 		[
 
-			'select id',
+			'select id   ',
 			10000,
 
 			function(){
@@ -49,6 +49,51 @@ jQuery( function(){
 
 			function(){
 				a1 = wQuery('#test');
+			}
+
+		],
+
+		[
+
+			'select class',
+			10000,
+
+			function(){
+				a1 = jQuery('.tic');
+			},
+
+			function(){
+				a1 = wQuery('.tic');
+			}
+
+		],
+
+		[
+
+			'select class inside element',
+			10000,
+
+			function(){
+				a1 = jQuery('body .tic');
+			},
+
+			function(){
+				a1 = wQuery('body .tic');
+			}
+
+		],
+
+		[
+
+			'select element with class  ',
+			10000,
+
+			function(){
+				a1 = jQuery('div.tic');
+			},
+
+			function(){
+				a1 = wQuery('div.tic');
 			}
 
 		]
@@ -78,7 +123,9 @@ jQuery( function(){
 
 		var t21 = window.performance.now();
 
-		console.log( tests[ step ][ 0 ] + ' | ' + tests[ step ][ 1 ] + ' samples | ' + 'jQuery: ' + ( t11 - t10 ) + 'ms | wQuery: ' + ( t21 - t20 ) + 'ms' );
+		var fn = ( ( t11 - t10 ) < ( t21 - t20 ) ) ? console.warn : console.info;
+
+		fn.call( console, tests[ step ][ 0 ] + ' | ' + tests[ step ][ 1 ] + ' samples | ' + 'jQuery: ' + ( t11 - t10 ).toFixed( 10 ) + 'ms | wQuery: ' + ( t21 - t20 ).toFixed( 10 ) + 'ms' );
 
 		if( ++step < steps ){
 			setTimeout( next, 50 );
@@ -89,6 +136,7 @@ jQuery( function(){
 	}
 
 	next();
+	//wQuery('div');
 
 });
 
