@@ -410,7 +410,7 @@ var WQConstructor;
 
 			};
 
-			this.__defineGetter__('elements' = function () {
+			this.__defineGetter__('elements', function () {
 				var array = [];
 
 				for (var i = 0; i < parents.length; i++) {
@@ -421,7 +421,7 @@ var WQConstructor;
 
 			});
 
-			this.__defineSetter__('elements' = function () {
+			this.__defineSetter__('elements', function () {
 				var err = "wQueryObj ERR: You can't modify this property";
 				throw err;
 			});
@@ -605,7 +605,6 @@ var WQConstructor;
 		 	}
 
 	 		result.__proto__ = new wQueryObj();
-		 	this = result;
 		 	return result;
 
 	};
