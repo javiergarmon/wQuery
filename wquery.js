@@ -380,7 +380,6 @@ var WQConstructor;
 			parents = WQTools.removeDuplicated(parents);
 
 			parents.__proto__ = new wQueryObj();
-			this = parents;
 
 			return parents;
 
@@ -430,8 +429,6 @@ var WQConstructor;
 			parents = WQTools.removeDuplicated(parents);
 			parents.__proto__ = new wQueryObj();
 
-			this = parents;
-
 			return parents;
 
 		} else {
@@ -474,8 +471,6 @@ var WQConstructor;
 
 			parents = WQTools.removeDuplicated( parents );
 			parents.__proto__ = new wQueryObj();
-
-			this = parents;
 
 			return parents;
 
