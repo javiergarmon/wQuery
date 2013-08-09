@@ -34,7 +34,7 @@ var WQConstructor;
 
 		},
 
-	wQueryObj = function () {
+	wQueryObjObj  = function () {
 		this.version = version;
 	};
 
@@ -57,8 +57,15 @@ var WQConstructor;
 
 			ctx = document.getElementById( id.split('#')[1] );
 
-			this.context = ctx;
-			
+			this.__defineGetter__('context' = function () {
+				return ctx;
+			});
+
+			this.__defineSetter__('context' = function () {
+				var err = "wQueryObj ERR: You can't modify this property";
+				throw err;
+			});
+
 		} else {
 			var err = "wQueryObj ERR: Context declaration is wrong";
 			throw err;
@@ -83,8 +90,8 @@ var WQConstructor;
 			if ( !this.context ) {
 
 				match = document.querySelectorAll(selector);
-				match.__proto__ = new wQueryObj();
-				return match;
+				this.elements = match;
+				return this;
 
 			} else if ( this.context ) {
 
@@ -101,6 +108,14 @@ var WQConstructor;
 		}
 
 	};
+
+	wQueryObj.prototype.get = function ( index ) {
+		if ( index ) {
+			return this.elements[ index ];
+		} else {
+			return this.elements;
+		}
+	}
 
 	/*	  _____________________________________________________
 		 |													   |
@@ -345,6 +360,7 @@ var WQConstructor;
 			var parents = WQTools.removeDuplicated(this);
 
 			parents.__proto__ = new wQueryObj();
+			this = parents;
 
 			return parents;
 
@@ -380,6 +396,7 @@ var WQConstructor;
 			parents = WQTools.removeDuplicated(parents);
 
 			parents.__proto__ = new wQueryObj();
+			this = parents;
 
 			return parents;
 
@@ -429,6 +446,8 @@ var WQConstructor;
 			parents = WQTools.removeDuplicated(parents);
 			parents.__proto__ = new wQueryObj();
 
+			this = parents;
+
 			return parents;
 
 		} else {
@@ -471,6 +490,8 @@ var WQConstructor;
 
 			parents = WQTools.removeDuplicated( parents );
 			parents.__proto__ = new wQueryObj();
+
+			this = parents;
 
 			return parents;
 
