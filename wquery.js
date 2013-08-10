@@ -31,7 +31,7 @@ var WQConstructor;
 
 				return catche;
 
-			}
+			},
 
 			/* removeDuplicated function
 			// Remove duplicated elements from an array
