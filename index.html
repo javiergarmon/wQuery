@@ -11,7 +11,10 @@
 			console.log('##Testing wQuery##');
 			wQuery(function () {
 
-				console.log(wQuery('#sub1_1').parents().elements)
+				var a = wQuery('#sub1_1');
+				var b = a.parent();
+
+				console.log(a.elements, b.elements)
 
 			});
 

@@ -353,9 +353,10 @@ var WQConstructor;
 				parents.push(this.elements[i].parentNode);
 			};
 
-			this.elements = WQTools.removeDuplicated(parents);
+			var newElement = new wQueryObj();
+			newElement.elements = WQTools.removeDuplicated(parents);
 
-			return this;
+			return newElement;
 
 		} else {
 
