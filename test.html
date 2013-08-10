@@ -21,6 +21,9 @@ jQuery( function(){
 	var a1 = 0;
 	var a2 = 0;
 
+	var cJ = jQuery('div');
+	var cW = wQuery('div');
+
 	var tests = [
 
 		[
@@ -96,7 +99,116 @@ jQuery( function(){
 				a1 = wQuery('div.tic');
 			}
 
-		]
+		],
+
+		/*
+		[
+
+			'is method     ',
+			10000,
+
+			function(){
+				a1 = cJ.is('div.toc');
+			},
+
+			function(){
+				a1 = cW.is('div.toc');
+			}
+
+		],
+		*/
+
+		[
+
+			'each method  ',
+			10000,
+
+			function(){
+				cJ.each( function( i ){ a1 = 1 + i; } );
+			},
+
+			function(){
+				cW.each( function( i ){ a1 = 1 + i; } );
+			}
+
+		],
+
+		[
+
+			'parent method',
+			10000,
+
+			function(){
+				a1 = cJ.parent();
+			},
+
+			function(){
+				a1 = cW.parent();
+			}
+
+		],
+
+		/*
+		[
+
+			'parents method ',
+			10000,
+
+			function(){
+				a1 = cJ.parents();
+			},
+
+			function(){
+				a1 = cW.parents();
+			}
+
+		],
+		*/
+
+		[
+
+			'css method (get color property)    ',
+			10000,
+
+			function(){
+				a1 = cJ.css('color');
+			},
+
+			function(){
+				a1 = cW.css('color');
+			}
+
+		],
+
+		[
+
+			'css method (get transform property)',
+			10000,
+
+			function(){
+				a1 = cJ.css('color');
+			},
+
+			function(){
+				a1 = cW.css('color');
+			}
+
+		],
+
+		[
+
+			'css method (set color property)    ',
+			10000,
+
+			function(){
+				a1 = cJ.css('color','#f00');
+			},
+
+			function(){
+				a1 = cW.css('color','#f00');
+			}
+
+		],
 
 	];
 
@@ -125,10 +237,18 @@ jQuery( function(){
 
 		var fn = ( ( t11 - t10 ) < ( t21 - t20 ) ) ? console.warn : console.info;
 
-		fn.call( console, tests[ step ][ 0 ] + ' | ' + tests[ step ][ 1 ] + ' samples | ' + 'jQuery: ' + ( t11 - t10 ).toFixed( 10 ) + 'ms | wQuery: ' + ( t21 - t20 ).toFixed( 10 ) + 'ms' );
+		fn.call( console,
+
+			tests[ step ][ 0 ] + ' | ' +
+			tests[ step ][ 1 ] + ' samples | ' +
+			'jQuery: ' + ( t11 - t10 ).toFixed( 5 ) + 'ms | ' +
+			'wQuery: ' + ( t21 - t20 ).toFixed( 5 ) + 'ms | ' +
+			'x' + ( (t11 - t10 ) / (t21 - t20) ).toFixed( 2 ) + ' times faster'
+
+		);
 
 		if( ++step < steps ){
-			setTimeout( next, 50 );
+			setTimeout( next );
 		}else{
 			console.log('Test end');
 		}
