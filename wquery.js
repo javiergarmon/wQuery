@@ -33,6 +33,21 @@ var WQConstructor;
 
 			}
 
+			/* removeDuplicated function
+			// Remove duplicated elements from an array
+			*/
+			convertToArray: function ( element ) {
+
+				var array = [];
+
+				for (var i = 0; i < element.length; i++) {
+					array.push(element[i]);
+				};
+
+				return array;
+
+			}
+
 		},
 
 	wQueryObj = function () {
@@ -84,13 +99,13 @@ var WQConstructor;
 			if ( !this.context ) {
 
 				match = document.querySelectorAll(selector);
-				this.elements = match;
+				this.elements = WQTools.convertToArray(match);
 				return this;
 
 			} else if ( this.context ) {
 
 				match = this.context.querySelectorAll(selector);
-				this.elements = match;
+				this.elements = WQTools.convertToArray(match);
 				return this;
 
 			}
