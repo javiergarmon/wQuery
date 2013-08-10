@@ -541,21 +541,36 @@ var WQConstructor;
 	 */
 	wQueryObj.prototype.css = function ( name, value ) {
 
-			if( typeof name === 'string' ){
+		if( typeof name === 'string' ){
 
-				if( typeof value === 'undefined' ){
+			if( typeof value === 'undefined' ){
 
-					value = window.getComputedStyle( this.elements[ 0 ] );
+				// Get all rules
+				value = window.getComputedStyle( this.elements[ 0 ] );
 
+				if( typeof value[ name ] !== 'undefined' ){
 					return value[ name ];
-
+				}else if( value [ '-moz-' + name ] !== 'undefined' ){
+					return value [ '-moz-' + name ];
+				}else if( value[ '-webkit-' + name ] !== 'undefined' ){
+					return value[ '-webkit-' + name ];
 				}else{
-					console.log('Not implemented');
+					return undefined;
 				}
 
 			}else{
-				console.log('Not implemented');
+
+				this.each( function(){
+					this.style[ name ] = value;
+				});
+
+				return this;
+
 			}
+
+		}else{
+			console.log('Not implemented');
+		}
 
 	};
 
