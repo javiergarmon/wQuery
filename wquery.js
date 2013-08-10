@@ -425,7 +425,7 @@ var WQConstructor;
 				
 				var node = this.elements[i].parentNode;
 
-				while ( node != document.getElementsByTagName('html')[0] ) {
+				while ( node != null ) {
 
 					parents.push(node);
 					node = node.parentNode;
