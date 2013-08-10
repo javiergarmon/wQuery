@@ -519,8 +519,8 @@ var WQConstructor;
 
 	wQueryObj.prototype.each = function ( fn ) {
 			
-		var length = this.length,
-		    stop   = false;
+		var length = this.elements.length;
+		var stop   = false;
 
 		for( var i = 0; i < length; i++ ){
 
@@ -530,7 +530,8 @@ var WQConstructor;
 				break;
 			}
 
-		} 
+		}
+
 		return this;
 
 	};
