@@ -346,11 +346,13 @@ var WQConstructor;
 
 		if ( !this.context ) {
 
-			for (var i = 0; i < this.length; i++) {
-				this.elements[i] = this.elements[i].parentNode;
+			var parents = [];
+
+			for (var i = 0; i < this.elements.length; i++) {
+				parents.push(this.elements[i].parentNode);
 			};
 
-			var parents = WQTools.removeDuplicated(this);
+			this.elements = WQTools.removeDuplicated(parents);
 
 			return this;
 
@@ -384,6 +386,7 @@ var WQConstructor;
 			};
 
 			parents = WQTools.removeDuplicated(parents);
+			this.elements = parents;
 
 			return this;
 
@@ -401,9 +404,9 @@ var WQConstructor;
 
 			var parents = [];
 
-			for (var i = 0; i < this.length; i++) {
+			for (var i = 0; i < this.elements.length; i++) {
 				
-				var node = this.elements[0].parentNode;
+				var node = this.elements[i].parentNode;
 
 				while ( node != document.getElementsByTagName('html')[0] ) {
 
@@ -414,26 +417,7 @@ var WQConstructor;
 
 			};
 
-			this.__defineGetter__('elements', function () {
-				var array = [];
-
-				for (var i = 0; i < parents.length; i++) {
-					array.push(parents[i]);
-				};
-
-				this.elements = array;
-
-				return this;
-
-			});
-
-			this.__defineSetter__('elements', function () {
-				var err = "wQueryObj ERR: You can't modify this property";
-				throw err;
-			});
-
-			parents = WQTools.removeDuplicated(parents);
-			this.elements = parents
+			this.elements = WQTools.removeDuplicated(parents);
 
 			return this;
 
@@ -442,7 +426,7 @@ var WQConstructor;
 			var parents = [];
 			var eachPar = [];
 
-			for (var i = 0; i < this.length; i++) {
+			for (var i = 0; i < this.elements.length; i++) {
 				
 				var node = this.elements[i].parentNode;
 
@@ -475,8 +459,7 @@ var WQConstructor;
 
 			};
 
-			parents = WQTools.removeDuplicated( parents );
-			parents.__proto__ = new wQueryObj();
+			this.elements = WQTools.removeDuplicated( parents );
 
 			return this;
 
