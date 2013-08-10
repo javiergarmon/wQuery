@@ -387,10 +387,10 @@ var WQConstructor;
 			
 			};
 
-			parents = WQTools.removeDuplicated(parents);
-			this.elements = parents;
+			var newElement = new wQueryObj();
+			newElement.elements = WQTools.removeDuplicated(parents);
 
-			return this;
+			return newElement;
 
 		}
 
@@ -419,9 +419,11 @@ var WQConstructor;
 
 			};
 
-			this.elements = WQTools.removeDuplicated(parents);
+			var newElement = new wQueryObj();
+			newElement.elements = WQTools.removeDuplicated(parents);
 
-			return this;
+			return newElement;
+
 
 		} else {
 
@@ -460,10 +462,11 @@ var WQConstructor;
 				}
 
 			};
+			
+			var newElement = new wQueryObj();
+			newElement.elements = WQTools.removeDuplicated(parents);
 
-			this.elements = WQTools.removeDuplicated( parents );
-
-			return this;
+			return newElement;
 
 		}
 
@@ -582,37 +585,39 @@ var WQConstructor;
 
 	wQueryObj.prototype.add = function ( coll2 ) {
 
-	 		var result = [];
-	 		result.concat(this);
+ 		var result = [];
+ 		result.concat(this);
 
-	 		if ( typeof coll2 === 'string' ) {
+ 		if ( typeof coll2 === 'string' ) {
 
-	 			var added;
+ 			var added;
 
-	 			if ( !this.context ) {
-	 				added = document.querySelectorAll(coll2);
-	 			} else {
-	 				added = this.context.querySelectorAll(coll2);
-	 			};
+ 			if ( !this.context ) {
+ 				added = document.querySelectorAll(coll2);
+ 			} else {
+ 				added = this.context.querySelectorAll(coll2);
+ 			};
 
-	 			for (var i = 0; i < added.length; i++) {
-	 				if ( result.indexOf(added[i]) < 0 ) {
-	 					result.push(added[i]);
-	 				};
-	 			};
+ 			for (var i = 0; i < added.length; i++) {
+ 				if ( result.indexOf(added[i]) < 0 ) {
+ 					result.push(added[i]);
+ 				};
+ 			};
 
-	 		} else {
+ 		} else {
 
-		 		for (var i = 0; i < coll2.length; i++) {
-		 			if (result.indexOf( coll2[i] ) < 0) {
-		 				coll2[i];
-		 			}
-		 		};
+	 		for (var i = 0; i < coll2.length; i++) {
+	 			if (result.indexOf( coll2[i] ) < 0) {
+	 				coll2[i];
+	 			}
+	 		};
 
-		 	}
+	 	}
 
-	 		this.elements = result;
-		 	return this;
+		var newElement = new wQueryObj();
+		newElement.elements = WQTools.removeDuplicated(result);
+
+		return newElement;
 
 	};
 
