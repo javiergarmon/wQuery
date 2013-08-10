@@ -8,6 +8,7 @@ var WQConstructor;
 !function () {
 
 	var version = "2.0.0 alpha",
+		undefined  = ({}).a, 
 		wQueryObj  = {},
 		WQTools = {
 
@@ -53,9 +54,9 @@ var WQConstructor;
 
 		var ctx;
 
-		if ( id.charAt(0) == '#' ) {
+		if ( id.charAt(0) === '#' ) {
 
-			ctx = document.getElementById( id.split('#')[1] );
+			ctx = document.getElementById( id.slice( 1 ) );
 
 			this.context = ctx;
 
@@ -366,12 +367,12 @@ var WQConstructor;
 
 				while( node != null) {
 
-					if ( node == this.context ) {
+					if ( node === this.context ) {
 
 						parents.push(node);
 						node = null;
 
-					} else if ( node == document.getElementById('body') ) {
+					} else if ( node === document.getElementById('body') ) {
 
 						node = null;
 
@@ -432,12 +433,12 @@ var WQConstructor;
 
 				while ( node != null ) {
 
-					if ( node == document.getElementsByTagName('body') ) {
+					if ( node === document.getElementsByTagName('body') ) {
 
 						eachPar = [];
 						node = null;
 
-					} else if ( node == this.context ) {
+					} else if ( node === this.context ) {
 
 						parents.push( node );
 						eachPar = [];
@@ -473,23 +474,23 @@ var WQConstructor;
 
 	wQueryObj.prototype.is = function ( check ) {
 			
-		if ( check.atChar(0) == '#' ) {
+		if ( check.atChar(0) === '#' ) {
 
 			for (var i = 0; i < this.length; i++) {
 				
-				if ( this.elements[i].id == check.split('#')[1] ) return true;
+				if ( this.elements[i].id === check.slice( 1 ) ) return true;
 
-				if (i === this.length - 1 && this.elements[i].id != check.split('#')[1] ) {
+				if (i === this.length - 1 && this.elements[i].id != check.slice( 1 ) ) {
 					return false;
 				};
 
 			};
 
-		} else if ( check.atChar(0) == '.' ) {
+		} else if ( check.atChar(0) === '.' ) {
 
 			for (var i = 0; i < this.length; i++) {
 				
-				if ( this.elements[i].className == check.split('.')[1] ) return true;
+				if ( this.elements[i].className === check.split('.')[1] ) return true;
 
 				if (i === this.length - 1 && this.elements[i].className != check.split('.')[1] ) {
 					return false;
@@ -501,7 +502,7 @@ var WQConstructor;
 
 			for (var i = 0; i < this.length; i++) {
 				
-				if ( this.elements[i].nodeName == check.toLowerCase() ) return true;
+				if ( this.elements[i].nodeName === check.toLowerCase() ) return true;
 
 				if (i === this.length - 1 && this.elements[i].nodeName != check.toLowerCase() ) {
 					return false;
