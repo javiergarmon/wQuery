@@ -24,6 +24,9 @@ jQuery( function(){
 	var cJ = jQuery('div');
 	var cW = wQuery('div');
 
+	var dJ = jQuery('a');
+	var dW = wQuery('a');
+
 	var tests = [
 
 		[
@@ -225,8 +228,65 @@ jQuery( function(){
 
 	];
 
+	var result = [];
+
+	for( var i in tests ){
+
+		result[ i ] = {
+
+			name    : tests[ i ][ 0 ],
+			samples : tests[ i ][ 1 ],
+			jTime   : 0,
+			wTime   : 0
+
+		};
+
+	}
+
+	var loop  = 0;
+	var loops = 100;
 	var step  = 0;
 	var steps = tests.length;
+
+	var inform = function(){
+
+		var fn = null;
+
+		for( var i in result ){
+
+			result[ i ].jTime = result[ i ].jTime / loops;
+			result[ i ].wTime = result[ i ].wTime / loops;
+
+			fn = ( result[ i ].jTime < result[ i ].wTime ) ? console.warn : console.info;
+
+			fn.call( console,
+
+				result[ i ].name + ' | ' +
+				loops + ' x ' + result[ i ].samples + ' samples | ' +
+				'jQuery: ' + result[ i ].jTime.toFixed( 3 ) + 'ms | ' +
+				'wQuery: ' + result[ i ].wTime.toFixed( 3 ) + 'ms | ' +
+				'x' + ( result[ i ].jTime / result[ i ].wTime ).toFixed( 2 ) + ' times faster'
+
+			);
+
+		}
+
+	};
+
+	var startLoop = function(){
+
+		if( ++loop < loops ){
+
+			console.log('Completed ' + Math.round( ( loop / loops ) * 100 ) + '%');
+			step = 0;
+			next();
+
+		}else{
+			inform();
+			console.log('Test end');
+		}
+		
+	};
 
 	var next = function(){
 
@@ -248,28 +308,18 @@ jQuery( function(){
 
 		var t21 = window.performance.now();
 
-		var fn = ( ( t11 - t10 ) < ( t21 - t20 ) ) ? console.warn : console.info;
-
-		fn.call( console,
-
-			tests[ step ][ 0 ] + ' | ' +
-			tests[ step ][ 1 ] + ' samples | ' +
-			'jQuery: ' + ( t11 - t10 ).toFixed( 3 ) + 'ms | ' +
-			'wQuery: ' + ( t21 - t20 ).toFixed( 3 ) + 'ms | ' +
-			'x' + ( (t11 - t10 ) / (t21 - t20) ).toFixed( 2 ) + ' times faster'
-
-		);
+		result[ step ].jTime += ( t11 - t10 );
+		result[ step ].wTime += ( t21 - t20 );
 
 		if( ++step < steps ){
 			setTimeout( next );
 		}else{
-			console.log('Test end');
+			startLoop();
 		}
 
 	}
 
 	next();
-	//wQuery('div');
 
 });
 
