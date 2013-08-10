@@ -88,8 +88,6 @@ var WQConstructor;
 	*/
 	wQueryObj.prototype.init = function ( selector ) {
 
-		var match, elem;
-
 		if ( !selector ) {
 		
 			return this;
@@ -98,15 +96,15 @@ var WQConstructor;
 
 			if ( !this.context ) {
 
-				match = document.querySelectorAll(selector);
-				this.elements = WQTools.convertToArray(match);
-				return this;
+				var newElement = new wQueryObj();
+				newElement.elements = WQTools.convertToArray(document.querySelectorAll(selector));
+				return newElement;
 
 			} else if ( this.context ) {
 
-				match = this.context.querySelectorAll(selector);
-				this.elements = WQTools.convertToArray(match);
-				return this;
+				var newElement = new wQueryObj();
+				newElement.elements = WQTools.convertToArray(this.context.querySelectorAll(selector));
+				return newElement;
 
 			}
 
@@ -493,7 +491,7 @@ var WQConstructor;
 
 	wQueryObj.prototype.is = function ( check ) {
 			
-		if ( check.atChar(0) === '#' ) {
+		if ( check.atChar && check.atChar(0) === '#' ) {
 
 			for (var i = 0; i < this.length; i++) {
 				
@@ -505,7 +503,7 @@ var WQConstructor;
 
 			};
 
-		} else if ( check.atChar(0) === '.' ) {
+		} else if ( check.atChar && check.atChar(0) === '.' ) {
 
 			for (var i = 0; i < this.length; i++) {
 				
@@ -517,13 +515,13 @@ var WQConstructor;
 
 			};
 
-		} else {
+		} else {	
 
-			for (var i = 0; i < this.length; i++) {
+			for (var i = 0; i < this.elements.length; i++) {
 				
-				if ( this.elements[i].nodeName === check.toLowerCase() ) return true;
+				if ( this.elements[i].nodeName.toLowerCase() === check ) return true;
 
-				if (i === this.length - 1 && this.elements[i].nodeName != check.toLowerCase() ) {
+				if ( i === this.elements.length - 1 ) {
 					return false;
 				};
 
@@ -601,7 +599,10 @@ var WQConstructor;
 	wQueryObj.prototype.add = function ( coll2 ) {
 
  		var result = [];
- 		result.concat(this);
+		
+		for (var i = 0; i < this.elements.length; i++) {
+			result.push( this.elements[i] );
+		};
 
  		if ( typeof coll2 === 'string' ) {
 
@@ -621,10 +622,10 @@ var WQConstructor;
 
  		} else {
 
-	 		for (var i = 0; i < coll2.length; i++) {
-	 			if (result.indexOf( coll2[i] ) < 0) {
-	 				coll2[i];
-	 			}
+	 		for (var i = 0; i < coll2.elements.length; i++) {
+				
+	 			result.push( coll2.elements[i] );
+
 	 		};
 
 	 	}

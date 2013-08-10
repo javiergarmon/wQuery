@@ -11,10 +11,11 @@
 			console.log('##Testing wQuery##');
 			wQuery(function () {
 
-				var a = wQuery('#sub1_1');
-				var b = a.parent();
+				var a = wQuery('div');
+				var b = wQuery('h3');
+				var c = a.add( b );
 
-				console.log(a.elements, b.elements)
+				console.log(c.elements);
 
 			});
 
