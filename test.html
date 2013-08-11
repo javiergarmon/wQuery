@@ -211,6 +211,36 @@ jQuery( function(){
 
 		[
 
+			'eq(2) method  ',
+			10000,
+
+			function(){
+				cJ.eq( 2 );
+			},
+
+			function(){
+				cW.eq( 2 );
+			}
+
+		],
+
+		[
+
+			'eq(-2) method  ',
+			10000,
+
+			function(){
+				cJ.eq( -2 );
+			},
+
+			function(){
+				cW.eq( -2 );
+			}
+
+		],
+
+		[
+
 			'get method  ',
 			10000,
 
