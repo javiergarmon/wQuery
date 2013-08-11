@@ -269,36 +269,33 @@ var WQConstructor;
 	 * Remove the class(es) form the current elements
 	 */
 
-	wQueryObj.prototype.removeClass = function ( classes ) {
+	wQueryObj.prototype.removeClass = function ( classNames ) {
 
-		if ( classes ) {
+		if( typeof classNames !== 'undefined' ){
 
-			var classCollection = classes.split(' ');
+			classNames = classNames.toString().split(' ');
 
-			for (var i = 0; i < this.length; i++) {
+			var i   = this.elements.length;
+			var tmp = null;
 
-				var actClasses = this.elements[i].className.split(' ');
+			while( i-- ){
 
-				for (var x = 0; x < classCollection.length; x++) {
-				
-					if ( actClasses.indexOf( classCollection[x] ) > 0 ) {
+				tmp = this.elements[ i ].classList;
+				tmp.remove.apply( tmp, classNames );
 
-						actClasses.splice( actClasses.indexOf( classCollection[x] ), 1 );
+			}
 
-					}
-				
-				};
+		}else{
 
-				this.elements[i].className = actClasses.join(' ');
+			var i = this.elements.length;
 
-			};
+			while( i-- ){
+				this.elements[ i ].className = '';
+			}
 
-			return this;
-
-		} else {
-			var err = "wQueryObj ERR: This function needs a parameter";
-			throw err;
 		}
+
+		return this;
 
 	};
 
