@@ -136,17 +136,17 @@ var WQConstructor;
 
 	wQueryObj.prototype.hasClass = function ( classSearched ) {
 
-		var classes = "";
+		classSearched = classSearched.toString();
 
-		for (var i = 0; i < this.length; i++) {
-			classes.concat(this.elements[i].className + " ");
+		for( var i = 0, j = this.elements.length; i < j; i++ ){
+			
+			if( this.elements[ i ].classList.contains( classSearched ) ){
+				return true;
+			}
+
 		};
 
-		if (classes.indexOf( classSearched ) < 0 ) {
-			return false;
-		} else {
-			return true;
-		}
+		return false;
 
 	};
 
