@@ -119,22 +119,80 @@ jQuery( function(){
 
 		],
 
-		/*
 		[
 
-			'is method     ',
+			'addClass method     ',
 			10000,
 
 			function(){
-				cJ.is('div.toc');
+				cJ.addClass( 'testClass' );
 			},
 
 			function(){
-				cW.is('div.toc');
+				cW.addClass( 'testClass' );
 			}
 
 		],
-		*/
+
+		[
+
+			'attr method  ',
+			10000,
+
+			function(){
+				cJ.attr('class');
+			},
+
+			function(){
+				cW.attr('class');
+			}
+
+		],
+
+		[
+
+			'attr( nonExist ) method  ',
+			10000,
+
+			function(){
+				cJ.attr('nonExist');
+			},
+
+			function(){
+				cW.attr('nonExist');
+			}
+
+		],
+
+		[
+
+			'attr( "class", "helloWorld" ) method  ',
+			10000,
+
+			function(){
+				cJ.attr('class','helloWorld');
+			},
+
+			function(){
+				cW.attr('class','helloWorld');
+			}
+
+		],
+
+		[
+
+			'attr( "data-hi", "helloWorld" ) method  ',
+			10000,
+
+			function(){
+				cJ.attr('data-hi','helloWorld');
+			},
+
+			function(){
+				cW.attr('data-hi','helloWorld');
+			}
+
+		],
 
 		[
 
@@ -183,6 +241,53 @@ jQuery( function(){
 
 		[
 
+			'hasClass method  ',
+			10000,
+
+			function(){
+				cJ.hasClass('toc');
+			},
+
+			function(){
+				cW.hasClass('toc');
+			}
+
+		],
+
+		[
+
+			'hasClass( nonExist ) method  ',
+			10000,
+
+			function(){
+				cJ.hasClass('nonExist');
+			},
+
+			function(){
+				cW.hasClass('nonExist');
+			}
+
+		],
+
+		/*
+		[
+
+			'is method     ',
+			10000,
+
+			function(){
+				cJ.is('div.toc');
+			},
+
+			function(){
+				cW.is('div.toc');
+			}
+
+		],
+		*/
+
+		[
+
 			'parent method',
 			10000,
 
@@ -207,6 +312,36 @@ jQuery( function(){
 
 			function(){
 				cW.parents();
+			}
+
+		],
+
+		[
+
+			'removeClass() method     ',
+			10000,
+
+			function(){
+				cJ.removeClass();
+			},
+
+			function(){
+				cW.removeClass();
+			}
+
+		],
+
+		[
+
+			'removeClass("testClass") method     ',
+			10000,
+
+			function(){
+				cJ.removeClass( 'testClass' );
+			},
+
+			function(){
+				cW.removeClass( 'testClass' );
 			}
 
 		],
@@ -274,7 +409,7 @@ jQuery( function(){
 	}
 
 	var loop  = 0;
-	var loops = 10;
+	var loops = 1;
 	var step  = 0;
 	var steps = tests.length;
 
