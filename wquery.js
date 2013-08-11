@@ -441,7 +441,7 @@ var WQConstructor;
 				} else {
 
 					newElement.elements = [];
-					return newElements;
+					return newElement;
 
 				}
 
