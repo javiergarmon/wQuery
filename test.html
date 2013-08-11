@@ -378,6 +378,36 @@ jQuery( function(){
 
 		[
 
+			'removeAttr() method     ',
+			10000,
+
+			function(){
+				cJ.removeAttr();
+			},
+
+			function(){
+				cW.removeAttr();
+			}
+
+		],
+
+		[
+
+			'removeAttr("data-hi") method     ',
+			10000,
+
+			function(){
+				cJ.removeAttr('data-hi');
+			},
+
+			function(){
+				cW.removeAttr('data-hi');
+			}
+
+		],
+
+		[
+
 			'removeClass() method     ',
 			10000,
 

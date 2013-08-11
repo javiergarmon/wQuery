@@ -116,8 +116,9 @@ var WQConstructor;
 
 	};
 
+	// Revised and tested
 	wQueryObj.prototype.get = function ( index ) {
-		if ( typeof index == "number" ) {
+		if ( typeof index === 'undefined' ) {
 			return this.elements[ index ];
 		} else {
 			return this.elements;
@@ -133,7 +134,7 @@ var WQConstructor;
 	/* `hasClass` function 
 	 * Check if an element(s) has a class(es)
 	 */
-
+	 // Revised and tested
 	wQueryObj.prototype.hasClass = function ( classSearched ) {
 
 		classSearched = classSearched.toString();
@@ -151,9 +152,9 @@ var WQConstructor;
 	};
 
 	/* `attr` process
-	 * Check if an element(s) has a class(es)
+	 * Check if an element(s) has an attribute(s)
 	 */
-
+	// Revised and tested
 	wQueryObj.prototype.attr = function ( attr, value ) {
 
 		if ( attr ) {
@@ -200,7 +201,7 @@ var WQConstructor;
 	/* `addClass` process
 	 * Add the class(es) to the whole collection of elements
 	 */
-
+	// Revised and tested
 	wQueryObj.prototype.addClass = function (  classNames  ) {
 
 		classNames = classNames.split(' ');
@@ -218,8 +219,7 @@ var WQConstructor;
 
 	};
 
-	/* `addClass` process
-	 * Add the class(es) to the whole collection of elements
+	/* `html` process
 	 */
 
 	wQueryObj.prototype.html = function ( HTMLInner ) {
@@ -247,28 +247,36 @@ var WQConstructor;
 	/* `removeAttr` process
 	 * Remove the attribute form the current elements
 	 */
-
+	// Revised and tested
 	wQueryObj.prototype.removeAttr = function ( attr ) {
 
 		if ( attr ) {
 
-			for (var i = 0; i < this.length; i++) {
-				this.elements[i].removeAttribute( attr );
-			};
+			attr = attr.toString().split(' ');
 
-			return this;
+			var i = this.elements.length;
+			var j = attr.length;
 
-		} else {
-			var err = "wQueryObj ERR: This function needs a parameter";
-			throw err;
+			while( i-- ){
+
+				while( j-- ){
+					this.elements[ i ].removeAttribute( attr[ j ] );
+				}
+
+				j = attr.length;
+
+			}
+
 		}
+
+		return this;
 
 	};
 
 	/* `removeClass` process
 	 * Remove the class(es) form the current elements
 	 */
-
+	// Revised and tested
 	wQueryObj.prototype.removeClass = function ( classNames ) {
 
 		if( typeof classNames !== 'undefined' ){
@@ -312,7 +320,7 @@ var WQConstructor;
 	/* `toggleClass` process
 	 * 	Add or remove the class(es) passed in the arguments
 	 */
-
+	// Revised and tested
 	wQueryObj.prototype.toggleClass = function ( classes ) {
 
 		if ( classes ) {
@@ -356,7 +364,7 @@ var WQConstructor;
    /*  `eq` function
 	*  Returns an object with the selected dom element
 	*/
-
+	// Revised and tested
 	wQueryObj.prototype.eq = function ( index ) {
 
 		var newObject = new wQueryObj();
@@ -376,33 +384,23 @@ var WQConstructor;
 	}
 
    /*  `first` function
-	*  Returns the parent of the current element
 	*/
-
+	// Revised and tested
 	wQueryObj.prototype.first = function () {
-
-		var newObject = new wQueryObj();
-		newObject.elements = [ this.elements[0] ];
-		return newObject;
-
+		return this.eq( 0 );
 	}
 
    /*  `last` function
-	*  Returns the parent of the current element
 	*/
-
+	// Revised and tested
     wQueryObj.prototype.last = function () {
-
-    	var newObject = new wQueryObj();
-    	newObject.elements = [ this.elements[ this.elements.length - 1  ] ];
-    	return newObject;
-
+    	return this.eq( -1 );
     }
 
    /*  `slice` function
 	*  Returns the elements from the collection indicated in the arguments
 	*/
-
+	// Revised and tested
 	wQueryObj.prototype.slice = function ( start, end ) {
 
 		if ( start ) {
@@ -633,7 +631,7 @@ var WQConstructor;
 	/* `each` function
 	 * Loop over the collection
 	 */
-
+	// Revised and tested
 	wQueryObj.prototype.each = function ( fn ) {
 			
 		var length = this.elements.length;
