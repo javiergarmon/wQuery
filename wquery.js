@@ -373,6 +373,11 @@ var WQConstructor;
 				newObject.elements = this.elements[ ( this.elements.length - 1 ) + index ];
 				return newObject;
 
+			} else {
+
+				newObject.elements = [];
+				return newObject;
+
 			}
 
 		} else {
