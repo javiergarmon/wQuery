@@ -399,11 +399,11 @@ var WQConstructor;
 
     }
 
-   /*  `splice` function
+   /*  `slice` function
 	*  Returns the elements from the collection indicated in the arguments
 	*/
 
-	wQueryObj.prototype.splice = function ( start, end ) {
+	wQueryObj.prototype.slice = function ( start, end ) {
 
 		if ( start ) {
 
@@ -414,13 +414,21 @@ var WQConstructor;
 
 			if ( end ) {
 
-				for ( ; start < end + 1; start++ ) {
-					result.push( this.elements[ start ] );
-				};
+				if ( start < end ) {
 
-				var newElement = new wQueryObj();
-				newElement.elements = result;
-				return newElement;
+					for ( ; start < end + 1; start++ ) {
+						result.push( this.elements[ start ] );
+					};
+
+					var newElement = new wQueryObj();
+					newElement.elements = result;
+					return newElement;
+
+				} else {
+
+					return this;
+
+				}
 
 			} else {
 
