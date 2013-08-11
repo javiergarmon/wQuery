@@ -417,6 +417,7 @@ var WQConstructor;
 		if ( start ) {
 
 			var result = [];
+			var newElement = new wQueryObj();
 
 			if ( start < 0 ) start = this.elements.length + start;
 			if ( end < 0 )   end   = this.elements.length + end;
@@ -429,13 +430,13 @@ var WQConstructor;
 						result.push( this.elements[ start ] );
 					};
 
-					var newElement = new wQueryObj();
 					newElement.elements = result;
 					return newElement;
 
 				} else {
 
-					return this;
+					newElements.elements = [];
+					return newElements;
 
 				}
 
