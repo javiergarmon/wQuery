@@ -11,11 +11,9 @@
 			console.log('##Testing wQuery##');
 			wQuery(function () {
 
-				var a = wQuery('div');
-				var b = a.slice(-2, -1);
+				var a = wQuery('div').children('p');
 
 				console.log(a.elements);
-				console.log(b.elements);
 
 			});
 
@@ -106,7 +104,7 @@
 		<div id="wz">
 
 			<div id="major" class="app">
-				<div id="sub1_1" class="mama"></div>
+				<div id="sub1_1" class="mama"> <p>pene</p> </div>
 				<div id="sub1_2" class="mama"></div>
 				<div id="sub1_3" class="pupi"></div>
 			</div>

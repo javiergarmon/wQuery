@@ -48,7 +48,7 @@ var WQConstructor;
 
 			}
 
-		},
+		}
 
 	wQueryObj = function () {
 		this.version = version;
@@ -227,7 +227,7 @@ var WQConstructor;
 		if ( !HTMLInner ) {
 			return this.elements[0].innerHTML;
 		} else {
-			for (var i = 0; i < this.length; i++) {
+			for (var i = 0; i < this.elements.length; i++) {
 				this.elements[i].innerHTML = HTMLInner;
 			};
 		}
@@ -252,7 +252,7 @@ var WQConstructor;
 
 		if ( attr ) {
 
-			for (var i = 0; i < this.length; i++) {
+			for (var i = 0; i < this.elements.length; i++) {
 				this.elements[i].removeAttribute( attr );
 			};
 
@@ -465,6 +465,100 @@ var WQConstructor;
 
 	}
 
+   /*  `find` function
+	*  Find the elements inside the selected elements
+	*/
+
+	wQueryObj.prototype.find = function ( selector ) {
+
+		var newObject = new wQueryObj();
+
+		if ( selector ) {
+
+			var results = [];
+
+			for (var i = 0; i < this.elements.length; i++) {
+				results.push( this.elements[i].querySelectorAll( selector ) );
+			};
+
+			newObject.elements = WQTools.removeDuplicated(result);
+			return newObject;
+
+		} else {
+
+			newObject.elements = [];
+			return newObject;
+
+		}
+
+	}
+
+   /*  `children` function
+	*  Get the child with the same object as the parameter
+	*/
+
+	wQueryObj.prototype.children = function ( selector ) {
+
+		var newObject = new wQueryObj(),
+			result    = [];
+
+		if ( selector ) {
+
+			for (var i = 0; i < this.elements.length; i++) {
+		
+				var node = this.elements[i].children[0];
+
+				while ( node != undefined ) {
+
+					if ( selector.atChar && selector.atChar(0) === '#' ) {
+
+						if ( node.id == selector.split('#')[1] ) {
+							result.push( node );
+							node = undefined;
+						} else {
+							node = node.children[0];
+						}
+
+					} else if ( selector.atChar && selector.atChar(0) === '.' ) {
+
+						if ( node.className == selector.split('.')[1] ) {
+							result.push( node );
+							node = undefined;
+						} else {
+							node = node.children[0];
+						}
+
+					} else {	
+
+						if ( node.nodeName.toLowerCase() == selector ) {
+							result.push( node );
+							node = undefined;
+						} else {
+							node = node.children[0];
+						};
+
+					}
+
+				}
+
+			};
+
+			newObject.elements = WQTools.removeDuplicated(result);
+			return newObject;
+
+		} else {
+
+			for (var i = 0; i < this.elements.length; i++) {
+				result.push( this.elements[ i ].children[0] );
+			};
+
+			newObject.elements = result;
+			return newObject;
+
+		}
+
+	}
+
    /*  `parent` function
 	*  Returns the parent of the current element
 	*/
@@ -488,7 +582,7 @@ var WQConstructor;
 
 			var parents = [];
 
-			for (var i = 0; i < this.length; i++) {
+			for (var i = 0; i < this.elements.length; i++) {
 			
 				var node = this.elements[i].parentNode;
 
@@ -606,11 +700,11 @@ var WQConstructor;
 			
 		if ( check.atChar && check.atChar(0) === '#' ) {
 
-			for (var i = 0; i < this.length; i++) {
+			for (var i = 0; i < this.elements.length; i++) {
 				
 				if ( this.elements[i].id === check.slice( 1 ) ) return true;
 
-				if (i === this.length - 1 && this.elements[i].id != check.slice( 1 ) ) {
+				if (i === this.elements.length - 1 && this.elements[i].id != check.slice( 1 ) ) {
 					return false;
 				};
 
@@ -618,11 +712,11 @@ var WQConstructor;
 
 		} else if ( check.atChar && check.atChar(0) === '.' ) {
 
-			for (var i = 0; i < this.length; i++) {
+			for (var i = 0; i < this.elements.length; i++) {
 				
 				if ( this.elements[i].className === check.split('.')[1] ) return true;
 
-				if (i === this.length - 1 && this.elements[i].className != check.split('.')[1] ) {
+				if (i === this.elements.length - 1 && this.elements[i].className != check.split('.')[1] ) {
 					return false;
 				};
 
