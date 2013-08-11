@@ -317,29 +317,16 @@ var WQConstructor;
 
 		if ( classes ) {
 
-			var classCollection = classes.split(' ');
+			var classes = classes.toString().split(' ');
+			var i       = this.elements.length;
+			var tmp     = null;
 
-			for (var i = 0; i < this.length; i++) {
+			while( i-- ){
 
-				var actClasses = this.elements[i].className.split(' ');
-				
-				for (var x = 0; x < classCollection.length; x++) {
+				tmp = this.elements[ i ].classList;
+				tmp.toggle.apply( tmp, classes );
 
-					if ( actClasses.indexOf( classCollection[ x ] ) < 0 ) {
-
-						actClasses.push( classCollection[ x ] );
-
-					} else {
-
-						actClasses.splice( actClasses.indexOf( classCollection[ x ] ), 1 );
-
-					}
-
-				};
-
-				this.elements[i].className = actClasses.join(' ');
-
-			};
+			}
 
 			return this;
 

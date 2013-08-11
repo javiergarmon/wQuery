@@ -348,6 +348,21 @@ jQuery( function(){
 
 		[
 
+			'toggleClass("testClass") method     ',
+			10000,
+
+			function(){
+				cJ.toggleClass( 'testClass' );
+			},
+
+			function(){
+				cW.toggleClass( 'testClass' );
+			}
+
+		],
+
+		[
+
 			'css method (get color property)    ',
 			10000,
 
