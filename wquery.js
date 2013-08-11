@@ -117,7 +117,7 @@ var WQConstructor;
 	};
 
 	wQueryObj.prototype.get = function ( index ) {
-		if ( index ) {
+		if ( typeof index == "number" ) {
 			return this.elements[ index ];
 		} else {
 			return this.elements;
@@ -351,6 +351,52 @@ var WQConstructor;
 		 |			               XXX  	         		   |
 		 |_____________________________________________________|
 	*/
+
+   /*  `eq` function
+	*  Returns an object with the selected dom element
+	*/
+
+	wQueryObj.prototype.eq = function ( index ) {
+
+		var newObject = new wQueryObj();
+
+		if ( index > 0 && index <= this.elements.length - 1 ) {
+
+			newObject.elements = this.elements[ index ];
+			return newObject;
+
+		} else if ( index < 0 && ( index * -1 ) <= this.elements.length - 1 ) {
+
+			newObject.elements = this.elements[ ( this.elements.length - 1 ) + index ];
+			return newObject;
+
+		}
+
+	}
+
+   /*  `first` function
+	*  Returns the parent of the current element
+	*/
+
+	wQueryObj.prototype.first = function () {
+
+		var newObject = new wQueryObj();
+		newObject.elements = this.elements[0];
+		return newObject;
+
+	}
+
+   /*  `last` function
+	*  Returns the parent of the current element
+	*/
+
+    wQueryObj.prototype.last = function () {
+
+    	var newObject = new wQueryObj();
+    	newObject.elements = this.elements[ this.elements.length - 1  ];
+    	return newObject;
+
+    }
 
    /*  `parent` function
 	*  Returns the parent of the current element

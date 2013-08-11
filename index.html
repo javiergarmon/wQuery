@@ -11,11 +11,9 @@
 			console.log('##Testing wQuery##');
 			wQuery(function () {
 
-				var a = wQuery('div');
-				var b = wQuery('h3');
-				var c = a.add( b );
+				var a = wQuery('div').get(0);
 
-				console.log(c.elements);
+				console.log(a);
 
 			});
 
