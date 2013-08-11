@@ -203,14 +203,15 @@ var WQConstructor;
 
 	wQueryObj.prototype.addClass = function (  classNames  ) {
 
-		var classArray = classNames.split(' ');
+		classNames = classNames.split(' ');
 
-		for (var i = 0; i < this.length; i++) {
-			for (var x = 0; i < classArray.length; x++) {
-				if (this.elements[i].indexOf( classArray[x] ) < 0) {
-					this.elements[i].className = this.elements[i].className + " " + classArray[x];
-				};
-			};
+		var tmp = null;
+
+		for( var i = 0, j = this.elements.length; i < j; i++ ){
+
+			tmp = this.elements[ i ].classList;
+			tmp.add.apply( tmp, classNames );
+
 		};
 
 		return this;
