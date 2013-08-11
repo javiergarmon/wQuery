@@ -391,7 +391,7 @@ var WQConstructor;
 	wQueryObj.prototype.first = function () {
 
 		var newObject = new wQueryObj();
-		newObject.elements = this.elements[0];
+		newObject.elements = [ this.elements[0] ];
 		return newObject;
 
 	}
@@ -403,7 +403,7 @@ var WQConstructor;
     wQueryObj.prototype.last = function () {
 
     	var newObject = new wQueryObj();
-    	newObject.elements = this.elements[ this.elements.length - 1  ];
+    	newObject.elements = [ this.elements[ this.elements.length - 1  ] ];
     	return newObject;
 
     }
@@ -426,7 +426,7 @@ var WQConstructor;
 
 				if ( start < end ) {
 
-					for ( ; start < end + 1; start++ ) {
+					for ( ; start < end; start++ ) {
 						result.push( this.elements[ start ] );
 					};
 
@@ -435,7 +435,7 @@ var WQConstructor;
 
 				} else {
 
-					newElements.elements = [];
+					newElement.elements = [];
 					return newElements;
 
 				}
