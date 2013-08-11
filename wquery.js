@@ -361,31 +361,17 @@ var WQConstructor;
 
 		var newObject = new wQueryObj();
 
-		if ( index ) {
-
-			if ( index > 0 && index <= this.elements.length - 1 ) {
-
-				newObject.elements = this.elements[ index ];
-				return newObject;
-
-			} else if ( index < 0 && ( index * -1 ) <= this.elements.length - 1 ) {
-
-				newObject.elements = this.elements[ ( this.elements.length - 1 ) + index ];
-				return newObject;
-
-			} else {
-
-				newObject.elements = [];
-				return newObject;
-
-			}
-
-		} else {
-
-			newObject.elements = [];
-			return newObject;
-
+		if( index < 0 ){
+			index += this.elements.length;
 		}
+
+		if( typeof this.elements[ index ] !== 'undefined' ){
+			newObject.elements = [ this.elements[ index ] ];
+		}else{
+			newObject.elements = [];
+		}
+
+		return newObject;
 
 	}
 
