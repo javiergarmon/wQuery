@@ -241,6 +241,21 @@ jQuery( function(){
 
 		[
 
+			'first method  ',
+			10000,
+
+			function(){
+				cJ.first();
+			},
+
+			function(){
+				cW.first();
+			}
+
+		],
+
+		[
+
 			'get method  ',
 			10000,
 
@@ -318,6 +333,21 @@ jQuery( function(){
 
 		[
 
+			'last method  ',
+			10000,
+
+			function(){
+				cJ.last();
+			},
+
+			function(){
+				cW.last();
+			}
+
+		],
+
+		[
+
 			'parent method',
 			10000,
 
@@ -342,6 +372,36 @@ jQuery( function(){
 
 			function(){
 				cW.parents();
+			}
+
+		],
+
+		[
+
+			'removeAttr() method     ',
+			10000,
+
+			function(){
+				cJ.removeAttr();
+			},
+
+			function(){
+				cW.removeAttr();
+			}
+
+		],
+
+		[
+
+			'removeAttr("data-hi") method     ',
+			10000,
+
+			function(){
+				cJ.removeAttr('data-hi');
+			},
+
+			function(){
+				cW.removeAttr('data-hi');
 			}
 
 		],
