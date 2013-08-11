@@ -158,14 +158,30 @@ var WQConstructor;
 
 		if ( attr ) {
 
+			attr = attr.toString();
+			
 			if ( !value ) {
 
-				return this.elements[0].getAttribute( attr );
+				var tmp = null;
+
+				for( var i = 0, j = this.elements.length; i < j; i++ ){
+
+					tmp = this.elements[ i ].getAttribute( attr );
+
+					if( tmp !== null ){
+						return tmp;
+					}
+
+				}
+
+				return undefined;
 
 			} else {
 
-				for (var i = 0; i < this.length; i++) {
-					this.elements[i].setAttribute( attr, value );
+				value = value.toString();
+
+				for (var i = 0, j = this.elements.length; i < j; i++) {
+					this.elements[ i ].setAttribute( attr, value );
 				};
 
 				return this;
