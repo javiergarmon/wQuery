@@ -412,6 +412,49 @@ var WQConstructor;
 
     }
 
+   /*  `splice` function
+	*  Returns the elements from the collection indicated in the arguments
+	*/
+
+	wQueryObj.prototype.splice = function ( start, end ) {
+
+		if ( start ) {
+
+			var result = [];
+
+			if ( start < 0 ) start = this.elements.length + start;
+			if ( end < 0 )   end   = this.elements.length + end;
+
+			if ( end ) {
+
+				for ( ; start < end + 1; start++ ) {
+					result.push( this.elements[ start ] );
+				};
+
+				var newElement = new wQueryObj();
+				newElement.elements = result;
+				return newElement;
+
+			} else {
+
+				for ( ; start < this.elements.length; start++) {
+					result.push( this.elements[ start ] );
+				};
+
+				var newElement = new wQueryObj();
+				newElement.elements = result;
+				return newElement;
+
+			}
+
+		} else {
+
+			return this;
+
+		}
+
+	}
+
    /*  `parent` function
 	*  Returns the parent of the current element
 	*/
