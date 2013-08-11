@@ -348,6 +348,96 @@ jQuery( function(){
 
 		[
 
+			'slice method     ',
+			10000,
+
+			function(){
+				cJ.slice();
+			},
+
+			function(){
+				cW.slice();
+			}
+
+		],
+
+		[
+
+			'slice( 2 ) method     ',
+			10000,
+
+			function(){
+				cJ.slice( 2 );
+			},
+
+			function(){
+				cW.slice( 2 );
+			}
+
+		],
+
+		[
+
+			'slice( -2 ) method     ',
+			10000,
+
+			function(){
+				cJ.slice( -2 );
+			},
+
+			function(){
+				cW.slice( -2 );
+			}
+
+		],
+
+		[
+
+			'slice( 2, 3 ) method     ',
+			10000,
+
+			function(){
+				cJ.slice( 2, 3 );
+			},
+
+			function(){
+				cW.slice( 2, 3 );
+			}
+
+		],
+
+		[
+
+			'slice( 2, -2 ) method     ',
+			10000,
+
+			function(){
+				cJ.slice( 2, -2 );
+			},
+
+			function(){
+				cW.slice( 2, -2 );
+			}
+
+		],
+
+		[
+
+			'slice( -2, -1 ) method     ',
+			10000,
+
+			function(){
+				cJ.slice( -2, -1 );
+			},
+
+			function(){
+				cW.slice( -2, -1 );
+			}
+
+		],
+
+		[
+
 			'toggleClass("testClass") method     ',
 			10000,
 
