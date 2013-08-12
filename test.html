@@ -626,21 +626,17 @@ jQuery( function(){
 
 			fn = ( result[ i ].jTime < result[ i ].wTime ) ? console.warn : console.info;
 
-			fn.call( console,
-
-				result[ i ].name + ' | ' +
-				loops + ' x ' + result[ i ].samples + ' samples | ' +
-				'jQuery: ' + result[ i ].jTime.toFixed( 3 ) + 'ms | ' +
-				'wQuery: ' + result[ i ].wTime.toFixed( 3 ) + 'ms | ' +
-				'x' + ( result[ i ].jTime / result[ i ].wTime ).toFixed( 2 ) + ' times faster'
-
-			);
+			fn.call( console, result[ i ].name );
 
 			fn.call( console,
 
 				'     ' +
-				'jQuery: ' + parseInt( 1000 / ( result[ i ].jTime / result[ i ].samples ), 10 ) + ' ops/s | ' +
-				'wQuery: ' + parseInt( 1000 / ( result[ i ].wTime / result[ i ].samples ), 10 ) + ' ops/s'
+				'x' + ( result[ i ].jTime / result[ i ].wTime ).toFixed( 2 ) + ' times faster | ' +
+				//loops + ' x ' + result[ i ].samples + ' samples | ' +
+				'jQuery: ' + result[ i ].jTime.toFixed( 3 ) + 'ms ( ' +
+				parseInt( 1000 / ( result[ i ].jTime / result[ i ].samples ), 10 ) + ' ops/s ) | ' +
+				'wQuery: ' + result[ i ].wTime.toFixed( 3 ) + 'ms ( ' +
+				parseInt( 1000 / ( result[ i ].wTime / result[ i ].samples ), 10 ) + ' ops/s )'
 
 			);
 
