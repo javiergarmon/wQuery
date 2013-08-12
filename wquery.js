@@ -54,6 +54,19 @@ var WQConstructor;
 		this.version = version;
 	};
 
+
+	var matchesSelector = 'matchesSelector';
+
+	if( Element.prototype.matchesSelector ){
+		matchesSelector = 'matchesSelector';
+	}else if( Element.prototype.mozMatchesSelector ){
+		matchesSelector = 'mozMatchesSelector';
+	}else if( Element.prototype.webkitMatchesSelector ){
+		matchesSelector = 'webkitMatchesSelector';
+	}else if( Element.prototype.msMatchesSelector ){
+		matchesSelector = 'msMatchesSelector';
+	}
+
 	/*	  _____________________________________________________
 		 |													   |
 		 |			SETTTING UP THE wQueryObj OBJECT 			   |
@@ -252,13 +265,7 @@ var WQConstructor;
 
 		if ( attr ) {
 
-<<<<<<< HEAD
-			for (var i = 0; i < this.elements.length; i++) {
-				this.elements[i].removeAttribute( attr );
-			};
-=======
 			attr = attr.toString().split(' ');
->>>>>>> b8e03621b0c10b56107d82c09dd1ce1b4d2dae2f
 
 			var i = this.elements.length;
 			var j = attr.length;
@@ -687,44 +694,22 @@ var WQConstructor;
 	*/
 
 	wQueryObj.prototype.is = function ( check ) {
-			
-		if ( check.atChar && check.atChar(0) === '#' ) {
 
-			for (var i = 0; i < this.elements.length; i++) {
-				
-				if ( this.elements[i].id === check.slice( 1 ) ) return true;
+		var i = this.elements.length;
 
-				if (i === this.elements.length - 1 && this.elements[i].id != check.slice( 1 ) ) {
-					return false;
-				};
+		if( !i ){
+			return false;
+		}
 
-			};
+		while( i-- ){
 
-		} else if ( check.atChar && check.atChar(0) === '.' ) {
-
-			for (var i = 0; i < this.elements.length; i++) {
-				
-				if ( this.elements[i].className === check.split('.')[1] ) return true;
-
-				if (i === this.elements.length - 1 && this.elements[i].className != check.split('.')[1] ) {
-					return false;
-				};
-
-			};
-
-		} else {	
-
-			for (var i = 0; i < this.elements.length; i++) {
-				
-				if ( this.elements[i].nodeName.toLowerCase() === check ) return true;
-
-				if ( i === this.elements.length - 1 ) {
-					return false;
-				};
-
-			};
+			if( this.elements[ i ][ matchesSelector ]( check ) ){
+				return true;
+			}
 
 		}
+
+		return false;
 
 	};
 
