@@ -422,7 +422,7 @@ var WQConstructor;
 			var newElement = new wQueryObj();
 
 			if ( start < 0 ) start = this.elements.length + start;
-			if ( end < 0 )   end   = this.elements.length + end;
+			if ( end < 0 )   end   = this.elements.length + end;	
 
 			if ( end ) {
 
@@ -778,7 +778,7 @@ var WQConstructor;
 	 * Make an union of 2 collection
 	 */
 
-	wQueryObj.prototype.add = function ( coll2 ) {
+	wQueryObj.prototype.add = function ( coll2, context ) {
 
  		var result = [];
 		
@@ -788,19 +788,57 @@ var WQConstructor;
 
  		if ( typeof coll2 === 'string' ) {
 
- 			var added;
+ 			var added = [];
 
- 			if ( !this.context ) {
- 				added = document.querySelectorAll(coll2);
+ 			if ( coll2.charAt(0) == '<' && coll2.charAt( coll2.length - 1 ) == '>' ) {
+ 				result.push( document.createElement( coll2.substr( coll2.indexOf('<') + 1, coll2.indexOf('>') - coll2.indexOf('<') - 1 ) ) );
  			} else {
- 				added = this.context.querySelectorAll(coll2);
- 			};
 
- 			for (var i = 0; i < added.length; i++) {
- 				if ( result.indexOf(added[i]) < 0 ) {
- 					result.push(added[i]);
+	 			if ( typeof context === 'string' ){
+	 				
+	 				var contextElements;
+
+	 				if ( !this.context ) {
+		 				contextElements = document.querySelectorAll( context );
+		 			} else {
+		 				contextElements = this.context.querySelectorAll( context );
+		 			};
+
+		 			for (var i = 0; i < contextElements.length; i++) {
+		 				added.concat( contextElements[i].querySelectorAll( coll2 ));
+		 			};
+
+	 			} else if ( !this.context ) {
+	 				added = document.querySelectorAll( coll2 );
+	 			} else {
+	 				added = this.context.querySelectorAll( coll2 );
+	 			};
+
+	 			for (var i = 0; i < added.length; i++) {
+	 				if ( result.indexOf(added[i]) < 0 ) {
+	 					result.push(added[i]);
+	 				};
+	 			};
+
+	 		}
+
+ 		} else if ( typeof coll2 == "object" ) {
+
+ 			if ( coll2.elements ) {
+
+ 				for (var i = 0; i < coll2.elements.length; i++) {
+ 					result.push( coll2.elements[i] );
  				};
- 			};
+
+ 			} else if ( coll2.length ) {
+
+ 				for (var i = 0; i < coll2.length; i++) {
+ 					result.push( coll2[i] );
+ 				};
+
+ 			} else {
+ 				result.push( coll2 );
+ 			}
 
  		} else {
 
