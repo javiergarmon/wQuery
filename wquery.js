@@ -7,122 +7,124 @@ var WQConstructor;
 
 !function () {
 
-	var version = "2.0.0 alpha",
-		undefined  = ({}).a, 
-		wQueryObj  = {},
-		WQTools = {
+	var version    = "2.0.0 alpha";
+	var undefined  = ({}).a;
+	var matchesSelector = 'matchesSelector';
+	var WQTools = {
 
-			/* removeDuplicated function
-			// Remove duplicated elements from an array
-			*/
-			removeDuplicated: function ( array ) {
+		/* removeDuplicated function
+		// Remove duplicated elements from an array
+		*/
+		removeDuplicated: function ( array ) {
 
-				var catche = [];
+			var catche = [];
 
-				for (var i = 0; i < array.length; i++) {
-					
-					if( catche.indexOf( array[i] ) < 0 ) {
+			for (var i = 0; i < array.length; i++) {
+				
+				if( catche.indexOf( array[i] ) < 0 ) {
 
-						catche.push( array[i] );
-
-					} 
-
-				};
-
-				return catche;
-
-			},
-
-			/* removeDuplicated function
-			// Remove duplicated elements from an array
-			*/
-			convertToArray: function ( element ) {
-
-				var array = [];
-
-				for (var i = 0; i < element.length; i++) {
-					array.push(element[i]);
-				};
-
-				return array;
-
-			},
-
-			/* clone function
-			// Clone an wQuery object
-			*/
-			clone: function ( object, dataEvents, deepDataEvents ) {
-
-				var objects =  [];
-
-				if ( dataEvents ) {
-					objects = object.elements;
-					return objects;
-				}
-
-				if ( deepDataEvents ) {
-
-					objects = object.elements;
-					return objects;
+					catche.push( array[i] );
 
 				} 
 
-				if ( !dataEvents && deepDataEvents ) {
-					objects = object.elements;
-					return objects;
-				};
+			};
 
-			},
+			return catche;
 
-			/* getChildren
-			// Get the full children collection in the single array
-			*/
-			getChildren: function ( object ) {
+		},
 
-				for (var i = 0; i < object.length; i++) {
-					
-					if ( !object[i].childNodes ) {
+		/* removeDuplicated function
+		// Remove duplicated elements from an array
+		*/
+		convertToArray: function ( element ) {
 
-						elements -= 1;
-						continue;
+			var array = [];
 
-					} else {
+			for (var i = 0; i < element.length; i++) {
+				array.push(element[i]);
+			};
 
-						object = object.concat( this.convertToArray( object[i].childNodes ) )	;
-						elements = object.length;
+			return array;
 
-					};
+		},
 
-				};
+		/* clone function
+		// Clone an wQuery object
+		*/
+		clone: function ( object, dataEvents, deepDataEvents ) {
 
-				return object;
+			var objects =  [];
 
-			},
-
-			/* cleanArray
-			// Remove non-DOM objects from the array (not nodeList)
-			*/
-			cleanArray: function ( array ) {
-
-				var clean = [];
-
-				for (var i = 0; i < array.length; i++) {
-					if( array[i].nodeType == 1 ) clean.push(array[i]);
-				};
-
-				return clean;
-
+			if ( dataEvents ) {
+				objects = object.elements;
+				return objects;
 			}
 
-		};
+			if ( deepDataEvents ) {
 
-	wQueryObj = function () {
+				objects = object.elements;
+				return objects;
+
+			} 
+
+			if ( !dataEvents && deepDataEvents ) {
+				objects = object.elements;
+				return objects;
+			};
+
+		},
+
+		/* getChildren
+		// Get the full children collection in the single array
+		*/
+		getChildren: function ( object ) {
+
+			for (var i = 0; i < object.length; i++) {
+				
+				if ( !object[i].childNodes ) {
+
+					elements -= 1;
+					continue;
+
+				} else {
+
+					object = object.concat( this.convertToArray( object[i].childNodes ) )	;
+					elements = object.length;
+
+				};
+
+			};
+
+			return object;
+
+		},
+
+		/* cleanArray
+		// Remove non-DOM objects from the array (not nodeList)
+		*/
+		cleanArray: function ( array ) {
+
+			var clean = [];
+
+			for (var i = 0; i < array.length; i++) {
+				if( array[i].nodeType == 1 ) clean.push(array[i]);
+			};
+
+			return clean;
+
+		},
+
+		is : function( element, selector ){
+			return element[ matchesSelector ]( selector );
+		}
+
+
+	};
+	var wQueryObj = function () {
 		this.version = version;
 	};
 
-
-	var matchesSelector = 'matchesSelector';
-
+	// Browser prefixes
 	if( Element.prototype.matchesSelector ){
 		matchesSelector = 'matchesSelector';
 	}else if( Element.prototype.mozMatchesSelector ){
@@ -577,7 +579,7 @@ var WQConstructor;
 
 			for( var i = 0, j = this.elements.length; i < j; i++ ) {
 
-				if( this.elements[ i ][ matchesSelector ]( selector ) ){
+				if( WQTools.is( this.elements[ i ], selector ) ){
 					results.push( this.elements[ i ] );
 				}
 				
@@ -623,7 +625,7 @@ var WQConstructor;
 
 				for( var k = 0, m = this.elements[ i ].children.length; k < m; k++ ){
 
-					if( this.elements[ i ].children[ k ][ matchesSelector ]( selector ) ){
+					if( WQTools.is( this.elements[ i ].children[ k ], selector ) ){
 						result.push( this.elements[ i ].children[ k ] );
 					}
 
@@ -789,7 +791,7 @@ var WQConstructor;
 
 		while( i-- ){
 
-			if( this.elements[ i ][ matchesSelector ]( check ) ){
+			if( WQTools.is( this.elements[ i ], check ) ){
 				return true;
 			}
 
@@ -962,7 +964,7 @@ var WQConstructor;
 
 				for (var x = children.indexOf( this.elements[ i ] ); x < children.length; x++) {
 					console.log(children[x]);
-					if ( this.elements[ x ][ matchesSelector ]( selector ) ) {
+					if ( WQTools.is( this.elements[ x ], selector ) ) {
 						result.push( children[ x ] );
 					}
 				};
