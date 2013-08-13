@@ -496,63 +496,37 @@ var WQConstructor;
 
 	wQueryObj.prototype.children = function ( selector ) {
 
-		var newObject = new wQueryObj(),
-			result    = [];
+		var newObject = new wQueryObj();
+		var result    = [];
 
 		if ( selector ) {
 
-			for (var i = 0; i < this.elements.length; i++) {
-		
-				var node = this.elements[i].children[0];
+			for( var i = 0, j = this.elements.length; i < j; i++ ) {
 
-				while ( node != undefined ) {
+				for( var k = 0, m = this.elements[ i ].children.length; k < m; k++ ){
 
-					if ( selector.atChar && selector.atChar(0) === '#' ) {
-
-						if ( node.id == selector.split('#')[1] ) {
-							result.push( node );
-							node = undefined;
-						} else {
-							node = node.children[0];
-						}
-
-					} else if ( selector.atChar && selector.atChar(0) === '.' ) {
-
-						if ( node.className == selector.split('.')[1] ) {
-							result.push( node );
-							node = undefined;
-						} else {
-							node = node.children[0];
-						}
-
-					} else {	
-
-						if ( node.nodeName.toLowerCase() == selector ) {
-							result.push( node );
-							node = undefined;
-						} else {
-							node = node.children[0];
-						};
-
+					if( this.elements[ i ].children[ k ][ matchesSelector ]( selector ) ){
+						result.push( this.elements[ i ].children[ k ] );
 					}
 
 				}
 
 			};
 
-			newObject.elements = WQTools.removeDuplicated(result);
-			return newObject;
-
 		} else {
 
-			for (var i = 0; i < this.elements.length; i++) {
-				result.push( this.elements[ i ].children[0] );
-			};
+			for( var i = 0, j = this.elements.length; i < j; i++ ) {
 
-			newObject.elements = result;
-			return newObject;
+				for( var k = 0, m = this.elements[ i ].children.length; k < m; k++ ){
+					result.push( this.elements[ i ].children );
+				}
+
+			}
 
 		}
+
+		newObject.elements = result;
+		return newObject;
 
 	}
 

@@ -196,6 +196,36 @@ jQuery( function(){
 
 		[
 
+			'children() method  ',
+			10000,
+
+			function(){
+				cJ.children();
+			},
+
+			function(){
+				cW.children();
+			}
+
+		],
+
+		[
+
+			'children("div") method  ',
+			10000,
+
+			function(){
+				cJ.children('div');
+			},
+
+			function(){
+				cW.children('div');
+			}
+
+		],
+
+		[
+
 			'each method  ',
 			10000,
 
