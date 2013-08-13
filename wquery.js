@@ -497,7 +497,27 @@ var WQConstructor;
 
 	}
 
-			newObject.elements = WQTools.removeDuplicated(result);
+	/*  `filter` function
+	*  Filter elements inside the selected elements
+	*/
+
+	wQueryObj.prototype.filter = function ( selector ) {
+
+		var newObject = new wQueryObj();
+
+		if ( selector ) {
+
+			var results = [];
+
+			for( var i = 0, j = this.elements.length; i < j; i++ ) {
+
+				if( this.elements[ i ][ matchesSelector ]( selector ) ){
+					results.push( this.elements[ i ] );
+				}
+				
+			}
+
+			newObject.elements = results;
 			return newObject;
 
 		} else {
