@@ -4,18 +4,30 @@
 	
 		<title>wQuery test</title>
 
-		<script type="text/javascript" src="wquery.js"></script>
+		<script type="text/javascript" src="jQuery.js"></script>
 		
 		<script type="text/javascript">
 	
 			console.log('##Testing wQuery##');
-			wQuery(function () {
+			
+			/*wQuery(function () {
 
-				var a = wQuery('div').add('<p>taaa</p>');
+				var a = wQuery('#wz');
+				var b = a.clone( false, true );
 
 				console.log(a.elements);
+				console.log(b.elements);
 
-			});
+			});*/
+
+			$(function () {
+
+				var a = $('#wz');
+				var b = a.clone( true, true );
+
+				console.log(b);
+
+			})
 
 		</script>
 

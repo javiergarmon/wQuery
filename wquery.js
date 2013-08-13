@@ -46,9 +46,75 @@ var WQConstructor;
 
 				return array;
 
+			},
+
+			/* clone function
+			// Clone an wQuery object
+			*/
+			clone: function ( object, dataEvents, deepDataEvents ) {
+
+				var objects =  [];
+
+				if ( dataEvents ) {
+					objects = object.elements;
+					return objects;
+				}
+
+				if ( deepDataEvents ) {
+
+					objects = object.elements;
+					return objects;
+
+				} 
+
+				if ( !dataEvents && deepDataEvents ) {
+					objects = object.elements;
+					return objects;
+				};
+
+			},
+
+			/* getChildren
+			// Get the full children collection in the single array
+			*/
+			getChildren: function ( object ) {
+
+				for (var i = 0; i < object.length; i++) {
+					
+					if ( !object[i].childNodes ) {
+
+						elements -= 1;
+						continue;
+
+					} else {
+
+						object = object.concat( this.convertToArray( object[i].childNodes ) )	;
+						elements = object.length;
+
+					};
+
+				};
+
+				return object;
+
+			},
+
+			/* cleanArray
+			// Remove non-DOM objects from the array (not nodeList)
+			*/
+			cleanArray: function ( array ) {
+
+				var clean = [];
+
+				for (var i = 0; i < array.length; i++) {
+					if( array[i].nodeType == 1 ) clean.push(array[i]);
+				};
+
+				return clean;
+
 			}
 
-		}
+		};
 
 	wQueryObj = function () {
 		this.version = version;
@@ -529,6 +595,19 @@ var WQConstructor;
 
 	}
 
+   /*  `find` function
+	*  Find the elements inside the selected elements
+	*/
+
+	wQueryObj.prototype.clone = function ( dataAndEvents, deepDataAndEvents ) {
+		
+		var newObject = new wQueryObj();
+		newObject.elements = WQTools.clone( this, dataAndEvents, deepDataAndEvents );
+
+		return newObject;
+
+	}
+
    /*  `children` function
 	*  Get the child with the same object as the parameter
 	*/
@@ -818,7 +897,8 @@ var WQConstructor;
 		 			};
 
 		 			for (var i = 0; i < contextElements.length; i++) {
-		 				added.concat( contextElements[i].querySelectorAll( coll2 ));
+		 				var arr = WQTools.convertToArray(contextElements[i].querySelectorAll( coll2 ));
+		 				added = added.concat( arr );
 		 			};
 
 	 			} else if ( !this.context ) {
