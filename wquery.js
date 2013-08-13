@@ -473,10 +473,29 @@ var WQConstructor;
 		if ( selector ) {
 
 			var results = [];
+			var tmp     = [];
 
-			for (var i = 0; i < this.elements.length; i++) {
-				results.push( this.elements[i].querySelectorAll( selector ) );
-			};
+			for( var i = 0, j = this.elements.length; i < j; i++ ) {
+
+				tmp = this.elements[ i ].querySelectorAll( selector );
+
+				for( var k = 0, m = tmp.length; k < m; k++ ){
+					results.push( tmp[ k ] );
+				}
+
+			}
+
+			newObject.elements = WQTools.removeDuplicated( results );
+			return newObject;
+
+		} else {
+
+			newObject.elements = [];
+			return newObject;
+
+		}
+
+	}
 
 			newObject.elements = WQTools.removeDuplicated(result);
 			return newObject;
