@@ -633,13 +633,7 @@ var WQConstructor;
 
 		} else {
 
-			for( var i = 0, j = this.elements.length; i < j; i++ ) {
-
-				for( var k = 0, m = this.elements[ i ].children.length; k < m; k++ ){
-					result.push( this.elements[ i ].children );
-				}
-
-			}
+			result = WQTools.cleanArray(WQTools.getChildren(this.elements));
 
 		}
 
@@ -949,6 +943,51 @@ var WQConstructor;
 		return newElement;
 
 	};
+
+	/* `addBack` function
+	 * Returns a new wQuery object with the actual element(s) an the elements at its(their) back
+	 */
+
+	wQueryObj.prototype.addBack = function ( selector ) {
+
+		var newObject = new wQueryObj();
+		var result = [];
+
+		if ( selector ) {
+
+			for (var i = 0; i < this.elements.length; i++) {
+				
+				var parent   = this.elements[i].parentNode;
+				var children = WQTools.convertToArray(parent.childNodes);
+
+				for (var x = children.indexOf( this.elements[ i ] ); x < children.length; x++) {
+					console.log(children[x]);
+					if ( this.elements[ x ][ matchesSelector ]( selector ) ) {
+						result.push( children[ x ] );
+					}
+				};
+
+			};
+
+		} else {
+
+			for (var i = 0; i < this.elements.length; i++) {
+				
+				var parent   = this.elements[i].parentNode;
+				var children = WQTools.convertToArray(parent.childNodes);
+
+				for (var x = children.indexOf( this.elements[ i ] ); x < children.length; x++) {
+					result.push( children[ x ] );
+				};
+
+			};
+
+		}
+
+		newObject.elements = WQTools.cleanArray(result);
+		return newObject;
+
+	}
 
 	WQConstructor = new wQueryObj();
 

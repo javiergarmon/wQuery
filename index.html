@@ -4,30 +4,19 @@
 	
 		<title>wQuery test</title>
 
-		<script type="text/javascript" src="jQuery.js"></script>
+		<script type="text/javascript" src="wquery.js"></script>
 		
 		<script type="text/javascript">
 	
 			console.log('##Testing wQuery##');
 			
-			/*wQuery(function () {
+			wQuery(function () {
 
-				var a = wQuery('#wz');
-				var b = a.clone( false, true );
+				var a = wQuery('#sub1_2').addBack('div');
 
 				console.log(a.elements);
-				console.log(b.elements);
 
-			});*/
-
-			$(function () {
-
-				var a = $('#wz');
-				var b = a.clone( true, true );
-
-				console.log(b);
-
-			})
+			});
 
 		</script>
 
@@ -118,6 +107,8 @@
 			<div id="major" class="app">
 				<div id="sub1_1" class="mama"> <p>pene</p> </div>
 				<div id="sub1_2" class="mama"></div>
+				<span>hehe</span>
+				<a href="">haha</a>
 				<div id="sub1_3" class="pupi"></div>
 			</div>
 
