@@ -1,0 +1,759 @@
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+<script src="./wquery.js"></script>
+<body>
+	<div></div>
+	<div></div>
+	<div></div>
+	<div class="tic"></div>
+	<a></a>
+	<div></div>
+	<a class="tic"></a>
+	<div class="toc"></div>
+	<a></a>
+	<div id="test"></div>
+	<a></a>
+</body>
+<script>
+jQuery.noConflict();
+
+jQuery( function(){
+
+	var a1 = 0;
+	var a2 = 0;
+
+	var cJ = jQuery('div');
+	var cW = wQuery('div');
+
+	var dJ = jQuery('a');
+	var dW = wQuery('a');
+
+	var tests = [
+
+		[
+
+			'select tag  ',
+			10000,
+
+			function(){
+				jQuery('div');
+			},
+
+			function(){
+				wQuery('div');
+			}
+
+		],
+
+		[
+
+			'select id   ',
+			10000,
+
+			function(){
+				jQuery('#test');
+			},
+
+			function(){
+				wQuery('#test');
+			}
+
+		],
+
+		[
+
+			'select class',
+			10000,
+
+			function(){
+				jQuery('.tic');
+			},
+
+			function(){
+				wQuery('.tic');
+			}
+
+		],
+
+		[
+
+			'select class inside element',
+			10000,
+
+			function(){
+				jQuery('body .tic');
+			},
+
+			function(){
+				wQuery('body .tic');
+			}
+
+		],
+
+		[
+
+			'select element with class  ',
+			10000,
+
+			function(){
+				jQuery('div.tic');
+			},
+
+			function(){
+				wQuery('div.tic');
+			}
+
+		],
+
+		[
+
+			'add method     ',
+			10000,
+
+			function(){
+				cJ.add( dJ );
+			},
+
+			function(){
+				cW.add( dW );
+			}
+
+		],
+
+		[
+
+			'addClass method     ',
+			10000,
+
+			function(){
+				cJ.addClass( 'testClass' );
+			},
+
+			function(){
+				cW.addClass( 'testClass' );
+			}
+
+		],
+
+		[
+
+			'attr method  ',
+			10000,
+
+			function(){
+				cJ.attr('class');
+			},
+
+			function(){
+				cW.attr('class');
+			}
+
+		],
+
+		[
+
+			'attr( nonExist ) method  ',
+			10000,
+
+			function(){
+				cJ.attr('nonExist');
+			},
+
+			function(){
+				cW.attr('nonExist');
+			}
+
+		],
+
+		[
+
+			'attr( "class", "helloWorld" ) method  ',
+			10000,
+
+			function(){
+				cJ.attr('class','helloWorld');
+			},
+
+			function(){
+				cW.attr('class','helloWorld');
+			}
+
+		],
+
+		[
+
+			'attr( "data-hi", "helloWorld" ) method  ',
+			10000,
+
+			function(){
+				cJ.attr('data-hi','helloWorld');
+			},
+
+			function(){
+				cW.attr('data-hi','helloWorld');
+			}
+
+		],
+
+		[
+
+			'children() method  ',
+			10000,
+
+			function(){
+				cJ.children();
+			},
+
+			function(){
+				cW.children();
+			}
+
+		],
+
+		[
+
+			'children("div") method  ',
+			10000,
+
+			function(){
+				cJ.children('div');
+			},
+
+			function(){
+				cW.children('div');
+			}
+
+		],
+
+		[
+
+			'each method  ',
+			10000,
+
+			function(){
+				cJ.each( function( i ){ a1 = 1 + i; } );
+			},
+
+			function(){
+				cW.each( function( i ){ a1 = 1 + i; } );
+			}
+
+		],
+
+		[
+
+			'eq(2) method  ',
+			10000,
+
+			function(){
+				cJ.eq( 2 );
+			},
+
+			function(){
+				cW.eq( 2 );
+			}
+
+		],
+
+		[
+
+			'eq(-2) method  ',
+			10000,
+
+			function(){
+				cJ.eq( -2 );
+			},
+
+			function(){
+				cW.eq( -2 );
+			}
+
+		],
+
+		[
+
+			'find method  ',
+			10000,
+
+			function(){
+				cJ.find('.toc');
+			},
+
+			function(){
+				cW.find('.toc');
+			}
+
+		],
+
+		[
+
+			'filter method  ',
+			10000,
+
+			function(){
+				cJ.filter('.toc');
+			},
+
+			function(){
+				cW.filter('.toc');
+			}
+
+		],
+
+		[
+
+			'first method  ',
+			10000,
+
+			function(){
+				cJ.first();
+			},
+
+			function(){
+				cW.first();
+			}
+
+		],
+
+		[
+
+			'get method  ',
+			10000,
+
+			function(){
+				cJ.get();
+			},
+
+			function(){
+				cW.get();
+			}
+
+		],
+
+		[
+
+			'get(2) method  ',
+			10000,
+
+			function(){
+				cJ.get(2);
+			},
+
+			function(){
+				cW.get(2);
+			}
+
+		],
+
+		[
+
+			'hasClass method  ',
+			10000,
+
+			function(){
+				cJ.hasClass('toc');
+			},
+
+			function(){
+				cW.hasClass('toc');
+			}
+
+		],
+
+		[
+
+			'hasClass( nonExist ) method  ',
+			10000,
+
+			function(){
+				cJ.hasClass('nonExist');
+			},
+
+			function(){
+				cW.hasClass('nonExist');
+			}
+
+		],
+
+		[
+
+			'is method     ',
+			10000,
+
+			function(){
+				cJ.is('div.toc');
+			},
+
+			function(){
+				cW.is('div.toc');
+			}
+
+		],
+
+		[
+
+			'last method  ',
+			10000,
+
+			function(){
+				cJ.last();
+			},
+
+			function(){
+				cW.last();
+			}
+
+		],
+
+		[
+
+			'parent method',
+			10000,
+
+			function(){
+				cJ.parent();
+			},
+
+			function(){
+				cW.parent();
+			}
+
+		],
+
+		[
+
+			'parents method ',
+			10000,
+
+			function(){
+				cJ.parents();
+			},
+
+			function(){
+				cW.parents();
+			}
+
+		],
+
+		[
+
+			'removeAttr() method     ',
+			10000,
+
+			function(){
+				cJ.removeAttr();
+			},
+
+			function(){
+				cW.removeAttr();
+			}
+
+		],
+
+		[
+
+			'removeAttr("data-hi") method     ',
+			10000,
+
+			function(){
+				cJ.removeAttr('data-hi');
+			},
+
+			function(){
+				cW.removeAttr('data-hi');
+			}
+
+		],
+
+		[
+
+			'removeClass() method     ',
+			10000,
+
+			function(){
+				cJ.removeClass();
+			},
+
+			function(){
+				cW.removeClass();
+			}
+
+		],
+
+		[
+
+			'removeClass("testClass") method     ',
+			10000,
+
+			function(){
+				cJ.removeClass( 'testClass' );
+			},
+
+			function(){
+				cW.removeClass( 'testClass' );
+			}
+
+		],
+
+		[
+
+			'slice method     ',
+			10000,
+
+			function(){
+				cJ.slice();
+			},
+
+			function(){
+				cW.slice();
+			}
+
+		],
+
+		[
+
+			'slice( 2 ) method     ',
+			10000,
+
+			function(){
+				cJ.slice( 2 );
+			},
+
+			function(){
+				cW.slice( 2 );
+			}
+
+		],
+
+		[
+
+			'slice( -2 ) method     ',
+			10000,
+
+			function(){
+				cJ.slice( -2 );
+			},
+
+			function(){
+				cW.slice( -2 );
+			}
+
+		],
+
+		[
+
+			'slice( 2, 3 ) method     ',
+			10000,
+
+			function(){
+				cJ.slice( 2, 3 );
+			},
+
+			function(){
+				cW.slice( 2, 3 );
+			}
+
+		],
+
+		[
+
+			'slice( 2, -2 ) method     ',
+			10000,
+
+			function(){
+				cJ.slice( 2, -2 );
+			},
+
+			function(){
+				cW.slice( 2, -2 );
+			}
+
+		],
+
+		[
+
+			'slice( -2, -1 ) method     ',
+			10000,
+
+			function(){
+				cJ.slice( -2, -1 );
+			},
+
+			function(){
+				cW.slice( -2, -1 );
+			}
+
+		],
+
+		[
+
+			'toggleClass("testClass") method     ',
+			10000,
+
+			function(){
+				cJ.toggleClass( 'testClass' );
+			},
+
+			function(){
+				cW.toggleClass( 'testClass' );
+			}
+
+		],
+
+		[
+
+			'css method (get color property)    ',
+			10000,
+
+			function(){
+				cJ.css('color');
+			},
+
+			function(){
+				cW.css('color');
+			}
+
+		],
+
+		[
+
+			'css method (get transform property)',
+			10000,
+
+			function(){
+				cJ.css('color');
+			},
+
+			function(){
+				cW.css('color');
+			}
+
+		],
+
+		[
+
+			'css method (set color property)    ',
+			10000,
+
+			function(){
+				cJ.css('color','#f00');
+			},
+
+			function(){
+				cW.css('color','#f00');
+			}
+
+		],
+
+	];
+
+	var result = [];
+
+	for( var i in tests ){
+
+		result[ i ] = {
+
+			name    : tests[ i ][ 0 ],
+			samples : tests[ i ][ 1 ],
+			jTime   : 0,
+			wTime   : 0
+
+		};
+
+	}
+
+	var loop  = 0;
+	var loops = 1;
+	var step  = 0;
+	var steps = tests.length;
+
+	var timeType = Boolean( window.performance );
+	var timeFn = function(){
+
+		if( timeType )
+			return window.performance.now();
+			return Date.now();
+
+	};
+
+	var inform = function(){
+
+		var fn = null;
+
+		for( var i in result ){
+
+			result[ i ].jTime = result[ i ].jTime / loops;
+			result[ i ].wTime = result[ i ].wTime / loops;
+
+			fn = ( result[ i ].jTime < result[ i ].wTime ) ? console.warn : console.info;
+
+			fn.call( console, result[ i ].name );
+
+			fn.call( console,
+
+				'     ' +
+				'x' + ( result[ i ].jTime / result[ i ].wTime ).toFixed( 2 ) + ' times faster | ' +
+				//loops + ' x ' + result[ i ].samples + ' samples | ' +
+				'jQuery: ' + result[ i ].jTime.toFixed( 3 ) + 'ms ( ' +
+				parseInt( 1000 / ( result[ i ].jTime / result[ i ].samples ), 10 ) + ' ops/s ) | ' +
+				'wQuery: ' + result[ i ].wTime.toFixed( 3 ) + 'ms ( ' +
+				parseInt( 1000 / ( result[ i ].wTime / result[ i ].samples ), 10 ) + ' ops/s )'
+
+			);
+
+		}
+
+	};
+
+	var startLoop = function(){
+
+		if( ++loop < loops ){
+
+			console.log('Completed ' + Math.round( ( loop / loops ) * 100 ) + '%');
+			step = 0;
+			next();
+
+		}else{
+			inform();
+			alert('Test end');
+		}
+		
+	};
+
+	var next = function(){
+
+		var fn1 = tests[ step ][ 2 ];
+		var fn2 = tests[ step ][ 3 ];
+
+		var t10 = timeFn();
+
+		for( var i = 0, j = tests[ step ][ 1 ]; i < j ; i++ ){
+			fn1();
+		}
+
+		var t11 = timeFn();
+		var t20 = timeFn();
+
+		for( var k = 0, l = tests[ step ][ 1 ]; k < l ; k++ ){
+			fn2();
+		}
+
+		var t21 = timeFn();
+
+		result[ step ].jTime += ( t11 - t10 );
+		result[ step ].wTime += ( t21 - t20 );
+
+		if( ++step < steps ){
+			setTimeout( next );
+		}else{
+			startLoop();
+		}
+
+	}
+
+	console.log('Starting');
+
+	next();
+
+});
+
+</script>

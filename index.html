@@ -5,16 +5,23 @@
 		<title>wQuery test</title>
 
 		<script type="text/javascript" src="wquery.js"></script>
-		<script type="text/javascript" src="jQuery.js"></script>
+		
 		<script type="text/javascript">
 	
 			console.log('##Testing wQuery##');
-
+			
 			wQuery(function () {
 
-				console.log($('#wz').val());
+				
 
 			});
+
+			/*$(function () {
+
+				var a = $('div').html();
+				console.log(a);
+
+			});*/
 
 		</script>
 
@@ -35,6 +42,12 @@
 				margin: 1em 0.5em 0em 0.5em;
 				background: #FFF;
 				padding-top: 1em; 
+
+			}
+
+			#wz {
+
+				padding: 5em;
 
 			}
 
@@ -103,15 +116,16 @@
 		<div id="wz">
 
 			<div id="major" class="app">
-				<div id="sub1_1" class="mama">rata</div>
+				<div id="sub1_1" class="mama"> <p>pene</p> </div>
 				<div id="sub1_2" class="mama"></div>
+				<!-- <div id="cacota"> MAMA </div> -->
 				<div id="sub1_3" class="pupi"></div>
 			</div>
 
 			<div id="content" class="app">
 				<div id="sub2_1" class="mama"></div>
 				<div id="sub2_2" class="pupi"></div>
-				<div id="sub2_3"></div>
+				<div id="sub2_3" class="test"></div>
 			</div>	
 		
 		</div>
