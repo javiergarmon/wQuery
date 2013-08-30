@@ -10,9 +10,10 @@
 	
 			console.log('##Testing wQuery##');
 			
-			wQuery(function () {
+			$(function () {
 
-				
+				WQConstructor.setContext( '#major' );
+				console.log( $( 'div' ).get()[0].parentNode );
 
 			});
 

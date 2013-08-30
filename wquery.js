@@ -120,6 +120,8 @@ var WQConstructor;
 
 	};
 	var wQueryObj = function () {
+		var elements = [];
+		var context  = undefined;
 		this.version = version;
 	};
 
@@ -152,8 +154,7 @@ var WQConstructor;
 		if ( id.charAt(0) === '#' ) {
 
 			ctx = document.getElementById( id.slice( 1 ) );
-
-			this.context = ctx;
+			context = ctx;
 
 		} else {
 			var err = "wQueryObj ERR: Context declaration is wrong";
@@ -174,16 +175,16 @@ var WQConstructor;
 		
 		} else if ( typeof selector === "string" ) {
 
-			if ( !this.context ) {
+			if ( !context ) {
 
 				var newElement = new wQueryObj();
-				newElement.elements = WQTools.convertToArray(document.querySelectorAll(selector));
+				elements = WQTools.convertToArray(document.querySelectorAll(selector));
 				return newElement;
 
-			} else if ( this.context ) {
+			} else if ( context ) {
 
 				var newElement = new wQueryObj();
-				newElement.elements = WQTools.convertToArray(this.context.querySelectorAll(selector));
+				elements = WQTools.convertToArray(context.querySelectorAll(selector));
 				return newElement;
 
 			} else if ( selector.atChar(0) == '<' && selector.atChar( selector.length - 1 ) == '>' ) {
@@ -194,7 +195,7 @@ var WQConstructor;
 				selector = selector.substr( selector.indexOf('>') + 1 );
 				element.innerHTML = selector.substr( 0, selector.indexOf('<') );
 
-				newElement.elements = element;
+				elements = element;
 				return newElement;
 
 
@@ -210,11 +211,34 @@ var WQConstructor;
 
 	// Revised and tested
 	wQueryObj.prototype.get = function ( index ) {
-		if ( typeof index === 'undefined' ) {
-			return this.elements[ index ];
+
+		if ( context ) {
+			
+			if ( index  == undefined ) {
+				var clone = [],
+					i     =  elements.length;
+
+				while ( i-- ) {
+					clone.push( elements[ i ].cloneNode() );
+				}
+
+				return clone;
+
+			} else { 
+ 				var clone = elements[ index ].cloneNode();
+				return clone;
+			}
+
 		} else {
-			return this.elements;
+
+			if ( index ) {
+				return elements[ index ];
+			} else {
+				return elements;
+			}
+
 		}
+	
 	};
 
 	/*	  _____________________________________________________
@@ -369,8 +393,8 @@ var WQConstructor;
 
 			if ( typeof elements == 'string' ) {
 
-				if ( this.context ) {
-					nodes = WQTools.convertToArray( this.context.querySelectorAll( elements ) );
+				if ( context ) {
+					nodes = WQTools.convertToArray( context.querySelectorAll( elements ) );
 				} else {
 					nodes = WQTools.convertToArray( document.querySelectorAll( elements ) );
 				}
@@ -397,7 +421,7 @@ var WQConstructor;
 					return this;
 				}
 
-				if ( this.context ) {
+				if ( context ) {
 
 					var valid = [];
 
@@ -407,7 +431,7 @@ var WQConstructor;
 						
 						while ( node ) {
 
-							if ( node == this.context ) {
+							if ( node == context ) {
 								valid.push( nodes[i] );
 							} else {
 								node = node.parentNode;
@@ -451,8 +475,8 @@ var WQConstructor;
 
 			if ( typeof elements == 'string' ) {
 
-				if ( this.context ) {
-					nodes = WQTools.convertToArray( this.context.querySelectorAll( elements ) );
+				if ( context ) {
+					nodes = WQTools.convertToArray( context.querySelectorAll( elements ) );
 				} else {
 					nodes = WQTools.convertToArray( document.querySelectorAll( elements ) );
 				}
@@ -479,7 +503,7 @@ var WQConstructor;
 					return this;
 				}
 
-				if ( this.context ) {
+				if ( context ) {
 
 					var valid = [];
 
@@ -489,7 +513,7 @@ var WQConstructor;
 						
 						while ( node ) {
 
-							if ( node == this.context ) {
+							if ( node == context ) {
 								valid.push( nodes[i] );
 							} else {
 								node = node.parentNode;
@@ -549,7 +573,7 @@ var WQConstructor;
 			result = result.concat( WQTools.convertToArray( this.elements[i].childNodes ) );
 		};
 
-		newObject.elements = WQTools.cleanArray( WQTools.removeDuplicated( result ) );
+		elements = WQTools.cleanArray( WQTools.removeDuplicated( result ) );
 		return newObject;
 
 	};
@@ -582,7 +606,7 @@ var WQConstructor;
 		}
 
 		var newObject = new wQueryObj();
-		newObject.elements = this.elements;
+		elements = this.elements;
 
 		return newObject;
 
@@ -718,9 +742,9 @@ var WQConstructor;
 		}
 
 		if( typeof this.elements[ index ] !== 'undefined' ){
-			newObject.elements = [ this.elements[ index ] ];
+			elements = [ this.elements[ index ] ];
 		}else{
-			newObject.elements = [];
+			elements = [];
 		}
 
 		return newObject;
@@ -763,12 +787,12 @@ var WQConstructor;
 						result.push( this.elements[ start ] );
 					};
 
-					newElement.elements = result;
+					elements = result;
 					return newElement;
 
 				} else {
 
-					newElement.elements = [];
+					elements = [];
 					return newElement;
 
 				}
@@ -780,7 +804,7 @@ var WQConstructor;
 				};
 
 				var newElement = new wQueryObj();
-				newElement.elements = result;
+				elements = result;
 				return newElement;
 
 			}
@@ -842,12 +866,12 @@ var WQConstructor;
 
 			}
 
-			newObject.elements = WQTools.removeDuplicated( results );
+			elements = WQTools.removeDuplicated( results );
 			return newObject;
 
 		} else {
 
-			newObject.elements = [];
+			elements = [];
 			return newObject;
 
 		}
@@ -914,12 +938,12 @@ var WQConstructor;
 
 			}
 
-			newObject.elements = results;
+			elements = results;
 			return newObject;
 
 		} else {
 
-			newObject.elements = [];
+			elements = [];
 			return newObject;
 
 		}
@@ -953,7 +977,7 @@ var WQConstructor;
 
 				}
 
-				newObject.elements = result;
+				elements = result;
 				return newObject;
 
 			} else if ( selector.nodeType == 1 ) {
@@ -962,7 +986,7 @@ var WQConstructor;
 					if ( this.elements[i] == selector ) result.push( this.elements[i] );
 				};
 
-				newObject.elements = result;
+				elements = result;
 				return newObject;
 
 			}
@@ -980,7 +1004,7 @@ var WQConstructor;
 	wQueryObj.prototype.clone = function ( dataAndEvents, deepDataAndEvents ) {
 		
 		var newObject = new wQueryObj();
-		newObject.elements = WQTools.clone( this, dataAndEvents, deepDataAndEvents );
+		elements = WQTools.clone( this, dataAndEvents, deepDataAndEvents );
 
 		return newObject;
 
@@ -1015,7 +1039,7 @@ var WQConstructor;
 
 		}
 
-		newObject.elements = result;
+		elements = result;
 		return newObject;
 
 	};
@@ -1029,7 +1053,7 @@ var WQConstructor;
 		var newElement = new wQueryObj(),
 			parents    = [];
 
-		if ( !this.context ) {
+		if ( !context ) {
 
 			var parents = [];
 
@@ -1045,7 +1069,7 @@ var WQConstructor;
 
 			};
 
-			newElement.elements = WQTools.removeDuplicated(parents);
+			elements = WQTools.removeDuplicated(parents);
 
 			return newElement;
 
@@ -1059,7 +1083,7 @@ var WQConstructor;
 
 				while( node ) {
 
-					if ( node === this.context ) {
+					if ( node === context ) {
 
 						if ( selector ) {
 							if ( this.elements[i].parentNode[ matchesSelector ]( selector ) ) {
@@ -1082,7 +1106,7 @@ var WQConstructor;
 			};
 
 			var newElement = new wQueryObj();
-			newElement.elements = WQTools.removeDuplicated(parents);
+			elements = WQTools.removeDuplicated(parents);
 
 			return newElement;
 
@@ -1099,7 +1123,7 @@ var WQConstructor;
 		var newElement = new wQueryObj(),
 			parents = [];
 
-		if ( !this.context ) {
+		if ( !context ) {
 
 			for (var i = 0; i < this.elements.length; i++) {
 				
@@ -1123,7 +1147,7 @@ var WQConstructor;
 
 			};
 
-			newElement.elements = WQTools.removeDuplicated(parents);
+			elements = WQTools.removeDuplicated(parents);
 			return newElement;
 
 		} else {
@@ -1141,7 +1165,7 @@ var WQConstructor;
 						eachPar = [];
 						node = undefined;
 
-					} else if ( node === this.context ) {
+					} else if ( node === context ) {
 
 						parents = eachPar;
 						node = undefined;
@@ -1165,7 +1189,7 @@ var WQConstructor;
 			};
 			
 			var newElement = new wQueryObj();
-			newElement.elements = WQTools.removeDuplicated(parents);
+			elements = WQTools.removeDuplicated(parents);
 
 			return newElement;
 
@@ -1182,7 +1206,7 @@ var WQConstructor;
 		var newObject = new wQueryObj(),
 			parents   = [];
 
-		if ( this.context ) {
+		if ( context ) {
 
 			var eachNode = [];
 
@@ -1193,9 +1217,9 @@ var WQConstructor;
 
 					while ( node ) {
 
-						if ( node == this.context ) {
+						if ( node == context ) {
 
-							newObject.elements = parents;
+							elements = parents;
 							return newObject;
 
 						} else if ( node == document.getElementsByTagName('body')[0] ) {
@@ -1262,7 +1286,7 @@ var WQConstructor;
 
 		}
 
-		newObject.elements = parents;
+		elements = parents;
 		return newObject;
 
 	};
@@ -1323,7 +1347,7 @@ var WQConstructor;
 
 					};
 
-					if ( this.context ) {
+					if ( context ) {
 
 						var validContext = [],
 							i = context.length - 1;  
@@ -1334,7 +1358,7 @@ var WQConstructor;
 
 							while ( node ) {
 
-								if ( node == this.context ) {
+								if ( node == context ) {
 									validContext.push ( context[i] );
 								} else if ( node == document.getElementsByTagName('body') ) {
 									node = undefined;
@@ -1352,8 +1376,8 @@ var WQConstructor;
 
 				} else {
 
-					if ( this.context ) {
-						context = [ this.context ];
+					if ( context ) {
+						context = [ context ];
 					} else {
 						context = [ document ];
 					}
@@ -1376,7 +1400,7 @@ var WQConstructor;
 				if ( context == document ) {
 					
 					result = elements;
-					newObject.elements = result;
+					elements = result;
 
 					return newObject;
 
@@ -1400,7 +1424,7 @@ var WQConstructor;
 
 					};
 
-					newObject.elements = result;
+					elements = result;
 					return newObject
 
 				}
@@ -1471,7 +1495,7 @@ var WQConstructor;
 
 				};
 
-				if ( this.context ) {
+				if ( context ) {
 
 					for (var i = 0; i < elements.length; i++) {
 						
@@ -1479,7 +1503,7 @@ var WQConstructor;
 
 						while ( node ) {
 
-							if ( node == this.context ) {
+							if ( node == context ) {
 								result.push( node );
 							} else {
 								node = node.parentNode;
@@ -1491,16 +1515,16 @@ var WQConstructor;
 
 				}
 
-				newObject.elements = result;
+				elements = result;
 				return newObject;
 
 			} else {
-				newObject.elements = this.elements;
+				elements = this.elements;
 				return newObject;
 			}
 
 		} else {
-			newObject.elements = this.elements;
+			elements = this.elements;
 			return newObject;
 		}
 
@@ -1700,7 +1724,7 @@ var WQConstructor;
 	 					context = document.getElementsByTagName( context );
 	 				};
 
-	 				if ( this.context ) {
+	 				if ( context ) {
 
 	 					var valid = [];
 
@@ -1710,7 +1734,7 @@ var WQConstructor;
 
 	 						while ( node ) {
 
-	 							if ( node == this.context ) {
+	 							if ( node == context ) {
 	 								valid.push( context[i] );
 	 							} else {
 	 								node = node.parentNode;
@@ -1726,8 +1750,8 @@ var WQConstructor;
 
 	 			} else {
 
-	 				if ( this.context ) {
-	 					context = this.context;
+	 				if ( context ) {
+	 					context = context;
 	 				} else {
 	 					context = document;
 	 				}
@@ -1744,7 +1768,7 @@ var WQConstructor;
 
  			if ( coll2.elements ) {
 
- 				if ( this.context ) {
+ 				if ( context ) {
 
  				} else {
 
@@ -1756,7 +1780,7 @@ var WQConstructor;
 
  			} else if ( coll2.length ) {
 
- 				if ( this.context ) {
+ 				if ( context ) {
 
 	 			} else {
 
@@ -1772,7 +1796,7 @@ var WQConstructor;
 
  		}
 
- 		if ( this.context ) {
+ 		if ( context ) {
 
  			var valid = [];
  			valid = valid.concat( this.elements );
@@ -1782,7 +1806,7 @@ var WQConstructor;
 
  				while( node ) {
 
- 					if ( node == this.context ) {
+ 					if ( node == context ) {
  						valid.push( result[i] );
  					} else {
  						node = node.parentNode;
@@ -1797,7 +1821,7 @@ var WQConstructor;
  		}
 
 		var newElement = new wQueryObj();
-		newElement.elements = WQTools.removeDuplicated(result);
+		elements = WQTools.removeDuplicated(result);
 
 		return newElement;
 
@@ -1834,7 +1858,7 @@ var WQConstructor;
 
 		}
 
-		newObject.elements = result;
+		elements = result;
 		return newObject;
 
 	};
@@ -1902,7 +1926,7 @@ var WQConstructor;
 
 			};
 
-			newObject.elements = result;
+			elements = result;
 			return newObject;
 
 		} else {
@@ -1960,7 +1984,7 @@ var WQConstructor;
 
 		};
 
-		newObject.elements = result;
+		elements = result;
 		return newObject;
 
 	}
@@ -2007,7 +2031,7 @@ var WQConstructor;
 			return this;
 		}
 
-		newObject.elements = result;
+		elements = result;
 		return newObject;
 
 	};
@@ -2038,7 +2062,7 @@ var WQConstructor;
 
 			};
 
-			newObject.elements = result;
+			elements = result;
 			return newObject;
 
 		} else {
@@ -2054,7 +2078,7 @@ var WQConstructor;
 
 			};
 
-			newObject.elements = result;
+			elements = result;
 			return newObject;
 
 		}
@@ -2114,7 +2138,7 @@ var WQConstructor;
 
 		}
 
-		newObject.elements = result;
+		elements = result;
 		return newObject;
 
 	};
@@ -2160,7 +2184,7 @@ var WQConstructor;
 
 		}
 
-		newObject.elements = WQTools.cleanArray(result);
+		elements = WQTools.cleanArray(result);
 		return newObject;
 
 	};
@@ -2194,3 +2218,5 @@ var WQConstructor;
 var wQuery = function ( selector ) {
 	return WQConstructor.init( selector );
 }
+
+$ = wQuery;
