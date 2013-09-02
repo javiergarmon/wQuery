@@ -118,8 +118,8 @@ var WQConstructor;
 			return element[ matchesSelector ]( selector );
 		}
 
-
 	};
+
 	var wQueryObj = function () {
 		this.version = version;
 	};
@@ -635,7 +635,13 @@ var WQConstructor;
 
 		} else {
 
-			result = WQTools.cleanArray(WQTools.getChildren(this.elements));
+			for( var i = 0, j = this.elements.length; i < j; i++ ) {
+
+				for( var k = 0, m = this.elements[ i ].children.length; k < m; k++ ){
+					result.push( this.elements[ i ].children[ k ] );
+				}
+
+			}
 
 		}
 
