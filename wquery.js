@@ -52,7 +52,7 @@ var WQConstructor;
 		*/
 		clone: function ( object, dataEvents, deepDataEvents ) {
 
-			var objects =  [];
+			var objects = [];
 
 			if ( dataEvents ) {
 				objects = object.elements;
@@ -64,12 +64,14 @@ var WQConstructor;
 				objects = object.elements;
 				return objects;
 
-			} 
+			}
 
-			if ( !dataEvents && deepDataEvents ) {
-				objects = object.elements;
+			if ( !dataEvents ) {
+				for (var i = 0; i < object.elements.length; i++) {
+					objects.push( object.elements[i] );
+				};
 				return objects;
-			};
+			}
 
 		},
 
@@ -113,15 +115,60 @@ var WQConstructor;
 
 		},
 
+		/* nodeReturn
+		// Clone the passed nodes to an valid type of element for the jail
+		*/
+
+		nodeReturn: function ( node, context ) {
+			
+			if ( node.length ) {
+				
+				var arr = [],
+					i   = node.length;
+
+				while ( i-- ) {
+
+					var obj = {};
+
+					for ( index in node[i] ) {
+						obj[ index ] = node[ index ];
+					}		
+
+					arr.push( obj );
+				}
+
+				i = arr.length;
+
+				while ( i-- ) {
+					if ( arr[i].parentNode == context ) arr[i].parentNode = null;
+				}
+
+				return arr;
+
+			} else {
+
+				var obj = {};
+
+				for ( index in node ) {
+					obj[ index ] = node[ index ];
+				}
+
+				if ( node.parentNode == context ) node.parentNode = null;
+				return obj;
+
+			}
+
+		},
+
 		is : function( element, selector ){
 			return element[ matchesSelector ]( selector );
 		}
 
-
 	};
+
+	var context  = undefined;
+
 	var wQueryObj = function () {
-		var elements = [];
-		var context  = undefined;
 		this.version = version;
 	};
 
@@ -177,17 +224,19 @@ var WQConstructor;
 
 			if ( !context ) {
 
-				var newElement = new wQueryObj();
-				elements = WQTools.convertToArray(document.querySelectorAll(selector));
+				var newElement 		= new wQueryObj();
+				newElement.elements = WQTools.convertToArray(document.querySelectorAll(selector));
 				return newElement;
 
 			} else if ( context ) {
-
-				var newElement = new wQueryObj();
+				
 				elements = WQTools.convertToArray(context.querySelectorAll(selector));
+
+				var newElement 		= new wQueryObj();
+				newElement.elements = WQTools.nodeReturn( elements );
 				return newElement;
 
-			} else if ( selector.atChar(0) == '<' && selector.atChar( selector.length - 1 ) == '>' ) {
+			} else if ( selector.charAt(0) == '<' && selector.charAt( selector.length - 1 ) == '>' ) {
 
 				var element = document.createElement( selector.substr( selector.indexOf('<'), selector.indexOf('>') - selector.indexOf('<') ) ),
 					newElement = new wQueryObj();
@@ -195,7 +244,7 @@ var WQConstructor;
 				selector = selector.substr( selector.indexOf('>') + 1 );
 				element.innerHTML = selector.substr( 0, selector.indexOf('<') );
 
-				elements = element;
+				newElement.elements = element;
 				return newElement;
 
 
@@ -216,25 +265,25 @@ var WQConstructor;
 			
 			if ( index  == undefined ) {
 				var clone = [],
-					i     =  elements.length;
+					i     = this.elements.length;
 
 				while ( i-- ) {
-					clone.push( elements[ i ].cloneNode() );
+					clone.push( this.elements[ i ].cloneNode() );
 				}
 
 				return clone;
 
 			} else { 
- 				var clone = elements[ index ].cloneNode();
+ 				var clone = this.elements[ index ].cloneNode();
 				return clone;
 			}
 
 		} else {
 
 			if ( index ) {
-				return elements[ index ];
+				return this.elements[ index ];
 			} else {
-				return elements;
+				return this.elements;
 			}
 
 		}
@@ -253,13 +302,17 @@ var WQConstructor;
 	 // Revised and tested
 	wQueryObj.prototype.hasClass = function ( classSearched ) {
 
-		classSearched = classSearched.toString();
+		if ( classSearched ) {
 
-		for( var i = 0, j = this.elements.length; i < j; i++ ){
-			
-			if( this.elements[ i ].classList.contains( classSearched ) ){
-				return true;
-			}
+			classSearched = classSearched.toString();
+
+			for( var i = 0, j = this.elements.length; i < j; i++ ){
+				
+				if( this.elements[ i ].classList.contains( classSearched ) ){
+					return true;
+				}
+
+			};
 
 		};
 
@@ -275,33 +328,54 @@ var WQConstructor;
 
 		if ( attr ) {
 
-			attr = attr.toString();
+			if ( typeof attr == 'string' ) {
 			
-			if ( !value ) {
+				if ( !value ) {
 
-				var tmp = null;
+					var tmp = null;
 
-				for( var i = 0, j = this.elements.length; i < j; i++ ){
+					for( var i = 0, j = this.elements.length; i < j; i++ ){
 
-					tmp = this.elements[ i ].getAttribute( attr );
+						tmp = this.elements[ i ].getAttribute( attr );
 
-					if( tmp !== null ){
-						return tmp;
+						if( tmp !== null ){
+							return tmp;
+							break;
+						}
+
 					}
+
+					return tmp;
+
+				} else {
+
+					value = value.toString();
+
+					for (var i = 0, j = this.elements.length; i < j; i++) {
+						this.elements[ i ].setAttribute( attr, value );
+					};
+
+					return this;
 
 				}
 
-				return undefined;
+			} else if ( typeof attr == 'object' ) {
 
-			} else {
+				for (index in attr) {
+					
+					if ( typeof attr[index] != 'string' ) continue;
 
-				value = value.toString();
+					for ( var i = 0; i < this.elements.length; i++ ) {
+						this.elements[i].setAttribute( index, attr[ index ] );
+					}
 
-				for (var i = 0, j = this.elements.length; i < j; i++) {
-					this.elements[ i ].setAttribute( attr, value );
 				};
 
-				return this;
+			} else if ( typeof attr == 'function') {
+
+				for (var i = this.elements.length - 1; i >= 0; i--) {
+					this.elements[i]
+				};
 
 			}
 
@@ -320,16 +394,24 @@ var WQConstructor;
 	// Revised and tested
 	wQueryObj.prototype.addClass = function (  classNames  ) {
 
-		classNames = classNames.split(' ');
+		if ( classNames ) {
 
-		var tmp = null;
+			if ( typeof classNames == 'string' ) {
 
-		for( var i = 0, j = this.elements.length; i < j; i++ ){
+				classNames = classNames.split(' ');
 
-			tmp = this.elements[ i ].classList;
-			tmp.add.apply( tmp, classNames );
+				var tmp = null;
 
-		};
+				for( var i = 0; i < this.elements.length; i++ ){
+					tmp = this.elements[ i ].classList;
+					tmp.add.apply( tmp, classNames );
+				};
+
+			} else if ( typeof classNames == 'function' ) {
+
+			}
+
+		}
 
 		return this;
 
@@ -342,36 +424,32 @@ var WQConstructor;
 	wQueryObj.prototype.html = function ( HTMLInner ) {
 
 		if ( HTMLInner ) {
-			
-			if ( HTMLInner ) {
 
-				if ( typeof HTMLInner == 'string' ) {
+			if ( typeof HTMLInner == 'string' ) {
 
-					for (var i = 0; i < this.elements.length; i++) {
-						this.elements[i].innerHTML = HTMLInner;
-					};
+				for (var i = 0; i < this.elements.length; i++) {
+					this.elements[i].innerHTML = HTMLInner;
+				};
 
-					return this;
+				return this;
 
-				} else if ( typeof HTMLInner == 'function' ) {
+			} else if ( typeof HTMLInner == 'function' ) {
 
-					var result = HTMLInner();
+				var result = HTMLInner();
 
-					for (var i = 0; i < this.elements.length; i++) {
-						this.elements[i].innerHTML = result;
-					};
+				for (var i = 0; i < this.elements.length; i++) {
+					this.elements[i].innerHTML = result;
+				};
 
-					return this;
+				return this;
 
-				} else {
+			} else {
 
-					for (var i = 0; i < this.elements.length; i++) {
-						this.elements[i].innerHTML = HTMLInner.toString();
-					};
+				for (var i = 0; i < this.elements.length; i++) {
+					this.elements[i].innerHTML = HTMLInner.toString();
+				};
 
-					return this;
-
-				}
+				return this;
 
 			}
 
@@ -385,18 +463,18 @@ var WQConstructor;
 	 * Insert an element before other
 	 */
 
-	wQueryObj.prototype.insertBefore = function ( elements ) {
+	wQueryObj.prototype.insertBefore = function ( elementss ) {
 	
-		if ( elements ) {
+		if ( elementss ) {
 
 			var nodes = [];
 
-			if ( typeof elements == 'string' ) {
+			if ( typeof elementss == 'string' ) {
 
 				if ( context ) {
-					nodes = WQTools.convertToArray( context.querySelectorAll( elements ) );
+					nodes = WQTools.convertToArray( context.querySelectorAll( elementss ) );
 				} else {
-					nodes = WQTools.convertToArray( document.querySelectorAll( elements ) );
+					nodes = WQTools.convertToArray( document.querySelectorAll( elementss ) );
 				}
 
 				for (var i = 0; i < nodes.length; i++) {
@@ -409,14 +487,14 @@ var WQConstructor;
 
 				};
 
-			} else if ( typeof elements == 'object' ) {
+				return this;
 
-				if ( elements.elements ) {
-					nodes = elements.elements;
-				} else if ( elements.length ) {
-					nodes = WQTools.convertToArray( elements );
-				} else if ( elements.nodeType == 1 ) {
-					nodes = elements;
+			} else if ( typeof elementss == 'object' ) {
+
+				if ( elementss.elements ) {
+					nodes = elementss.elements;
+				} else if ( elementss.length ) {
+					nodes = WQTools.convertToArray( elementss );
 				} else {
 					return this;
 				}
@@ -445,15 +523,19 @@ var WQConstructor;
 
 				}
 
+
+
 				for (var i = 0; i < nodes.length; i++) {
 
-					var parent = nodes[i]
+					var parent = nodes[i].parentNode;
 
 					for (var x = 0; x < this.elements.length; x++) {
 						parent.insertBefore( this.elements[x], nodes[i] );
 					};
 
 				};
+
+				return this;
 
 			}
 
@@ -467,18 +549,18 @@ var WQConstructor;
 	 * Insert an element after other
 	 */
 
-	wQueryObj.prototype.insertAfter = function ( elements ) {
+	wQueryObj.prototype.insertAfter = function ( elementss ) {
 	
-		if ( elements ) {
+		if ( elementss ) {
 
 			var nodes = [];
 
-			if ( typeof elements == 'string' ) {
+			if ( typeof elementss == 'string' ) {
 
 				if ( context ) {
-					nodes = WQTools.convertToArray( context.querySelectorAll( elements ) );
+					nodes = WQTools.convertToArray( context.querySelectorAll( elementss ) );
 				} else {
-					nodes = WQTools.convertToArray( document.querySelectorAll( elements ) );
+					nodes = WQTools.convertToArray( document.querySelectorAll( elementss ) );
 				}
 
 				for (var i = 0; i < nodes.length; i++) {
@@ -491,14 +573,14 @@ var WQConstructor;
 
 				};
 
-			} else if ( typeof elements == 'object' ) {
+			} else if ( typeof elementss == 'object' ) {
 
-				if ( elements.elements ) {
-					nodes = elements.elements;
-				} else if ( elements.length ) {
-					nodes = WQTools.convertToArray( elements );
-				} else if ( elements.nodeType == 1 ) {
-					nodes = elements;
+				if ( elementss.elements ) {
+					nodes = elementss.elements;
+				} else if ( elementss.length ) {
+					nodes = WQTools.convertToArray( elementss );
+				} else if ( elementss.nodeType == 1 ) {
+					nodes = elementss;
 				} else {
 					return this;
 				}
@@ -529,7 +611,7 @@ var WQConstructor;
 
 				for (var i = 0; i < nodes.length; i++) {
 
-					var parent = nodes[i]
+					var parent = nodes[i].parentNode;
 
 					for (var x = 0; x < this.elements.length; x++) {
 						parent.insertBefore( this.elements[x], nodes[i].nextSibling );
@@ -558,6 +640,8 @@ var WQConstructor;
 			};
 		};
 
+		return this;
+
 	};
 
 	/* `contents` process
@@ -573,7 +657,9 @@ var WQConstructor;
 			result = result.concat( WQTools.convertToArray( this.elements[i].childNodes ) );
 		};
 
-		elements = WQTools.cleanArray( WQTools.removeDuplicated( result ) );
+		result = WQTools.cleanArray( WQTools.removeDuplicated( result ) );
+
+		newObject.elements = context ? WQTools.nodeReturn( result ) : result;
 		return newObject;
 
 	};
@@ -605,10 +691,7 @@ var WQConstructor;
 			};
 		}
 
-		var newObject = new wQueryObj();
-		elements = this.elements;
-
-		return newObject;
+		return this;
 
 	};
 
@@ -651,17 +734,18 @@ var WQConstructor;
 
 			classNames = classNames.toString().split(' ');
 
-			var i   = this.elements.length;
-			var tmp = null;
+			var i   = this.elements.length,
+				x   = classNames.length;
 
-			while( i-- ){
+			for (var i = 0; i < this.elements.length; i++) {
+				for (var x = 0; x < classNames.length; x++) {
+					this.elements[i].classList.remove( classNames[x] );
+				};
+			};
 
-				tmp = this.elements[ i ].classList;
-				tmp.remove.apply( tmp, classNames );
+			return this;
 
-			}
-
-		}else{
+		} else {
 
 			var i = this.elements.length;
 
@@ -741,12 +825,7 @@ var WQConstructor;
 			index += this.elements.length;
 		}
 
-		if( typeof this.elements[ index ] !== 'undefined' ){
-			elements = [ this.elements[ index ] ];
-		}else{
-			elements = [];
-		}
-
+		newObject.elements = [ this.elements[ index ] ] ? this.elements[ index ] : [];
 		return newObject;
 
 	};
@@ -787,12 +866,12 @@ var WQConstructor;
 						result.push( this.elements[ start ] );
 					};
 
-					elements = result;
+					newElement.elements = result;
 					return newElement;
 
 				} else {
 
-					elements = [];
+					newElement.elements = [];
 					return newElement;
 
 				}
@@ -804,7 +883,7 @@ var WQConstructor;
 				};
 
 				var newElement = new wQueryObj();
-				elements = result;
+				newElement.elements = result;
 				return newElement;
 
 			}
@@ -827,8 +906,8 @@ var WQConstructor;
 
 		if ( selector ) {
 
-			var results = [];
-			var tmp     = [];
+			var results = [],
+				tmp     = [];
 
 			for( var i = 0, j = this.elements.length; i < j; i++ ) {
 				tmp = tmp.concat( WQTools.convertToArray( this.elements[ i ].querySelectorAll( selector ) ) );
@@ -846,7 +925,7 @@ var WQConstructor;
 
 					for (var i = 0; i < tmp.length; i++) {
 						for (var x = 0; x < selector.elements.length; x++) {
-							if ( selector.elements[x] == tmp[i] ) result.push( tmp[i] );
+							if ( selector.elements[x] == tmp[i] ) results.push( tmp[i] );
 						};
 					};
 
@@ -854,24 +933,26 @@ var WQConstructor;
 
 					for (var i = 0; i < tmp.length; i++) {
 						for (var x = 0; x < selector.length; x++) {
-							if ( selector[x] == tmp[i] ) result.push( tmp[i] );
+							if ( selector[x] == tmp[i] ) results.push( tmp[i] );
 						};
 					};
 
 				} else if ( selector.nodeType == 1 ) {
 					for (var i = 0; i < tmp.length; i++) {
-						if ( selector == tmp[i] ) result.push( tmp[i] );
+						if ( selector == tmp[i] ) results.push( tmp[i] );
 					};	
 				}
 
 			}
 
-			elements = WQTools.removeDuplicated( results );
+			results = WQTools.removeDuplicated( results )
+
+			newObject.elements = ( (context) ? WQTools.nodeReturn( results ) : results );
 			return newObject;
 
 		} else {
 
-			elements = [];
+			newObject.elements = [];
 			return newObject;
 
 		}
@@ -884,15 +965,14 @@ var WQConstructor;
 
 	wQueryObj.prototype.filter = function ( selector ) {
 
-		var newObject = new wQueryObj();
+		var newObject = new wQueryObj(),
+			results   = [];
 
 		if ( selector ) {
 
-			var results = [];
-
 			if ( typeof selector == 'string' ) {
 
-				if ( selector.atChar(0) == '<' && selector.atChar( selector.length - 1 ) == '>' ) {
+				if ( selector.charAt(0) == '<' && selector.charAt( selector.length - 1 ) == '>' ) {
 
 					for (var i = 0; i < this.elements.length; i++) {
 						if ( this.elements[i].toString() == selector ) results.push( this.elements[i] );
@@ -902,7 +982,7 @@ var WQConstructor;
 
 				for( var i = 0, j = this.elements.length; i < j; i++ ) {
 
-					if( WQTools.is( this.elements[ i ], selector ) ){
+					if( this.elements[ i ][ matchesSelector ](selector) ){
 						results.push( this.elements[ i ] );
 					}
 					
@@ -934,23 +1014,24 @@ var WQConstructor;
 
 				}
 
+			} else if ( selector.nodeType == 1 ) {
+
+				for (var i = 0; i < this.elements.length; i++) {
+					if (this.elements[i] == selector) results.push(this.elements[i]);
+				};
+
 			} else if ( typeof selector == 'function' ) {
 
 			}
 
-			elements = results;
-			return newObject;
+		} 
 
-		} else {
-
-			elements = [];
-			return newObject;
-
-		}
+		newObject.elements = results;
+		return newObject;
 
 	};
 
-   /*  `filter` function
+   /*  `hasClass` function
 	*  Filter elements inside the selected elements
 	*/
 
@@ -963,33 +1044,36 @@ var WQConstructor;
 
 			if ( typeof selector == "string" ) {
 
-				if ( selector.atChar(0) == '<' && selector.atChar( selector.length - 1 ) == '>' ) {
+				if ( selector.charAt(0) == '<' && selector.charAt( selector.length - 1 ) == '>' ) {
 
 					for (var i = 0; i < this.elements.length; i++) {
-						if ( this.elements[i].toString() == selector ) result.push( this.elements[i] );
+
+						var nodes = this.elements[i].children;
+
+						for (var x = 0; x < nodes.length; x++) {
+							if ( nodes[x] == selector ) result.push( this.elements[i] );
+						};
+						 
 					};
 
 				} else {
 
 					for (var i = 0; i < this.elements.length; i++) {
-						if ( this.elements[i][ matchesSelector ]( selector ) ) result.push( this.elements[i] );
+
+						var nodes = this.elements[i].children;
+
+						for (var x = 0; x < nodes.length; x++) {
+							if ( nodes[x][ matchesSelector ](selector) ) result.push( this.elements[i] );
+						};
+
 					};
 
 				}
 
-				elements = result;
+				newObject.elements = result;
 				return newObject;
 
-			} else if ( selector.nodeType == 1 ) {
-
-				for (var i = 0; i < this.elements.length; i++) {
-					if ( this.elements[i] == selector ) result.push( this.elements[i] );
-				};
-
-				elements = result;
-				return newObject;
-
-			}
+			} 
 
 		} else {
 			return this;
@@ -1003,9 +1087,8 @@ var WQConstructor;
 
 	wQueryObj.prototype.clone = function ( dataAndEvents, deepDataAndEvents ) {
 		
-		var newObject = new wQueryObj();
-		elements = WQTools.clone( this, dataAndEvents, deepDataAndEvents );
-
+		var newObject = new wQueryObj();	
+		newObject.elements = WQTools.clone( this, dataAndEvents, deepDataAndEvents );
 		return newObject;
 
 	};
@@ -1023,7 +1106,7 @@ var WQConstructor;
 
 			for( var i = 0, j = this.elements.length; i < j; i++ ) {
 
-				for( var k = 0, m = this.elements[ i ].children.length; k < m; k++ ){
+				for( var k = 0; k < this.elements[ i ].children.length; k++ ){
 
 					if( WQTools.is( this.elements[ i ].children[ k ], selector ) ){
 						result.push( this.elements[ i ].children[ k ] );
@@ -1035,11 +1118,16 @@ var WQConstructor;
 
 		} else {
 
-			result = WQTools.cleanArray(WQTools.getChildren(this.elements));
+			for (var i = 0; i < this.elements.length; i++) {
+				var childrens = this.elements[i].children;
+				for (var x = 0; x < childrens.length; x++) {
+					result.push( childrens[x] );
+				};
+			};
 
 		}
 
-		elements = result;
+		newObject.elements = ( ( context ) ? WQTools.nodeReturn( WQTools.removeDuplicated( result ) ) : WQTools.removeDuplicated( result ) );
 		return newObject;
 
 	};
@@ -1069,8 +1157,7 @@ var WQConstructor;
 
 			};
 
-			elements = WQTools.removeDuplicated(parents);
-
+			newElement.elements = (( context ) ? WQTools.nodeReturn(WQTools.removeDuplicated(parents)) : WQTools.removeDuplicated(parents) );
 			return newElement;
 
 		} else {
@@ -1106,8 +1193,7 @@ var WQConstructor;
 			};
 
 			var newElement = new wQueryObj();
-			elements = WQTools.removeDuplicated(parents);
-
+			newElement.elements = (( context ) ? WQTools.nodeReturn(WQTools.removeDuplicated(parents)) : WQTools.removeDuplicated(parents) );
 			return newElement;
 
 		}
@@ -1129,7 +1215,7 @@ var WQConstructor;
 				
 				var node = this.elements[i].parentNode;
 
-				while ( node ) {
+				while ( node != document ) {
 
 					if ( selector ) {
 
@@ -1147,7 +1233,7 @@ var WQConstructor;
 
 			};
 
-			elements = WQTools.removeDuplicated(parents);
+			newElement.elements = ( (context) ? WQTools.nodeReturn(WQTools.removeDuplicated(parents)) : WQTools.removeDuplicated(parents));
 			return newElement;
 
 		} else {
@@ -1189,8 +1275,7 @@ var WQConstructor;
 			};
 			
 			var newElement = new wQueryObj();
-			elements = WQTools.removeDuplicated(parents);
-
+			ewElement.elements = ( (context) ? WQTools.nodeReturn(WQTools.removeDuplicated(parents)) : WQTools.removeDuplicated(parents));
 			return newElement;
 
 		}
@@ -1205,7 +1290,6 @@ var WQConstructor;
 
 		var newObject = new wQueryObj(),
 			parents   = [];
-
 		if ( context ) {
 
 			var eachNode = [];
@@ -1219,8 +1303,8 @@ var WQConstructor;
 
 						if ( node == context ) {
 
-							elements = parents;
-							return newObject;
+							newObject.elements = ( (context) ? WQTools.nodeReturn(WQTools.removeDuplicated(parents)) : WQTools.removeDuplicated(parents));
+							node = undefined;
 
 						} else if ( node == document.getElementsByTagName('body')[0] ) {
 
@@ -1233,7 +1317,18 @@ var WQConstructor;
 
 						} else {
 
-							eachNode = parents.push(node);
+							if ( filter ) {
+
+								if ( node[ matchesSelector ]( filter ) ) parents.push( node );
+								node = node.parentNode;
+
+							} else {
+
+								parents.push( node );
+								node = node.parentNode;
+
+							}
+
 							node = node.parentNode;
 
 						}
@@ -1251,20 +1346,18 @@ var WQConstructor;
 			if ( selector ) {
 
 				for (var i = 0; i < this.elements.length; i++) {
-					var node = this.elements[i].node;
+					var node = this.elements[i].parentNode;
 
 					while ( node ) {
 
 						if ( node[ matchesSelector ]( selector ) ) {
+							newObject.elements = ( (context) ? WQTools.nodeReturn(WQTools.removeDuplicated(parents)) : WQTools.removeDuplicated(parents));
 							node = undefined;
 						} else {
 
 							if ( filter ) {
 
-								if ( node[ matchesSelector ](selector) ) {
-									parents.push( node );
-								}
-
+								if ( node[ matchesSelector ]( filter ) ) parents.push( node );
 								node = node.parentNode;
 
 							} else {
@@ -1286,7 +1379,6 @@ var WQConstructor;
 
 		}
 
-		elements = parents;
 		return newObject;
 
 	};
@@ -1295,238 +1387,79 @@ var WQConstructor;
 	* Returns the element(s)'s parents which are
 	*/
 
-	wQueryObj.prototype.closest = function ( selector, context ) {
+	wQueryObj.prototype.closest = function ( selector, ctx ) {	
 
-		var newObject = new wQueryObj();
-		var result    = [];
-		var elements  = [];
+		var newObject = new wQueryObj(),
+			closest   = [],
+			result    = [];
 
 		if ( selector ) {
 
-			if ( typeof selector === 'string' ) {
-
-				if ( selector.atChar(0) == '<' && selector.charAt( selector.length - 1 ) == ' >') {
-					selector = document.createElement( selector.charAt( selector.indexOf('<'), selector.indexOf('>') - selector.indexOf('<') -1 ) );
-				};
+			if ( ctx ) {
 
 				if ( context ) {
 
-					if ( typeof context == 'string' ) {
-
-						if ( context.charAt(0) == '#' ) {
-							context = document.getElementsByClassName( context.splice('#')[1] );
-						} else if ( context.charAt(0) == '.' ) {
-							context = document.getElementsByClassName( context.splice('.')[1] );
-						} else {
-							context = document.getElementsByTagName( context );
-						}
-
-					}; 
-
-					if ( typeof context == 'object') {
-
-						var valid;
-
-						if ( context.elements ) {
-
-							for (var i = 0; i < context.elements.length; i++) {
-								if ( context.elements[i].nodeType && context.elements[i].nodeType == 1 ) valid.push( context.elements[i] );
-							};
-
-							context = valid;
-
-						} else if ( context.length ) {
-
-							for (var i = 0; i < context.length; i++) {
-								if ( context.elements[i].nodeType && context[i].nodeType == 1 ) valid.push( context[i] );
-							};
-
-							context = valid;
-
-						}
-
-					};
-
-					if ( context ) {
-
-						var validContext = [],
-							i = context.length - 1;  
-
-						while ( i-- ) {
-
-							var node = context[i].parentNode;
-
-							while ( node ) {
-
-								if ( node == context ) {
-									validContext.push ( context[i] );
-								} else if ( node == document.getElementsByTagName('body') ) {
-									node = undefined;
-								} else {
-									node = node.parentNode;
-								}
-
-							}
-
-						};
-
-						context = validContext;
-
-					}
-
-				} else {
-
-					if ( context ) {
-						context = [ context ];
-					} else {
-						context = [ document ];
-					}
-
-				}
-
-				for (var i = 0; i < this.elements.length; i++) {
-					var node = this.elements[i].parentNode;
+					var node = ctx.parentNode;
 
 					while ( node ) {
 
-						if (node[ matchesSelector ](selector)) {
-							elements.push( node );
-						} 
+						if ( node == context ) {
+							node = undefined;
+						} else if ( node == document.getElementsByTagName('html')[0] ) {
+							ctx  = context;	
+							node = undefined;
+						} else {
+							node = node.parentNode;
+						}
 
+					}
+
+				}
+
+			} else {
+				ctx = ( context ) ? context : undefined;
+			}
+
+			for (var i = 0; i < this.elements.length; i++) {
+				var node = this.elements[i].parentNode;
+
+				while ( node ) {
+
+					if ( node[ matchesSelector ]( selector ) ) {
+						closest.push( node );
+						node = undefined;
+					} else {
+						node = node.parentNode;
+					}
+
+				}
+
+			};
+
+			if ( !ctx ) {
+				result = closest;
+			} else {
+
+				for (var i = 0; i < closest.length; i++) {
+					
+					var node = closest[i].parentNode;
+
+					while ( node ) {
+						if ( node == ctx ) {
+							result.push( closest[i] );
+						} else {	
+							node = node.parentNode;
+						}
 					}
 
 				};
 
-				if ( context == document ) {
-					
-					result = elements;
-					elements = result;
-
-					return newObject;
-
-				} else {
-
-					for (var i = 0; i < elements.length; i++) {
-						
-						var node = elements[i].parentNode;
-
-						while ( node ) {
-
-							for (var i = 0; i < context.length; i++) {
-								if ( node == context[i] ) {
-									result.push( node );
-								} else {
-									node = node.parentNode;
-								}
-							};
-
-						}
-
-					};
-
-					elements = result;
-					return newObject
-
-				}
-
-			} else if ( typeof selector === 'object' ) {
-
-				if ( selector.elements ) {
-
-					for (var i = 0; i < this.elements.length; i++) {
-							
-						var node = this.elements[i].parentNode;
-
-						for (var x = 0; x < selector.elements.length; x++) {
-							
-							while ( node ) {
-
-								if ( node == selector.elements[x] ) {
-									elements.push( node );
-								} else {	
-									node = node.parentNode;
-								}
-
-							}
-
-						};
-
-					};
-
-				} else if ( selector.length ) {
-
-					for (var i = 0; i < this.elements.length; i++) {
-							
-						var node = this.elements[i].parentNode;
-
-						for (var x = 0; x < selector.length; x++) {
-							
-							while ( node ) {
-
-								if ( node == selector[x] ) {
-									elements.push( node );
-								} else {	
-									node = node.parentNode;
-								}
-
-							}
-
-						};
-
-					}; 
-
-				} else {
-
-					for (var i = 0; i < this.elements.length; i++) {
-							
-						var node = this.elements[i].parentNode;
-							
-						while ( node ) {
-
-							if ( node == selector ) {
-								elements.push( node );
-							} else {	
-								node = node.parentNode;
-							}
-
-						}
-
-					}; 			
-
-				};
-
-				if ( context ) {
-
-					for (var i = 0; i < elements.length; i++) {
-						
-						var node = elements[i].parentNode;
-
-						while ( node ) {
-
-							if ( node == context ) {
-								result.push( node );
-							} else {
-								node = node.parentNode;
-							}
-
-						}
-
-					};
-
-				}
-
-				elements = result;
-				return newObject;
-
-			} else {
-				elements = this.elements;
-				return newObject;
 			}
 
-		} else {
-			elements = this.elements;
-			return newObject;
 		}
+
+		newObject.elements = ( context ) ? WQTools.nodeReturn( WQTools.removeDuplicated( result ) ) : WQTools.removeDuplicated( result );
+		return newObject;
 
 	};
 
@@ -1538,68 +1471,28 @@ var WQConstructor;
 
 		if ( check ) {
 
+			var result = false;
+
 			if ( typeof check == 'string' ) {
 
-				if ( check.atChat(0) == '<' && check.atChar( check.length - 1 ) == '>' ) {
+				for (var i = 0; i < this.elements.length; i++) {
+					if ( this.elements[i][ matchesSelector ]( check ) ) return true;
+				};
 
-					for (var i = 0; i < this.elements.length; i++) {
-						if ( this.elements[i].toString() == check ) return true;
+			} else if ( typeof check == 'object' && check.elements ) {
+
+				for (var i = 0; i < this.elements.length; i++) {
+					for (var x = 0; x < check.length; x++) {
+						if ( this.elements[i] == check.elements[x] ) return true;
 					};
+				};
 
-					return false;
-
-				}
-
-				var i = this.elements.length;
-
-				if( !i ){
-					return false;
-				}
-
-				while( i-- ){
-
-					if( WQTools.is( this.elements[ i ], check ) ){
-						return true;
-					}
-
-				}
-
-			} else if ( typeof check == 'object' ) {
-
-				if ( check.elements ) {
-
-					for (var i = 0; i < this.elements.length; i++) {
-						for (var x = 0; x < check.elements.length; x++) {
-							if ( this.elements[i] == check.elements[x] ) return true;
-						};
-					};
-
-					return false
-
-				} else if ( check.length ) {
-
-					for (var i = 0; i < this.elements.length; i++) {
-						for (var x = 0; x < check.elements.length; x++) {
-							if ( this.elements[i] == check[x] ) return true;
-						};
-					};
-
-					return false
-
-				} else if ( check.nodeType == 1) {
-
-					for (var i = 0; i < this.elements.length; i++) {
-						if ( this.elements[i] == check ) return true;
-					};
-
-					return false
-
-				}
-
+			} else if ( typeof check == 'object' && check.nodeType == 1 ) {
+				for (var i = 0; i < this.elements.length; i++) {
+					if ( this.elements[i] == check ) return true;
+				};
 			} else if ( typeof check == 'function' ) {
-
-
-
+				//FALTA	
 			}
 
 		} else {
@@ -1614,12 +1507,11 @@ var WQConstructor;
 	// Revised and tested
 	wQueryObj.prototype.each = function ( fn ) {
 			
-		var length = this.elements.length;
 		var stop   = false;
 
-		for( var i = 0; i < length; i++ ){
+		for( var i = 0; i < this.elements.length; i++ ){
 
-			stop = false === fn.call( this.elements[ i ], i, this.elements[ i ] );
+			stop = false === fn.call( i, this.elements[ i ] );
 
 			if( stop ){
 				break;
@@ -1641,7 +1533,7 @@ var WQConstructor;
 			if( typeof value === 'undefined' ){
 
 				// Get all rules
-				value = window.getComputedStyle( this.elements[ 0 ] );
+				value = window.getComputedStyle( this.selements[ 0 ] );
 
 				if( typeof value[ name ] !== 'undefined' ){
 					return value[ name ];
@@ -1701,9 +1593,10 @@ var WQConstructor;
 	 * Make an union of 2 collection
 	 */
 
-	wQueryObj.prototype.add = function ( coll2, context ) {
+	wQueryObj.prototype.add = function ( coll2, ctx ) {
 
- 		var result = [];
+ 		var newElement = new wQueryObj();
+ 			result     = [];
 		result = result.concat( this.elements );
 
  		if ( typeof coll2 === 'string' ) {
@@ -1714,55 +1607,36 @@ var WQConstructor;
  				result.push( document.createElement( coll2.substr( coll2.indexOf('<') + 1, coll2.indexOf('>') - coll2.indexOf('<') - 1 ) ) );
  			} else {
 
-	 			if ( context ) {
+	 			if ( ctx ) {
 
-	 				if ( context.atChar(0) == '#' ) {
-	 					context = [ document.getElementById( context.splice('#')[1] ) ];
-	 				} else if ( context.atChar(0) == '.' ) {
-	 					context = document.getElementsByClassName( context.splice('.')[1] );
-	 				} else {
-	 					context = document.getElementsByTagName( context );
-	 				};
+					var node = ctx.parentNode;
 
-	 				if ( context ) {
+					while ( node ) {
 
-	 					var valid = [];
+						if ( node == context ) {
+							node = undefined;
+						} else if ( node == document.getElementsByTagName('html')[0] ) {
+							ctx  = context;
+							node = undefined;
+						} else {
+							node = node.parentNode;
+						}
 
-	 					for (var i = 0; i < context.length; i++) {
-	 						
-	 						var node = context[i];
-
-	 						while ( node ) {
-
-	 							if ( node == context ) {
-	 								valid.push( context[i] );
-	 							} else {
-	 								node = node.parentNode;
-	 							}
-
-	 						}
-
-	 					};
-
-	 					context = valid;
-
-	 				};
+					}
 
 	 			} else {
 
 	 				if ( context ) {
-	 					context = context;
+	 					ctx = context;
 	 				} else {
-	 					context = document;
+	 					ctx = document;
 	 				}
 	 				
 	 			}
 
-	 		}
+	 			result = result.concat( WQTools.convertToArray( ctx.querySelectorAll( coll2 ) ) );
 
-	 		for (var i = 0; i < context.length; i++) {
-	 			result = result.concat( WQTools.convertToArray( context[i].querySelectorAll( coll2 ) ) );
-	 		};
+	 		}
 
  		} else if ( typeof coll2 == "object" ) {
 
@@ -1799,7 +1673,7 @@ var WQConstructor;
  		if ( context ) {
 
  			var valid = [];
- 			valid = valid.concat( this.elements );
+ 			valid = valid.concat( elements );
 
  			for (var i = 0; i < result.length; i++) {
  				var node = result[i].parentNode;
@@ -1820,9 +1694,8 @@ var WQConstructor;
 
  		}
 
-		var newElement = new wQueryObj();
-		elements = WQTools.removeDuplicated(result);
-
+		var newElement 		= new wQueryObj();
+		newElement.elements = ( context ) ? WQTools.nodeReturn( WQTools.removeDuplicated( result ) ) : WQTools.removeDuplicated( result );
 		return newElement;
 
 	};
@@ -1834,13 +1707,17 @@ var WQConstructor;
 	wQueryObj.prototype.prev = function ( selector ) {
 
 		var newObject = new wQueryObj(),
-			result    = [];
+			result    = [],
+			element;
 
 		if ( selector ) {
 
 			for (var i = 0; i < this.elements.length; i++) {
+
 				var parentContext = this.elements[i].parentNode,
-					element       = parentContext.children[ parentContext.children.indexOf( this.elements[0] ) - 1 ];
+					children 	  = WQTools.convertToArray(parentContext.children),
+					index 		  = children.indexOf( this.elements[0] ) - 1,
+					element       = parentContext.children[ index ];
 				
 				if ( element && element[ matchesSelector ]( selector ) ) result.push( element );
 
@@ -1850,7 +1727,9 @@ var WQConstructor;
 
 			for (var i = 0; i < this.elements.length; i++) {
 				var parentContext = this.elements[i].parentNode,
-					element       = parentContext.children[ parentContext.children.indexOf( this.elements[0] ) - 1 ];
+					children 	  = WQTools.convertToArray(parentContext.children),
+					index 		  = children.indexOf( this.elements[0] ) - 1,
+					element       = parentContext.children[ index ];
 				
 				if ( element ) result.push( element );
 
@@ -1858,7 +1737,7 @@ var WQConstructor;
 
 		}
 
-		elements = result;
+		newObject.elements =  (( context ) ? WQTools.nodeReturn(result) : result);
 		return newObject;
 
 	};
@@ -1874,10 +1753,11 @@ var WQConstructor;
 
 		for (var i = 0; i < this.elements.length; i++) {
 			
-			var parent = this.elements[i].parentNode,
-				index  = parent.children.indexOf( this.elements[i] );
+			var parent    = this.elements[i].parentNode,
+				children  = WQTools.convertToArray( parent.children ),
+				index 	  = children.indexOf( this.elements[i] );
 
-			for (var x = 0; x < index - 1; x++) {
+			for (var x = 0; x < index; x++) {
 				
 				if ( selector ) {
 					if ( parent.children[x][ matchesSelector ]( selector ) ) result.push( parent.children[x] );
@@ -1889,22 +1769,26 @@ var WQConstructor;
 
 		};
 
+		newObject.elements = ( ( context ) ? WQTools.nodeReturn( WQTools.removeDuplicated( result ) ) : WQTools.removeDuplicated( result ) );
+		return newObject;
+
 	};
 
 	/* `prevUntil` function
 	 * Get the provious element of the first element in the collection until selector
 	 */
 
-	wQueryObj.prototype.prevUntil = function ( selec, filter ) {
+	wQueryObj.prototype.prevUntil = function ( selector, filter ) {
 
 		var newObject = new wQueryObj(),
 			result    = [];
 
-		if ( elements ) {
+		if ( selector ) {
 
 			for ( var i = 0; i < this.elements.length; i++ ) {
-				var parent = this.elements[i].parentNode,
-					index  = parent.children.indexOf( this.elements[ i ] );
+				var parent 		= this.elements[i].parentNode,
+					children 	= WQTools.convertToArray( parent.children ),
+					index 		= children.indexOf( this.elements[i] );
 
 				for ( var x = index - 1; x >= 0; x-- ) {
 					
@@ -1913,9 +1797,7 @@ var WQConstructor;
 					} else {
 
 						if ( filter ) {
-
-							if ( parent.children[x][ matchesSelector ]( selector ) ) result.push( parent.children[x] );
-
+							if ( parent.children[x][ matchesSelector ]( filter ) ) result.push( parent.children[x] );
 						} else {
 							result.push( parent.children[x] );
 						}
@@ -1926,7 +1808,7 @@ var WQConstructor;
 
 			};
 
-			elements = result;
+			newObject.elements = (( context ) ? WQTools.nodeReturn( WQTools.removeDuplicated( result ) ) : WQTools.removeDuplicated( result ) );
 			return newObject;
 
 		} else {
@@ -1951,6 +1833,8 @@ var WQConstructor;
 
 		};
 
+		return this;
+
 	};
 
 	/* `siblings` function
@@ -1963,10 +1847,12 @@ var WQConstructor;
 			result    = [];
 
 		for (var i = 0; i < this.elements.length; i++) {
+			
 			var parent = this.elements[i].parentNode,
-				index  = parent.children.indexOf( this.elements[i] );
+ 				children   = WQTools.convertToArray( parent.children ),
+				index 	   = children.indexOf( this.elements[i] );
 
-			for (var x = 0; x < parent.children.length; x++) {
+			for (var x = 0; x <  children.length; x++) {
 					
 				if ( x == index ) {
 					continue;
@@ -1984,7 +1870,7 @@ var WQConstructor;
 
 		};
 
-		elements = result;
+		newObject.elements = (( context ) ? WQTools.nodeReturn( WQTools.removeDuplicated( result ) ) : WQTools.removeDuplicated( result ) );
 		return newObject;
 
 	}
@@ -1998,40 +1884,21 @@ var WQConstructor;
 		var newObject = new wQueryObj(),
 			result    = [];
 
-		if ( this.elements ) {
+		for (var i = 0; i < this.elements.length; i++) {
 
-			for (var i = 0; i < this.elements.length; i++) {
-
-				var parentContext = this.elements[i];
-
-				if ( selector ) {
-					
-					while ( index ) {
-
-						var index = parentContext.indexOf( this.elements[i] ) + 1;
-							next  = parentContext.children( index );
-
-						if ( next[ matchesSelector ](selector) ) {
-							result.push( next );
-						} else {
-							index == parentContext.children.length ? index = undefined : index += 1;						
-						}
-
-					}
-
+			if ( this.elements[i].nextElementSibling ) {
+				
+				if ( !selector ) {
+					result.push( this.elements[i].nextElementSibling );
 				} else {
-
-					var next = parentContext.children( parentContext.indexOf( this.elements[i] ) + 1 );
-					if ( next ) result.push( next );
-
+					if ( this.elements[i].nextElementSibling[ matchesSelector ]( selector ) ) result.push( this.elements[i].nextElementSibling );
 				}
-			};
 
-		} else {
-			return this;
-		}
+			}
 
-		elements = result;
+		};
+
+		newObject.elements = (( context ) ? WQTools.nodeReturn( result ) : result );
 		return newObject;
 
 	};
@@ -2045,43 +1912,25 @@ var WQConstructor;
 		var newObject = new wQueryObj(),
 			result = [];
 
-		if ( selector ) {
+		for (var i = 0; i < this.elements.length; i++) {
+			
+			var children   = WQTools.convertToArray(this.elements[i].parentNode.children),
+			    initIndex  = children.indexOf( this.elements[i] );
 
-			for (var i = 0; i < this.elements.length; i++) {
+			for (var x = initIndex + 1; x < children.length; x++) {
 				
-				var parentNode = this.elements[i].parentNode;
-				var initIndex  = parentNode.children.indexOf( this.elements[i] );
-
-				for (var x = initIndex + 1; x < parentNode.length; x++) {
-					
-					if ( parentNode.children[ x ][ matchesSelector ]( selector ) ) {
-						result.push( parentNode.children[ x ] );
-					}
-
-				};
+				if ( !selector ) {
+					result.push( children[ x ] );
+				} else {
+					if ( children[ x ][ matchesSelector ]( selector ) ) result.push( children[ x ] );
+				}
 
 			};
 
-			elements = result;
-			return newObject;
+		};
 
-		} else {
-
-			for (var i = 0; i < this.elements.length; i++) {
-				
-				var parentNode = this.elements[i].parentNode;
-				var initIndex  = parentNode.children.indexOf( this.elements[i] );
-
-				for (var x = initIndex + 1; x < parentNode.length; x++) {
-					result.push( parentNode.children[ x ] );
-				};
-
-			};
-
-			elements = result;
-			return newObject;
-
-		}
+		newObject.elements = (( context ) ? WQTools.nodeReturn( WQTools.removeDuplicated( result ) ) : WQTools.removeDuplicated( result ) );
+		return newObject;
 
 	};
 
@@ -2094,97 +1943,36 @@ var WQConstructor;
 		var newObject = new wQueryObj(),
 			result    = []; 
 
-		if ( selector ) {
+		for (var i = 0; i < this.elements.length; i++) {
+			
+			var children = WQTools.convertToArray( this.elements[i].parentNode.children ),
+				index    = children.indexOf( this.elements[ i ] ) + 1;
 
-			for (var i = 0; i < this.elements.length; i++) {
-				var parentNode = this.elements[i].parentNode;
-					index      = parentNode.children.indexOf( this.elements[i] ) + 1;
+			for (var i = index; i < children.length; i++) {
+		
+				if ( selector ) {
 
-				for (var x = index; x < parentNode.length; x++) {
-					if ( filter ) {
-
-						if ( parentNode.children[ index ][ matchesSelector ](selector) ) {
-							break;
-						} else {
-							if ( parentNode.children[ index ][ matchesSelector ](filter) ) {
-								result.push( parentNode.children[ index ] );
-							}
-						};
-
+					if ( children[i][ matchesSelector ]( selector ) ) {
+						break;
 					} else {
 
-						if ( parentNode.children[ index ][ matchesSelector ](selector) ) {
-							break;
+						if ( !filter ) {
+							result.push( children[i] );
 						} else {
-							result.push( parentNode.children[ index ] );
+							if ( children[i][ matchesSelector ]( filter ) ) result.push( children[i] );
 						}
-
-					}
-				};
-
-			};
-
-		} else {
-
-			for (var i = 0; i < this.elements.length; i++) {
-				var parentNode = this.elements[i].parentNode,
-					index      = parentNode.indexOf( this.elements[i] ) + 1;
-
-				for (var x = index; x < parentNode.length; x++) {
-					result.push( parentNode.children[x] );
-				};
-
-			};
-
-		}
-
-		elements = result;
-		return newObject;
-
-	};
-
-	/* `addBack` function
-	 * Returns a new wQuery object with the actual element(s) an the elements at its(their) back
-	 */
-
-	wQueryObj.prototype.addBack = function ( selector ) {
-
-		var newObject = new wQueryObj();
-		var result = [];
-
-		if ( selector ) {
-
-			for (var i = 0; i < this.elements.length; i++) {
-				
-				var parent   = this.elements[i].parentNode;
-				var children = WQTools.convertToArray(parent.childNodes);
-
-				for (var x = children.indexOf( this.elements[ i ] ); x < children.length; x++) {
-
-					if (  children[ x ][ matchesSelector ]( selector ) ) {
-						result.push( children[ x ] );
-					}
 					
-				};
+					}
+
+				} else {
+					return this.nextAll();
+				}
 
 			};
 
-		} else {
+		};
 
-			for (var i = 0; i < this.elements.length; i++) {
-				
-				var parent   = this.elements[i].parentNode;
-				var children = WQTools.convertToArray(parent.childNodes);
-
-				for (var x = children.indexOf( this.elements[ i ] ); x < children.length; x++) {
-					result.push( children[ x ] );
-				};
-
-			};
-
-		}
-
-		elements = WQTools.cleanArray(result);
+		newObject.elements = (( context ) ? WQTools.nodeReturn( WQTools.removeDuplicated( result ) ) : WQTools.removeDuplicated( result ) );
 		return newObject;
 
 	};
@@ -2210,6 +1998,8 @@ var WQConstructor;
 		}
 
 	};
+
+
 
 	WQConstructor = new wQueryObj();
 
