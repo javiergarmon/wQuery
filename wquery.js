@@ -2101,13 +2101,19 @@ var WQConstructor;
 							
 							var node = clone.children[0];
 
-							while ( node ) {
+							if ( !node ) {
+								node.appendChild( this.elements[i] );
+							} else {
+								
+								while ( node ) {
 
-								if ( !node.children[0] ) {
-									node.appendChild( this.elements[i] );
-									node = null;
-								} else {
-									node = node.children[0];
+									if ( !node.children[0] ) {
+										node.appendChild( this.elements[i] );
+										node = null;
+									} else {
+										node = node.children[0];
+									}
+
 								}
 
 							}
@@ -2130,17 +2136,22 @@ var WQConstructor;
 					
 					var node = clone.children[0];
 
-					while ( node ) {
+					if ( !node ) {
+						node.appendChild(this.elements[i]);
+					} else {
 
-						if ( !node.children[0] ) {
-							node.appendChild(this.elements[i]);
-							node = null;
-						} else {
-							node = node.children[0];
+						while ( node ) {
+
+							if ( !node.children[0] ) {
+								node.appendChild(this.elements[i]);
+								node = null;
+							} else {
+								node = node.children[0];
+							}
+
 						}
 
 					}
-
 
 				};
 
@@ -2156,16 +2167,22 @@ var WQConstructor;
 						
 						var node = clone.children[0];
 
-						while ( node ) {
+						if ( !node ) {
+							node.appendChild(this.elements[x]);
+						} else {
 
-							if ( !node.children[0] ) {
-								node.appendChild(this.elements[x]);
-								node = null;
-							} else {
-								node = node.children[0];
+							while ( node ) {
+
+								if ( !node.children[0] ) {
+									node.appendChild(this.elements[x]);
+									node = null;
+								} else {
+									node = node.children[0];
+								}
+
 							}
 
-						}
+						};
 
 					};
 
@@ -2181,20 +2198,26 @@ var WQConstructor;
 					
 					var node = clone.children[0];
 
-					while ( node ) {
+					if ( !node ) {
+						node.appendChild( this.elements[i] );
+					} else {
 
-						if ( !node.children[0] ) {
-							node.appendChild( this.elements[i] );
-							node = null;
-						} else {
-							node = node.children[0];
+						while ( node ) {
+
+							if ( !node.children[0] ) {
+								node.appendChild( this.elements[i] );
+								node = null;
+							} else {
+								node = node.children[0];
+							}
+
 						}
 
 					}
 
 				};
 
-			} else if ( typeof element == 'array' ) {
+			} else if ( typeof element == 'object' && element.length ) {
 
 				for (var i = 0; i < element.length; i++) {
 					
@@ -2208,13 +2231,19 @@ var WQConstructor;
 							
 							var node = clone.children[0];
 
-							while ( node ) {
+							if ( !node ) {
+								node.appendChild( this.elements[i] );
+							} else {
+								
+								while ( node ) {
 
-								if ( !node.children[0] ) {
-									node.appendChild(this.elements[x]);
-									node = null;
-								} else {
-									node = node.children[0];
+									if ( !node.children[0] ) {
+										node.appendChild(this.elements[x]);
+										node = null;
+									} else {
+										node = node.children[0];
+									}
+
 								}
 
 							}
@@ -2276,17 +2305,204 @@ var WQConstructor;
 	 * remove the parent element of the current element collection
 	 */
 
-	wQueryObj.prototype.wrappInner = function ( objects ) {
+	wQueryObj.prototype.wrapInner = function ( objects ) {
 
-		for (var i = 0; i < this.elements.length; i++) {
-			
-			if ( typeof objects == "string" ) {
+		if ( objects ) {
 
-			} else if ( typeof objects == "function" ) {
+			if ( typeof objects == 'string' ) {
+
+				if ( objects.charAt(0) == '<' && objects.charAt( objects.length - 1 )) {
+					// WAITING FOR DO THE HTML STRING TAGS PARSER
+				} else {
+
+					objects = ( context ) ? context.querySelectorAll( objects ) : document.querySelectorAll( objects );
+
+					for (var i = 0; i < objects.length; i++) {
+						
+						for (var x = 0; x < this.elements.length; x++) {
+							
+							var content  = this.elements[x].cloneNode(true).children;
+
+							this.elements[x].innerHTML = "";
+							this.elements[x].appendChild( objects[i].cloneNode( true ) );
+
+							var node = this.elements[x].children[0]
+
+							if ( !node ) {
+								newWrap.innerHTML = content;
+							} else {
+
+								while ( node ) {
+
+									if ( node.children[0] ) {
+										node = node.children[0];
+									} else {
+										console.log( node );
+										for (var y = 0; y < content.length; y++) {
+											node.appendChild( content[y].cloneNode( true ) );
+										};
+
+										node = undefined;
+									}
+
+								}
+
+							}
+
+						};
+
+					};
+
+				}	
+
+			} else if ( typeof objects == 'function' ) {	
+					
+				for (var x = 0; x < this.elements.length; x++) {
+					
+					var object   = objects.apply( this.elements[x], [] );
+					var content  = this.elements[x].cloneNode(true).children;
+
+					this.elements[x].innerHTML = "";
+					this.elements[x].appendChild( object.cloneNode( true ) );
+
+					var node = this.elements[x].children[0]
+
+					if ( !node ) {
+						newWrap.innerHTML = content;
+					} else {
+
+						while ( node ) {
+
+							if ( node.children[0] ) {
+								node = node.children[0];
+							} else {
+								console.log( node );
+								for (var y = 0; y < content.length; y++) {
+									node.appendChild( content[y].cloneNode( true ) );
+								};
+
+								node = undefined;
+							}
+
+						}
+
+					}
+
+				};
+
+			} else if ( typeof objects == 'object' && objects.elements ) {
+
+				for (var i = 0; i < objects.elements.length; i++) {
+					
+					for (var x = 0; x < this.elements.length; x++) {
+						
+						var content  = this.elements[x].cloneNode(true).children;
+
+						this.elements[x].innerHTML = "";
+						this.elements[x].appendChild( objects.elements[i].cloneNode( true ) );
+
+						var node = this.elements[x].children[0]
+
+						if ( !node ) {
+							newWrap.innerHTML = content;
+						} else {
+
+							while ( node ) {
+
+								if ( node.children[0] ) {
+									node = node.children[0];
+								} else {
+									console.log( node );
+									for (var y = 0; y < content.length; y++) {
+										node.appendChild( content[y].cloneNode( true ) );
+									};
+
+									node = undefined;
+								}
+
+							}
+
+						}
+
+					};
+
+				};
+
+			} else if ( typeof objects == 'object' && objects.nodeType == 1 ) {
+					
+				for (var x = 0; x < this.elements.length; x++) {
+					
+					var content  = this.elements[x].cloneNode(true).children;
+
+					this.elements[x].innerHTML = "";
+					this.elements[x].appendChild( objects.cloneNode( true ) );
+
+					var node = this.elements[x].children[0];
+
+					if ( !node ) {
+						newWrap.innerHTML = content;
+					} else {
+
+						while ( node ) {
+
+							if ( node.children[0] ) {
+								node = node.children[0];
+							} else {
+								console.log( node );
+								for (var y = 0; y < content.length; y++) {
+									node.appendChild( content[y].cloneNode( true ) );
+								};
+
+								node = undefined;
+							}
+
+						}
+
+					}
+
+				};
+
+			} else if ( typeof objects == 'object' && objects.length ) {
+
+				for (var i = 0; i < objects.length; i++) {
+					
+					for (var x = 0; x < this.elements.length; x++) {
+						
+						var content  = this.elements[x].cloneNode(true).children;
+
+						this.elements[x].innerHTML = "";
+						this.elements[x].appendChild( objects[i].cloneNode( true ) );
+
+						var node = this.elements[x].children[0]
+
+						if ( !node ) {
+							newWrap.innerHTML = content;
+						} else {
+
+							while ( node ) {
+
+								if ( node.children[0] ) {
+									node = node.children[0];
+								} else {
+									console.log( node );
+									for (var y = 0; y < content.length; y++) {
+										node.appendChild( content[y].cloneNode( true ) );
+									};
+
+									node = undefined;
+								}
+
+							}
+
+						}
+
+					};
+
+				};
 
 			};
 
-		};
+		}
 			
 		return this;
 
