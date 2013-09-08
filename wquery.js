@@ -6,9 +6,10 @@
 var WQConstructor;
 
 !function () {
-	var version    = "2.0.0 alpha";
-	var undefined  = ({}).a;
+	var version    		= "2.0.0 alpha";
+	var undefined  		= ({}).a;
 	var matchesSelector = 'matchesSelector';
+	var context  		= undefined;
 	var WQTools = {
 
 		/* removeDuplicated function
@@ -121,52 +122,33 @@ var WQConstructor;
 
 		nodeReturn: function ( node, context ) {
 			
-			if ( node.length ) {
+			var result = [];
+
+			for (var i = 0; i < node.length; i++) {
 				
-				var arr = [],
-					i   = node.length;
-
-				while ( i-- ) {
-
-					var obj = {};
-
-					for ( index in node[i] ) {
-						obj[ index ] = node[ index ];
-					}		
-
-					arr.push( obj );
-				}
-
-				i = arr.length;
-
-				while ( i-- ) {
-					if ( arr[i].parentNode == context ) arr[i].parentNode = null;
-				}
-
-				return arr;
-
-			} else {
-
 				var obj = {};
 
-				for ( index in node ) {
-					obj[ index ] = node[ index ];
+				for ( index in node[i] ) {
+					obj[ index ] = node[i][ index ];
 				}
 
-				if ( node.parentNode == context ) node.parentNode = null;
-				return obj;
+				if ( obj.parentNode == context ) obj.parentNode = null;
 
-			}
+				result.push( obj );
+
+			};
+
+			return result;
 
 		},
 
 		is : function( element, selector ){
+			
 			return element[ matchesSelector ]( selector );
+
 		}
 
 	};
-
-	var context  = undefined;
 
 	// Browser prefixes
 	if( Element.prototype.matchesSelector ){
@@ -190,114 +172,6 @@ var WQConstructor;
 		this.version = version;
 		var components = antecesor;
 
-		this.add = function ( coll2, ctx ) {
-
-	 		var result     = [];
-			
-			result 		= result.concat( this.elements );
-
-	 		if ( typeof coll2 === 'string' ) {
-
-	 			var added = [];
-
-	 			if ( coll2.charAt(0) == '<' && coll2.charAt( coll2.length - 1 ) == '>' ) {
-	 				result.push( document.createElement( coll2.substr( coll2.indexOf('<') + 1, coll2.indexOf('>') - coll2.indexOf('<') - 1 ) ) );
-	 				components.push( document.createElement( coll2.substr( coll2.indexOf('<') + 1, coll2.indexOf('>') - coll2.indexOf('<') - 1 ) ) )
-	 			} else {
-
-		 			if ( ctx ) {
-
-						var node = ctx.parentNode;
-
-						while ( node ) {
-
-							if ( node == context ) {
-								node = undefined;
-							} else if ( node == document.getElementsByTagName('html')[0] ) {
-								ctx  = context;
-								node = undefined;
-							} else {
-								node = node.parentNode;
-							}
-
-						}
-
-		 			} else {
-
-		 				if ( context ) {
-		 					ctx = context;
-		 				} else {
-		 					ctx = document;
-		 				}
-		 				
-		 			}
-
-		 			result = result.concat( WQTools.convertToArray( ctx.querySelectorAll( coll2 ) ) );
-
-		 		}
-
-	 		} else if ( typeof coll2 == "object" ) {
-
-	 			if ( coll2.elements ) {
-
-	 				if ( context ) {
-
-	 				} else {
-
-		 				for (var i = 0; i < coll2.elements.length; i++) {
-		 					result.push( coll2.elements[i] );
-		 				};
-
-		 			}
-
-	 			} else if ( coll2.length ) {
-
-	 				if ( context ) {
-
-		 			} else {
-
-		 				for (var i = 0; i < coll2.length; i++) {
-		 					result.push( coll2[i] );
-		 				};
-
-		 			}
-
-	 			} else {
-	 				result.push( coll2 );
-	 			}
-
-	 		}
-
-	 		if ( context ) {
-
-	 			var valid = [];
-	 			valid = valid.concat( elements );
-
-	 			for (var i = 0; i < result.length; i++) {
-	 				var node = result[i].parentNode;
-
-	 				while( node ) {
-
-	 					if ( node == context ) {
-	 						valid.push( result[i] );
-	 					} else {
-	 						node = node.parentNode;
-	 					}
-
-	 				}
-
-	 			};
-
-	 			result = valid;
-
-	 		}
-
-			var newElement		= new wQueryObj( WQTools.convertToArray( this.elements ) );
-			newElement.elements = ( context ) ? WQTools.nodeReturn( WQTools.removeDuplicated( result ) ) : WQTools.removeDuplicated( result );
-			return newElement;
-
-		};
-
 		this.addBack = function () {
 			if ( components ) {
 				var newObject = new wQueryObj();
@@ -318,13 +192,20 @@ var WQConstructor;
 
 		var ctx;
 
-		if ( id.charAt(0) === '#' ) {
+		if ( !context ) {
 
-			ctx = document.getElementById( id.slice( 1 ) );
-			context = ctx;
+			if ( id.charAt(0) === '#' ) {
+
+				ctx = document.getElementById( id.slice( 1 ) );
+				context = ctx;
+
+			} else {
+				var err = "wQueryObj ERR: Context declaration is wrong";
+				throw err;
+			}
 
 		} else {
-			var err = "wQueryObj ERR: Context declaration is wrong";
+			var err = "wQueryObj ERR: You can't modify the context";
 			throw err;
 		}
 
@@ -353,7 +234,7 @@ var WQConstructor;
 				elements = WQTools.convertToArray(context.querySelectorAll(selector));
 
 				var newElement 		= new wQueryObj();
-				newElement.elements = WQTools.nodeReturn( elements );
+				newElement.elements = WQTools.nodeReturn( elements, context );
 				return newElement;
 
 			} else if ( selector.charAt(0) == '<' && selector.charAt( selector.length - 1 ) == '>' ) {
@@ -366,7 +247,6 @@ var WQConstructor;
 
 				newElement.elements = element;
 				return newElement;
-
 
 			}
 
@@ -976,6 +856,113 @@ var WQConstructor;
 	wQueryObj.prototype.val = function () {
 
 		return function () {};
+
+	};
+
+	wQueryObj.prototype.add = function ( coll2, ctx ) {
+
+		var result     = [];
+		result 		= result.concat( this.elements );
+
+		if ( typeof coll2 === 'string' ) {
+
+			var added = [];
+
+			if ( coll2.charAt(0) == '<' && coll2.charAt( coll2.length - 1 ) == '>' ) {
+				result.push( document.createElement( coll2.substr( coll2.indexOf('<') + 1, coll2.indexOf('>') - coll2.indexOf('<') - 1 ) ) );
+				components.push( document.createElement( coll2.substr( coll2.indexOf('<') + 1, coll2.indexOf('>') - coll2.indexOf('<') - 1 ) ) )
+			} else {
+
+ 			if ( ctx ) {
+
+				var node = ctx.parentNode;
+
+				while ( node ) {
+
+					if ( node == context ) {
+						node = undefined;
+					} else if ( node == document.getElementsByTagName('html')[0] ) {
+						ctx  = context;
+						node = undefined;
+					} else {
+						node = node.parentNode;
+					}
+
+				}
+
+ 			} else {
+
+ 				if ( context ) {
+ 					ctx = context;
+ 				} else {
+ 					ctx = document;
+ 				}
+ 				
+ 			}
+
+ 			result = result.concat( WQTools.convertToArray( ctx.querySelectorAll( coll2 ) ) );
+
+ 		}
+
+		} else if ( typeof coll2 == "object" ) {
+
+			if ( coll2.elements ) {
+
+				if ( context ) {
+
+				} else {
+
+ 				for (var i = 0; i < coll2.elements.length; i++) {
+ 					result.push( coll2.elements[i] );
+ 				};
+
+ 			}
+
+			} else if ( coll2.length ) {
+
+				if ( context ) {
+
+ 			} else {
+
+ 				for (var i = 0; i < coll2.length; i++) {
+ 					result.push( coll2[i] );
+ 				};
+
+ 			}
+
+			} else {
+				result.push( coll2 );
+			}
+
+		}
+
+		if ( context ) {
+
+			var valid = [];
+			valid = valid.concat( elements );
+
+			for (var i = 0; i < result.length; i++) {
+				var node = result[i].parentNode;
+
+				while( node ) {
+
+					if ( node == context ) {
+						valid.push( result[i] );
+					} else {
+						node = node.parentNode;
+					}
+
+				}
+
+			};
+
+			result = valid;
+
+		}
+
+		var newElement		= new wQueryObj( WQTools.convertToArray( this.elements ) );
+		newElement.elements = ( context ) ? WQTools.nodeReturn( WQTools.removeDuplicated( result ) ) : WQTools.removeDuplicated( result );
+		return newElement;
 
 	};
 
@@ -2233,6 +2220,25 @@ var WQConstructor;
 	WQConstructor = new wQueryObj();
 
 }();
+
+var interout    = [];
+
+const interval  = function ( funct, time ) {
+	return interout.push( setInterval( funct, time ) );
+};
+
+const clearInt  = function ( index ) {
+	clearInterval(interout[ index - 1 ]);
+};
+
+const timeout   = function ( funct, time ) {
+	return interout.push( setTimeout( funct, time ) );
+};
+
+const clearTime = function () {
+	clearTimeout(interout[ index - 1 ]);
+};
+
 
 var wQuery = function ( selector ) {
 	return WQConstructor.init( selector );
