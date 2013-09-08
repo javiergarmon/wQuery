@@ -330,32 +330,45 @@ var WQConstructor;
 
 			if ( typeof attr == 'string' ) {
 			
-				if ( !value ) {
+				if ( typeof value == 'function' ) {
 
-					var tmp = null;
-
-					for( var i = 0, j = this.elements.length; i < j; i++ ){
-
-						tmp = this.elements[ i ].getAttribute( attr );
-
-						if( tmp !== null ){
-							return tmp;
-							break;
-						}
-
-					}
-
-					return tmp;
-
-				} else {
-
-					value = value.toString();
-
-					for (var i = 0, j = this.elements.length; i < j; i++) {
-						this.elements[ i ].setAttribute( attr, value );
+					for (var i = 0; i < this.elements.length; i++) {
+						var attrVal = value.apply( this.elements[i], [ i, attr ] );
+						this.elements[i].setAttribute( attr, attrVal );
 					};
 
 					return this;
+
+				} else {
+
+					if ( !value ) {
+
+						var tmp = null;
+
+						for( var i = 0, j = this.elements.length; i < j; i++ ){
+
+							tmp = this.elements[ i ].getAttribute( attr );
+
+							if( tmp !== null ){
+								return tmp;
+								break;
+							}
+
+						}
+
+						return tmp;
+
+					} else {
+
+						value = value.toString();
+
+						for (var i = 0, j = this.elements.length; i < j; i++) {
+							this.elements[ i ].setAttribute( attr, value );
+						};
+
+						return this;
+
+					}
 
 				}
 
@@ -371,13 +384,7 @@ var WQConstructor;
 
 				};
 
-			} else if ( typeof attr == 'function') {
-
-				for (var i = this.elements.length - 1; i >= 0; i--) {
-					this.elements[i]
-				};
-
-			}
+			} 
 
 		} else {
 
@@ -408,6 +415,11 @@ var WQConstructor;
 				};
 
 			} else if ( typeof classNames == 'function' ) {
+
+				for (var i = 0; i < this.elements.length; i++) {
+					var className = classNames.apply( this.elements[i], [ i, this.elements[i].className ] );
+					this.elements[i].className = className;
+				};
 
 			}
 
@@ -1764,7 +1776,7 @@ var WQConstructor;
 			return this;
 		}
 
-	}
+	};
 
 	/* `scrollTop` method
 	 * Get/Set the scrollTop of the elements
@@ -1782,7 +1794,7 @@ var WQConstructor;
 			return this;
 		}
 
-	}
+	};
 
 	/* `prev` function
 	 * Get the provious element of the first element in the collection
@@ -1899,7 +1911,7 @@ var WQConstructor;
 			return this.prevAll;
 		}
 
-	}
+	};
 
 	/* `detach` function
 	 * Remove DOM elements
@@ -1957,7 +1969,7 @@ var WQConstructor;
 		newObject.elements = (( context ) ? WQTools.nodeReturn( WQTools.removeDuplicated( result ) ) : WQTools.removeDuplicated( result ) );
 		return newObject;
 
-	}
+	};
 
 	/* `next` function
 	 * Return the sibling element of the actual collection
@@ -2081,16 +2093,18 @@ var WQConstructor;
 						
 						for (var x = 0; x < this.elements.length; x++) {
 							
-							var parent = this.elements[i].parentNode;
-							var clone  = element[x].cloneNode( true );
-							parent.appendChild( clone );
+							var parent = this.elements[x].parentNode;
+							var clone  = element[i].cloneNode( true );
+							var inbef  = parent.childNodes[( WQTools.convertToArray( parent.children ) ).indexOf( this.elements[x] ) + 1 ];
+
+							parent.insertBefore( clone, inbef );
 							
 							var node = clone.children[0];
 
 							while ( node ) {
 
 								if ( !node.children[0] ) {
-									node.appendChild(this.elements[i]);
+									node.appendChild( this.elements[i] );
 									node = null;
 								} else {
 									node = node.children[0];
@@ -2105,15 +2119,39 @@ var WQConstructor;
 				}
 
 			} else if ( typeof element == 'function' ) {
-				// WAITING TO GET AN EFFICIENT METHOD FOR THIS KIND OF ACTIONS
+				
+				for (var i = 0; i < this.elements.length; i++) {
+					
+					var clone = element.apply( this.elements[i], [ i ] );
+					var parent = this.elements[x].parentNode;
+					var inbef  = parent.childNodes[( WQTools.convertToArray( parent.children ) ).indexOf( this.elements[x] ) + 1 ];
+
+					parent.insertBefore( clone, inbef );
+					
+					var node = clone.children[0];
+
+					while ( node ) {
+
+						if ( !node.children[0] ) {
+							node.appendChild(this.elements[i]);
+							node = null;
+						} else {
+							node = node.children[0];
+						}
+
+					}
+
+
+				};
+
 			} else if ( typeof element == 'object' && element.elements ) {
 
 				for (var i = 0; i < element.elements.length; i++) {
 					
 					for (var x = 0; x < this.elements.length; x++) {
 						
-						var parent = this.elements[i].parentNode;
-						var clone  = element.elements[x].cloneNode( true );
+						var parent = this.elements[x].parentNode;
+						var clone  = element.elements[i].cloneNode( true );
 						parent.appendChild( clone );
 						
 						var node = clone.children[0];
@@ -2121,7 +2159,7 @@ var WQConstructor;
 						while ( node ) {
 
 							if ( !node.children[0] ) {
-								node.appendChild(this.elements[i]);
+								node.appendChild(this.elements[x]);
 								node = null;
 							} else {
 								node = node.children[0];
@@ -2138,7 +2176,7 @@ var WQConstructor;
 				for (var i = 0; i < this.elements.length; i++) {
 							
 					var parent = this.elements[i].parentNode;
-					var clone  = element[x].cloneNode( true );
+					var clone  = element.cloneNode( true );
 					parent.appendChild( clone );
 					
 					var node = clone.children[0];
@@ -2146,7 +2184,7 @@ var WQConstructor;
 					while ( node ) {
 
 						if ( !node.children[0] ) {
-							node.appendChild(this.elements[i]);
+							node.appendChild( this.elements[i] );
 							node = null;
 						} else {
 							node = node.children[0];
@@ -2164,8 +2202,8 @@ var WQConstructor;
 						
 						if ( element[i].nodeType === 1 ) {
 
-							var parent = this.elements[i].parentNode;
-							var clone  = element[x].cloneNode( true );
+							var parent = this.elements[x].parentNode;
+							var clone  = element.elements[i].cloneNode( true );
 							parent.appendChild( clone );
 							
 							var node = clone.children[0];
@@ -2173,7 +2211,7 @@ var WQConstructor;
 							while ( node ) {
 
 								if ( !node.children[0] ) {
-									node.appendChild(this.elements[i]);
+									node.appendChild(this.elements[x]);
 									node = null;
 								} else {
 									node = node.children[0];
@@ -2191,6 +2229,65 @@ var WQConstructor;
 
 		}
 
+		return this;
+
+	};
+
+	/* `unwrap` function
+	 * remove the parent element of the current element collection
+	 */
+
+	wQueryObj.prototype.unwrap = function () {
+
+		var parents  = [],
+			children = [];
+
+		for (var i = 0; i <  this.elements.length; i++) {
+			if( parents.indexOf( this.elements[i].parentNode ) < 0 ) parents.push( this.elements[i].parentNode );
+		};
+
+		console.log( parents );
+
+		for (var i = 0; i < parents.length; i++) {
+			
+			var parent = parents[i].parentNode,
+				inbef  = parent.childNodes[ ( (WQTools.convertToArray( parent )).indexOf( parents[i] ) + 1 ) ];
+				child  = parents[i].children,
+				x      = 0;
+
+			while( x < child.length ) {
+				children.push( child[x].cloneNode( true ) );
+				x += 1;
+			};
+
+			parent.removeChild( parents[i] );
+
+			for (var x = 0; x < children.length; x++) {
+				( inbef && inbef.nodeType == 1 ) ? parent.insertBefore( children[x], inbef ) : parent.appendChild( children[x] );
+			};
+
+		};
+
+		return this;
+
+	};
+
+	/* `unwrap` function
+	 * remove the parent element of the current element collection
+	 */
+
+	wQueryObj.prototype.wrappInner = function ( objects ) {
+
+		for (var i = 0; i < this.elements.length; i++) {
+			
+			if ( typeof objects == "string" ) {
+
+			} else if ( typeof objects == "function" ) {
+
+			};
+
+		};
+			
 		return this;
 
 	};
