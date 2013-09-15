@@ -195,54 +195,6 @@ var WQConstructor;
 			}
 		};
 
-		this.data    = function ( key, value ) {
-
-			if ( key && typeof key == 'string' ) {
-
-				if ( this.elements.length <= 0 ) {
-
-					if ( value ) {
-						store[ key ] = value;
-					} else {
-						return store[ key ];
-					}
-
-				} else {
-
-					if ( !value ) {
-						return this.elements[0][ key ];
-					} else {
-						
-						for (var i = 0; i < this.elements.length; i++) {
-							this.elements[i][ key ] = value
-						};
-
-					}
-
-				}
-
-			} else if ( key && typeof key == 'object' ) {
-
-				for ( index in key ) {
-
-					if ( this.elements.length <= 0 ) {
-						store[index] = key[ index ];
-					} else {
-						
-						for ( var x = 0; x < this.elements.length; x++ ) {
-
-							this.elements[x][ index ] = key[ index ];
-
-						};
-
-					};
-
-				};
-
-			};
-
-		};
-
 	};
 
    /*  `setContext` process
@@ -1008,6 +960,134 @@ var WQConstructor;
 					};
 
 				};
+
+			};
+
+		};
+
+	};
+
+	/* `appendTo` process
+	 * Insert the content passed by parameter at the end of each element of the collection
+	 */
+
+	wQueryObj.prototype.appendTo = function ( target ) {
+
+		if ( typeof target == 'string' ) {
+			
+			if ( target.charAt(0) == '<' && target.charAt( target.length - 1 ) == '>' ) {
+				target = WQTools.convertToHTML( target );
+			} else {
+				target = WQTools.convertToArray( context ? context.querySelectorAll( target ) : document.querySelectorAll( target ) );
+			}
+
+		} else if ( target.nodeType == 1 ) {
+			target = [ target ];
+		} else if ( target.elements ) {
+			target = target.elements;
+		}
+
+		for ( var i = 0; i < target.length; i++ ) {
+			
+			for ( var x = 0; x < this.elements.length; x++ ) {
+
+				target[i].appendChild( this.elements[x] );
+
+			};
+
+		};
+
+	};
+
+	/* `prepend` process
+	 * Insert the content passed by parameter at the begining of each element of the collection
+	 */
+
+	wQueryObj.prototype.prepend = function ( target ) {
+
+		for (var i = 0; i < arguments.length; i++) {
+			
+			if ( typeof arguments[i] == 'string' ) {
+
+				for ( var x = 0; x < this.elements.length; x++ ) {
+
+					var parent = this.elements[x].parentNode;
+					parent.insertBefore( WQTools.convertToHTML( arguments[i] ), parent.firstChild );
+
+				};
+
+			} else if ( arguments[i].nodeType == 1 ) {
+
+				for ( var x = 0; x < this.elements.length; x++ ) {
+
+					var parent = this.elements[x].parentNode;
+					parent.insertBefore( arguments[i], parent.firstChild );
+
+				}
+
+			} else if ( typeof arguments[i] == 'object' ) {
+
+				if ( arguments[i].elements ) {
+
+					for ( var x = 0; x < this.elements.length; x++ ) {
+
+						var parent = this.elements[x].parentNode;
+
+						for ( var y = 0; y < arguments.elements[i].length; y++ ) {
+
+							parent.insertBefore( arguments[i].elements[y], this.elements[x] );
+
+						};
+
+					};
+
+				} else if ( arguments[i].length ) {
+
+					for ( var x = 0; x < this.elements.length; x++ ) {
+
+						var parent = this.elements[x].parentNode;
+
+						for ( var y = 0; y < arguments[i].length; y++ ) {
+
+							parent.insertBefore( arguments[i][y], this.elements[x] );
+
+						};
+
+					};
+
+				};
+
+			};
+
+		};
+
+	};
+
+	/* `prependTo` process
+	 * Insert the content passed by parameter at the begining of each element of the collection
+	 */
+
+	wQueryObj.prototype.prependTo = function ( target ) {
+		
+		if ( typeof target == 'string' ) {
+			
+			if ( target.charAt(0) == '<' && target.charAt( target.length - 1 ) == '>' ) {
+				target = WQTools.convertToHTML( target );
+			} else {
+				target = WQTools.convertToArray( context ? context.querySelectorAll( target ) : document.querySelectorAll( target ) );
+			}
+
+		} else if ( target.nodeType == 1 ) {
+			target = [ target ];
+		} else if ( target.elements ) {
+			target = target.elements;
+		}
+
+		for ( var i = 0; i < target.length; i++ ) {
+
+			for ( var x = this.elements.length - 1; x >= 0; x-- ) {
+
+				target[i].insertBefore( this.elements[x], target[i].firstChild );
 
 			};
 
@@ -2989,6 +3069,74 @@ var WQConstructor;
 		} else {
 			return this;
 		}
+
+	};
+
+	/* `data` function
+	 * Saves data in the DOM element
+	 */
+
+	wQueryObj.prototype.data = function ( key, value ) {
+
+		if ( key && typeof key == 'string' ) {
+
+			if ( this.elements.length <= 0 ) {
+
+				if ( value ) {
+					store[ key ] = value;
+				} else {
+					return store[ key ];
+				}
+
+			} else {
+
+				if ( !value ) {
+					return this.elements[0][ key ];
+				} else {
+					
+					for (var i = 0; i < this.elements.length; i++) {
+						this.elements[i][ key ] = value
+					};
+
+				}
+
+			}
+
+		} else if ( key && typeof key == 'object' ) {
+
+			for ( index in key ) {
+
+				if ( this.elements.length <= 0 ) {
+					store[index] = key[ index ];
+				} else {
+					
+					for ( var x = 0; x < this.elements.length; x++ ) {
+
+						this.elements[x][ index ] = key[ index ];
+
+					};
+
+				};
+
+			};
+
+		};
+
+	};
+
+	/* `removeData` function
+	 * Remove data saved in the DOM element
+	 */
+
+	wQueryObj.prototype.removeData = function ( key ) {
+
+		if ( typeof key == 'string' ) key = key.split();
+
+		for (var i = 0; i < this.elements.length; i++) {
+			for (var x = 0; x < key.length; x++) {
+				delete this.elements[i][ key[x] ];
+			};
+		};
 
 	};
 
