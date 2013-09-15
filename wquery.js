@@ -10,6 +10,7 @@ var WQConstructor;
 	var undefined  		= ({}).a;
 	var matchesSelector = 'matchesSelector';
 	var context  		= undefined;
+	var store			= {};
 	var WQTools = {
 
 		/* removeDuplicated function
@@ -181,7 +182,7 @@ var WQConstructor;
 
 	var wQueryObj = function ( antecesor ) {
 		
-		this.version = version;
+		this.version   = version;
 		var components = antecesor;
 
 		this.addBack = function () {
@@ -192,6 +193,54 @@ var WQConstructor;
 			} else {
 				return this;
 			}
+		};
+
+		this.data    = function ( key, value ) {
+
+			if ( key && typeof key == 'string' ) {
+
+				if ( this.elements.length <= 0 ) {
+
+					if ( value ) {
+						store[ key ] = value;
+					} else {
+						return store[ key ];
+					}
+
+				} else {
+
+					if ( !value ) {
+						return this.elements[0][ key ];
+					} else {
+						
+						for (var i = 0; i < this.elements.length; i++) {
+							this.elements[i][ key ] = value
+						};
+
+					}
+
+				}
+
+			} else if ( key && typeof key == 'object' ) {
+
+				for ( index in key ) {
+
+					if ( this.elements.length <= 0 ) {
+						store[index] = key[ index ];
+					} else {
+						
+						for ( var x = 0; x < this.elements.length; x++ ) {
+
+							this.elements[x][ index ] = key[ index ];
+
+						};
+
+					};
+
+				};
+
+			};
+
 		};
 
 	};
@@ -222,7 +271,6 @@ var WQConstructor;
 		}
 
 	}
-
 
    /*  `init` function
 	*  Create a new wQueryObj object with the same syntax 
@@ -271,6 +319,9 @@ var WQConstructor;
 
 	};
 
+   /*  `get` function
+	*  Get the element in the current collection with the same index
+	*/
 	// Revised and tested
 	wQueryObj.prototype.get = function ( index ) {
 
@@ -302,6 +353,40 @@ var WQConstructor;
 		}
 	
 	};
+
+   /*  `index` function
+	*  Returns the index of the element in the current collection
+	*/
+
+	wQueryObj.prototype.index = function ( contrast ) {
+
+		if ( contrast ) {
+
+			if ( typeof contrast == 'string' ) {
+
+
+
+			} else if ( contrast.nodeType == 1 ) {
+
+				for (var i = 0; i < this.elements.length; i++) {
+					if ( this.elements[i] == contrast ) return i;
+				};
+
+			} else if ( contrast.elements ) {
+
+				for (var i = 0; i < this.elements.length; i++) {
+					if ( this.elements[i] == contrast.elements[0] ) return i;
+				};
+
+			}
+
+		} else {
+
+			return WQTools.convertToArray( this.elements[0].parentNode.children ).indexOf( this.elements[0] );
+
+		}
+
+	}
 
 	/*	  _____________________________________________________
 		 |													   |
@@ -1110,6 +1195,10 @@ var WQConstructor;
 
 	};
 
+	/* `add` process
+	 * 	
+	 */
+
 	wQueryObj.prototype.add = function ( coll2, ctx ) {
 
 		var result     = [];
@@ -1214,6 +1303,28 @@ var WQConstructor;
 		var newElement		= new wQueryObj( WQTools.convertToArray( this.elements ) );
 		newElement.elements = ( context ) ? WQTools.nodeReturn( WQTools.removeDuplicated( result ) ) : WQTools.removeDuplicated( result );
 		return newElement;
+
+	};
+
+	/* `map` process
+	 * 	Pass each element in the current matched set through a function, producing a new jQuery object containing the return values.
+	 */
+
+	wQueryObj.prototype.map = function ( funct ) {
+
+		var newColl    = [],
+			newElement = new  wQueryObj();
+
+		if ( typeof funct == 'function' ) {
+
+			for (var i = 0; i < this.elements.length; i++) {
+				newColl.push( funct.apply( this.elements[i], [ i, this.elements[i] ] ) ;
+			};
+
+		}
+
+		newElement.elements = ( context ) ? WQTools.nodeReturn( newColl ) : newColl;
+		return newElement; 
 
 	};
 
