@@ -1209,40 +1209,39 @@ var WQConstructor;
 			var added = [];
 
 			if ( coll2.charAt(0) == '<' && coll2.charAt( coll2.length - 1 ) == '>' ) {
-				result.push( document.createElement( coll2.substr( coll2.indexOf('<') + 1, coll2.indexOf('>') - coll2.indexOf('<') - 1 ) ) );
-				components.push( document.createElement( coll2.substr( coll2.indexOf('<') + 1, coll2.indexOf('>') - coll2.indexOf('<') - 1 ) ) )
+				result.push( WQTools.convertToHTML(coll2) );
 			} else {
 
- 			if ( ctx ) {
+	 			if ( ctx ) {
 
-				var node = ctx.parentNode;
+					var node = ctx.parentNode;
 
-				while ( node ) {
+					while ( node ) {
 
-					if ( node == context ) {
-						node = undefined;
-					} else if ( node == document.getElementsByTagName('html')[0] ) {
-						ctx  = context;
-						node = undefined;
-					} else {
-						node = node.parentNode;
+						if ( node == context ) {
+							node = undefined;
+						} else if ( node == document.getElementsByTagName('html')[0] ) {
+							ctx  = context;
+							node = undefined;
+						} else {
+							node = node.parentNode;
+						}
+
 					}
 
-				}
+	 			} else {
 
- 			} else {
+	 				if ( context ) {
+	 					ctx = context;
+	 				} else {
+	 					ctx = document;
+	 				}
+	 				
+	 			}
 
- 				if ( context ) {
- 					ctx = context;
- 				} else {
- 					ctx = document;
- 				}
- 				
- 			}
+	 			result = result.concat( WQTools.convertToArray( ctx.querySelectorAll( coll2 ) ) );
 
- 			result = result.concat( WQTools.convertToArray( ctx.querySelectorAll( coll2 ) ) );
-
- 		}
+	 		}
 
 		} else if ( typeof coll2 == "object" ) {
 
@@ -1318,10 +1317,10 @@ var WQConstructor;
 		if ( typeof funct == 'function' ) {
 
 			for (var i = 0; i < this.elements.length; i++) {
-				newColl.push( funct.apply( this.elements[i], [ i, this.elements[i] ] ) ;
+				newColl.push( funct.apply( this.elements[i], [ i, this.elements[i] ] ) );
 			};
 
-		}
+		};
 
 		newElement.elements = ( context ) ? WQTools.nodeReturn( newColl ) : newColl;
 		return newElement; 
@@ -2021,6 +2020,62 @@ var WQConstructor;
 		}
 
 	};
+
+   /* `not` function
+	* Returns a new wQ object with remove elements who matched teh selector
+	*/
+
+	wQueryObj.prototype.not = function ( selector ) {
+
+		var newElement = new wQueryObj(),
+			valid 	   = [];
+
+		if ( typeof selector == 'function' ) {
+
+			for (var i = 0; i < this.elements.length; i++) {
+				if ( !selector.apply( this.elements[i], [ i ] ) ) valid.push( this.elements[i] );
+			};
+
+		} else if ( typeof selector == 'string' ) {
+
+			for (var i = 0; i < this.elements.length; i++) {
+				if ( !this.elements[i][ matchesSelector ]( selector ) ) valid.push( this.elements[i] );
+			};
+
+		} else if ( typeof selector == 'object' ) {
+
+			if ( selector.elements ) {
+
+				for ( var i = 0; i < this.elements.length; i++ ) {
+					for ( var x = 0; x < selector.elements; x++ ) {
+
+						if ( this.elements[i] != selector.elements[x] ) valid.push( this.elements[i] );
+
+					};
+				};
+
+			} else if ( selector.length ) {
+
+				for (var i = 0; i < this.elements.length; i++) {
+					for (var x = 0; x < selector.length; x++) {
+						if ( this.elements[i] != selector[x] ) valid.push( this.elements[i] );
+					};
+				};
+
+			} else if ( selector.nodeType == 1 ) {
+
+				for (var i = 0; i < this.elements.length; i++) {
+					if ( this.elements[i] != selector ) valid.push( this.elements[i] );
+				};
+
+			}
+
+		};
+
+		newElement.elements = valid;
+		return newElement;
+
+	};                
 
 	/* `each` function
 	 * Loop over the collection
