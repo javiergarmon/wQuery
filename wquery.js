@@ -817,7 +817,9 @@ var WQConstructor;
 
 		};
 
-	}
+		return this;
+
+	};
 
 	/* `after` process
 	 * Insert content, specified by the parameter, after each element in the set of matched elements.
@@ -897,6 +899,8 @@ var WQConstructor;
 
 		};
 
+		return this;
+
 	};
 
 	/* `append` process
@@ -965,6 +969,8 @@ var WQConstructor;
 
 		};
 
+		return this;
+
 	};
 
 	/* `appendTo` process
@@ -996,6 +1002,8 @@ var WQConstructor;
 			};
 
 		};
+
+		return this;
 
 	};
 
@@ -1061,6 +1069,8 @@ var WQConstructor;
 
 		};
 
+		return this;
+
 	};
 
 	/* `prependTo` process
@@ -1092,6 +1102,8 @@ var WQConstructor;
 			};
 
 		};
+
+		return this;
 
 	};
 
@@ -1141,7 +1153,6 @@ var WQConstructor;
 		return function () {};
 
 	};
-
 
 	/* `remove` process
 	 * Remove the attribute form the current elements
@@ -1276,13 +1287,13 @@ var WQConstructor;
 	};
 
 	/* `add` process
-	 * 	
+	 * 	Merge two collections and return the result in a new wQuery object
 	 */
 
 	wQueryObj.prototype.add = function ( coll2, ctx ) {
 
 		var result     = [];
-		result 		= result.concat( this.elements );
+		result 		   = result.concat( this.elements );
 
 		if ( typeof coll2 === 'string' ) {
 
@@ -1489,10 +1500,8 @@ var WQConstructor;
 			}
 
 		} else {
-
 			return this;
-
-		}
+		};
 
 	};
 
@@ -1565,73 +1574,79 @@ var WQConstructor;
 
 	wQueryObj.prototype.filter = function ( selector ) {
 
-		var newObject = new wQueryObj(),
-			results   = [];
+		if ( !selector ) {
+			return this;
+		} else {
 
-		if ( selector ) {
+			var newObject = new wQueryObj(),
+				results   = [];
 
-			if ( typeof selector == 'string' ) {
+			if ( selector ) {
 
-				if ( selector.charAt(0) == '<' && selector.charAt( selector.length - 1 ) == '>' ) {
+				if ( typeof selector == 'string' ) {
 
-					for (var i = 0; i < this.elements.length; i++) {
-						if ( this.elements[i].toString() == selector ) results.push( this.elements[i] );
-					};
+					if ( selector.charAt(0) == '<' && selector.charAt( selector.length - 1 ) == '>' ) {
 
-				}
+						for (var i = 0; i < this.elements.length; i++) {
+							if ( this.elements[i].toString() == selector ) results.push( this.elements[i] );
+						};
 
-				for( var i = 0, j = this.elements.length; i < j; i++ ) {
-
-					if( this.elements[ i ][ matchesSelector ](selector) ){
-						results.push( this.elements[ i ] );
 					}
-					
-				}
 
-			} else if ( typeof selector == 'object' ) {
+					for( var i = 0, j = this.elements.length; i < j; i++ ) {
 
-				if ( selector.elements ) {
+						if( this.elements[ i ][ matchesSelector ](selector) ){
+							results.push( this.elements[ i ] );
+						}
+						
+					}
 
-					for (var i = 0; i < this.elements.length; i++) {
-						for (var x = 0; x < selector.elements.length; x++) {
-							if ( this.elements[i] == selector.elements[x]) result.push( this.elements[i]);
+				} else if ( typeof selector == 'object' ) {
+
+					if ( selector.elements ) {
+
+						for (var i = 0; i < this.elements.length; i++) {
+							for (var x = 0; x < selector.elements.length; x++) {
+								if ( this.elements[i] == selector.elements[x]) result.push( this.elements[i]);
+							};
 						};
-					};
 
-				} else if ( selector.length ) {
+					} else if ( selector.length ) {
 
-					for (var i = 0; i < this.elements.length; i++) {
-						for (var x = 0; x < selector.length; x++) {
-							if ( this.elements[i] == selector[x] ) result.push( this.elements[i]);
+						for (var i = 0; i < this.elements.length; i++) {
+							for (var x = 0; x < selector.length; x++) {
+								if ( this.elements[i] == selector[x] ) result.push( this.elements[i]);
+							};
 						};
-					};
+
+					} else if ( selector.nodeType == 1 ) {
+
+						for (var i = 0; i < this.elements.length; i++) {
+							if ( this.elements[i] == selector) result.push( this.elements[i]);
+						};
+
+					}
 
 				} else if ( selector.nodeType == 1 ) {
 
 					for (var i = 0; i < this.elements.length; i++) {
-						if ( this.elements[i] == selector) result.push( this.elements[i]);
+						if (this.elements[i] == selector) results.push(this.elements[i]);
 					};
+
+				} else if ( typeof selector == 'function' ) {
 
 				}
 
-			} else if ( selector.nodeType == 1 ) {
+			} 
 
-				for (var i = 0; i < this.elements.length; i++) {
-					if (this.elements[i] == selector) results.push(this.elements[i]);
-				};
+			newObject.elements = results;
+			return newObject;
 
-			} else if ( typeof selector == 'function' ) {
-
-			}
-
-		} 
-
-		newObject.elements = results;
-		return newObject;
+		};
 
 	};
 
-   /*  `hasClass` function
+   /*  `has function
 	*  Filter elements inside the selected elements
 	*/
 
@@ -2107,53 +2122,59 @@ var WQConstructor;
 
 	wQueryObj.prototype.not = function ( selector ) {
 
-		var newElement = new wQueryObj(),
-			valid 	   = [];
+		if ( !selector ) {
+			return this;
+		} else {
 
-		if ( typeof selector == 'function' ) {
+			var newElement = new wQueryObj(),
+				valid 	   = [];
 
-			for (var i = 0; i < this.elements.length; i++) {
-				if ( !selector.apply( this.elements[i], [ i ] ) ) valid.push( this.elements[i] );
-			};
-
-		} else if ( typeof selector == 'string' ) {
-
-			for (var i = 0; i < this.elements.length; i++) {
-				if ( !this.elements[i][ matchesSelector ]( selector ) ) valid.push( this.elements[i] );
-			};
-
-		} else if ( typeof selector == 'object' ) {
-
-			if ( selector.elements ) {
-
-				for ( var i = 0; i < this.elements.length; i++ ) {
-					for ( var x = 0; x < selector.elements; x++ ) {
-
-						if ( this.elements[i] != selector.elements[x] ) valid.push( this.elements[i] );
-
-					};
-				};
-
-			} else if ( selector.length ) {
+			if ( typeof selector == 'function' ) {
 
 				for (var i = 0; i < this.elements.length; i++) {
-					for (var x = 0; x < selector.length; x++) {
-						if ( this.elements[i] != selector[x] ) valid.push( this.elements[i] );
-					};
+					if ( !selector.apply( this.elements[i], [ i ] ) ) valid.push( this.elements[i] );
 				};
 
-			} else if ( selector.nodeType == 1 ) {
+			} else if ( typeof selector == 'string' ) {
 
 				for (var i = 0; i < this.elements.length; i++) {
-					if ( this.elements[i] != selector ) valid.push( this.elements[i] );
+					if ( !this.elements[i][ matchesSelector ]( selector ) ) valid.push( this.elements[i] );
 				};
 
-			}
+			} else if ( typeof selector == 'object' ) {
+
+				if ( selector.elements ) {
+
+					for ( var i = 0; i < this.elements.length; i++ ) {
+						for ( var x = 0; x < selector.elements; x++ ) {
+
+							if ( this.elements[i] != selector.elements[x] ) valid.push( this.elements[i] );
+
+						};
+					};
+
+				} else if ( selector.length ) {
+
+					for (var i = 0; i < this.elements.length; i++) {
+						for (var x = 0; x < selector.length; x++) {
+							if ( this.elements[i] != selector[x] ) valid.push( this.elements[i] );
+						};
+					};
+
+				} else if ( selector.nodeType == 1 ) {
+
+					for (var i = 0; i < this.elements.length; i++) {
+						if ( this.elements[i] != selector ) valid.push( this.elements[i] );
+					};
+
+				}
+
+			} 
+
+			newElement.elements = valid;
+			return newElement;
 
 		};
-
-		newElement.elements = valid;
-		return newElement;
 
 	};                
 
@@ -2481,6 +2502,108 @@ var WQConstructor;
 
 		newObject.elements = (( context ) ? WQTools.nodeReturn( result ) : result );
 		return newObject;
+
+	};
+
+	/* `replaceAll` function
+	 * Replace each target element with the set of matched elements
+	 */
+
+	wQueryObj.prototype.replaceAll = function ( target ) {
+
+		if ( typeof target == 'string' ) {
+			target = context ? context.querySelectorAll( target ) : document.querySelectorAll( target );
+		} else if ( target.nodeType == 1 ) {
+			target = [ target ];
+		} else if ( typeof target == 'object' && target.elements ) {
+			target = target.elements;
+		}
+
+		for (var i = 0; i < target.length; i++) {
+
+			var parent = target[i].parentNode;
+
+			for ( var x = 0; x < this.elements.length;  x++) {
+				
+				parent.replaceChild( this.elements[x], target[i] );
+
+			};
+
+		};
+
+		return this;
+
+	};
+
+	/* `replaceWith` function
+	 * Replace each target element with the set of matched elements
+	 */
+
+	wQueryObj.prototype.replaceWith = function ( replace ) {
+
+		if ( typeof replace == 'string' ) {
+
+			if ( replace.charAt(0) == '<' && replace.charAt( replace.length - 1 ) == '>' ) {
+				replace = [ WQTools.convertToHTML( replace ) ];
+			} else {
+
+				for ( var x = 0; x < this.elements.length; x++ ) {
+					
+					var parent = this.elements[x].parentNode;
+					var text   = document.createTextNode( replace );
+					parent.replaceChild( text, this.elements[x] );
+
+				}
+
+				return this;
+
+			}
+
+		} else if ( replace.nodeType == 1 ) {
+			replace = [ replace ];
+		} else if ( typeof replace == 'object' && replace.elements ) {
+			replace = replace.elements;
+		}
+
+		for ( var x = 0; x < this.elements.length;  x++) {
+				
+			var parent = this.elements[x].parentNode;
+
+			for (var i = 0; i < replace.length; i++) {
+
+				parent.replaceChild( this.elements[x], replace[i] );
+
+			};
+
+		};
+
+		return this;
+
+	};
+
+	/* `text` function
+	 * Replace each target element with the set of matched elements
+	 */
+
+	wQueryObj.prototype.text = function ( text ) {
+
+		if ( !text ) {
+			return this.elements[ 0 ].innerText;
+		} else {
+
+			if ( typeof text == 'string' ) {
+				for (var i = 0; i < this.elements.length; i++) {
+					this.elements[i].innerText = text;
+				};
+			} else if ( typeof text == 'function' ) {
+				for (var i = 0; i < this.elements.length; i++) {
+					this.elements[i].innerText = text.apply( this.elements[i], [ i, this.elements[x].innerText ] ); 
+				};
+			}
+
+		};
+
+		return this;
 
 	};
 
@@ -3044,7 +3167,7 @@ var WQConstructor;
 
 			};
 
-		}
+		};
 			
 		return this;
 
@@ -3122,6 +3245,8 @@ var WQConstructor;
 
 		};
 
+		return this;
+
 	};
 
 	/* `removeData` function
@@ -3137,6 +3262,8 @@ var WQConstructor;
 				delete this.elements[i][ key[x] ];
 			};
 		};
+
+		return this;
 
 	};
 
