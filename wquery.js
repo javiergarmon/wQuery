@@ -124,6 +124,7 @@ var WQConstructor;
 		nodeReturn: function ( node, context ) {
 			
 			var result = [];
+			console.log(context);
 
 			for (var i = 0; i < node.length; i++) {
 				
@@ -148,11 +149,15 @@ var WQConstructor;
 		*/
 
 		convertToHTML: function ( string ) {
+			
 			var container = document.createElement('div');
 			container.innerHTML = string;
+			
 			var newElement = container.children[0].cloneNode( true );
 			container = null;
-			return newElement;	
+			
+			return ( newElement.nodeName == 'SCRIPT' ) ? undefined : newElement;
+
 		},
 
 		is : function( element, selector ){
@@ -172,23 +177,24 @@ var WQConstructor;
 		matchesSelector = 'webkitMatchesSelector';
 	}else if( Element.prototype.msMatchesSelector ){
 		matchesSelector = 'msMatchesSelector';
-	}
+	};
 
 	/*	  _____________________________________________________
 		 |													   |
-		 |			SETTTING UP THE wQueryObj OBJECT 			   |
+		 |			SETTTING UP THE wQueryObj OBJECT 		   |
 		 |_____________________________________________________|
 	*/
 
 	var wQueryObj = function ( antecesor ) {
 		
 		this.version   = version;
+		this.context   = context;
 		var components = antecesor;
 
 		this.addBack = function () {
 			if ( components ) {
 				var newObject = new wQueryObj();
-				newObject.elements = context ? WQTools.nodeReturn( components ) : components;
+				newObject.elements = context ? WQTools.nodeReturn( components, context ) : components;
 				return newObject;
 			} else {
 				return this;
@@ -240,7 +246,7 @@ var WQConstructor;
 				var element    = WQTools.convertToHTML( selector );
 					newElement = new wQueryObj();
 
-				newElement.elements = element;
+				newElement.elements = element ? [ elements ] : [];
 				return newElement;
 
 			} else {
@@ -334,7 +340,7 @@ var WQConstructor;
 
 		} else {
 
-			return WQTools.convertToArray( this.elements[0].parentNode.children ).indexOf( this.elements[0] );
+			return WQTools.convertToArray( (this.elements[0].parentNode) ? this.elements[0].children : context.children ).indexOf( this.elements[0] );
 
 		}
 
@@ -751,7 +757,7 @@ var WQConstructor;
 
 				for ( var x = 0; x < this.elements.length; x++ ) {
 
-					var parent  = this.elements[x].parentNode,
+					var parent  = this.elements[x].parentNode ? this.elements[x].parentNode : context,
 						content = WQTools.convertToHTML( arguments[i] );
 
 					parent.insertBefore( content, this.elements[x] );
@@ -763,7 +769,7 @@ var WQConstructor;
 				for (var x = 0; x < this.elements.length; x++) {
 				
 					var content = arguments[i].apply( this.elements[ x ], [ x ] ),
-						parent  = this.elements[x].parentNode;
+						parent  = this.elements[x].parentNode ? this.elements[x].parentNode : context;
 
 					parent.insertBefore( content, this.elements[x] );
 
@@ -779,7 +785,7 @@ var WQConstructor;
 
 							if ( arguments[i].elements[y].nodeType == 1 ) {
 
-								if ( arguments[i].elements[y].nodeType == 1 ) this.elements[x].parentNode.insertBefore( arguments[i].elements[y], this.elements[x] );
+								if ( arguments[i].elements[y].nodeType == 1 ) ( this.elements[x].parentNode ) ? this.elements[x].parentNode.insertBefore( arguments[i].elements[y], this.elements[x] ) : context.parentNode.insertBefore( arguments[i].elements[y], this.elements[x] );
 
 							}
 
@@ -795,7 +801,7 @@ var WQConstructor;
 
 							if ( arguments[i][y].nodeType == 1 ) {
 
-								if ( arguments[i][y].nodeType == 1 ) this.elements[x].parentNode.insertBefore( arguments[i][y], this.elements[x] );
+								if ( arguments[i][y].nodeType == 1 ) ( this.elements[x].parentNode ) ? this.elements[x].parentNode.insertBefore( arguments[i][y], this.elements[x] ) : context.parentNode.insertBefore( arguments[i][y], this.elements[x] );
 
 							}
 
@@ -807,7 +813,7 @@ var WQConstructor;
 
 					for (var x = 0; x < this.elements.length; x++) {
 
-						this.elements[x].parentNode.insertBefore( arguments[i], this.elements[x] );
+						( this.elements[x].parentNode ) this.elements[x].parentNode.insertBefore( arguments[i], this.elements[x] ) : context.parentNode.insertBefore( arguments[i], this.elements[x] );
 
 					};
 
@@ -833,7 +839,7 @@ var WQConstructor;
 
 				for ( var x = 0; x < this.elements.length; x++ ) {
 
-					var parent  = this.elements[x].parentNode,
+					var parent  = this.elements[x].parentNode ? this.elements[x].parentNode : context,
 						content = WQTools.convertToHTML( arguments[i] );
 
 					parent.insertBefore( content, this.elements[x].nextSibling );
@@ -845,7 +851,7 @@ var WQConstructor;
 				for (var x = 0; x < this.elements.length; x++) {
 				
 					var content = arguments[i].apply( this.elements[ x ], [ x ] ),
-						parent  = this.elements[x].parentNode;
+						parent  = this.elements[x].parentNode ? this.elements[x].parentNode : context;
 
 					parent.insertBefore( content, this.elements[x].nextSibling );
 
@@ -861,7 +867,7 @@ var WQConstructor;
 
 							if ( arguments[i].elements[y].nodeType == 1 ) {
 
-								if ( arguments[i].elements[y].nodeType == 1 ) this.elements[x].parentNode.insertBefore( arguments[i].elements[y], this.elements[x].nextSibling );
+								if ( arguments[i].elements[y].nodeType == 1 ) ( this.elements[x].parentNode ) ? this.elements[x].parentNode.insertBefore( arguments[i].elements[y], this.elements[x].nextSibling ) : context.parentNode.insertBefore( arguments[i].elements[y], this.elements[x].nextSibling );
 
 							}
 
@@ -877,7 +883,7 @@ var WQConstructor;
 
 							if ( arguments[i][y].nodeType == 1 ) {
 
-								if ( arguments[i][y].nodeType == 1 ) this.elements[x].parentNode.insertBefore( arguments[i][y], this.elements[x].nextSibling );
+								if ( arguments[i][y].nodeType == 1 ) ( this.elements[x].parentNode ) ? this.elements[x].parentNode.insertBefore( arguments[i][y], this.elements[x].nextSibling ) : context.parentNode.insertBefore( arguments[i][y], this.elements[x].nextSibling );
 
 							}
 
@@ -889,7 +895,7 @@ var WQConstructor;
 
 					for (var x = 0; x < this.elements.length; x++) {
 
-						this.elements[x].parentNode.insertBefore( arguments[i], this.elements[i].nextSibling );
+						this.elements[x].parentNode ? this.elements[x].parentNode.insertBefore( arguments[i], this.elements[i].nextSibling ) : context.parentNode.insertBefore( arguments[i], this.elements[i].nextSibling );
 
 					};
 
@@ -1019,7 +1025,7 @@ var WQConstructor;
 
 				for ( var x = 0; x < this.elements.length; x++ ) {
 
-					var parent = this.elements[x].parentNode;
+					var parent = this.elements[x].parentNode ? this.elements[x].parentNode : context;
 					parent.insertBefore( WQTools.convertToHTML( arguments[i] ), parent.firstChild );
 
 				};
@@ -1028,7 +1034,7 @@ var WQConstructor;
 
 				for ( var x = 0; x < this.elements.length; x++ ) {
 
-					var parent = this.elements[x].parentNode;
+					var parent = this.elements[x].parentNode ? this.elements[x].parentNode : context;
 					parent.insertBefore( arguments[i], parent.firstChild );
 
 				}
@@ -1039,7 +1045,7 @@ var WQConstructor;
 
 					for ( var x = 0; x < this.elements.length; x++ ) {
 
-						var parent = this.elements[x].parentNode;
+						var parent = this.elements[x].parentNode ? this.elements[x].parentNode : context;
 
 						for ( var y = 0; y < arguments.elements[i].length; y++ ) {
 
@@ -1053,7 +1059,7 @@ var WQConstructor;
 
 					for ( var x = 0; x < this.elements.length; x++ ) {
 
-						var parent = this.elements[x].parentNode;
+						var parent = this.elements[x].parentNode ? this.elements[x].parentNode : context;
 
 						for ( var y = 0; y < arguments[i].length; y++ ) {
 
@@ -1139,7 +1145,7 @@ var WQConstructor;
 
 		result = WQTools.cleanArray( WQTools.removeDuplicated( result ) );
 
-		newObject.elements = context ? WQTools.nodeReturn( result ) : result;
+		newObject.elements = context ? WQTools.nodeReturn( result, context ) : result;
 		return newObject;
 
 	};
@@ -1162,11 +1168,11 @@ var WQConstructor;
 
 		if ( selector ) {
 			for (var i = 0; i < this.elements.length; i++) {
-				if ( this.elements[i][ matchesSelector ]( selector ) ) this.elements[i].parentNode.removeChild( this.elements[i] );
+				if ( this.elements[i][ matchesSelector ]( selector ) ) (this.elements[i].parentNode) ? this.elements[i].parentNode.removeChild( this.elements[i] ) : context.removeChild( this.elements[i] );
  			};
 		} else {
 			for (var i = 0; i < this.elements.length; i++) {
-				this.elements[i].parentNode.removeChild( this.elements[i] );
+				this.elements[i].parentNode ? this.elements[i].parentNode.removeChild( this.elements[i] ) : context.removeChild( this.elements[i] );
 			};
 		}
 
@@ -1391,7 +1397,7 @@ var WQConstructor;
 		}
 
 		var newElement		= new wQueryObj( WQTools.convertToArray( this.elements ) );
-		newElement.elements = ( context ) ? WQTools.nodeReturn( WQTools.removeDuplicated( result ) ) : WQTools.removeDuplicated( result );
+		newElement.elements = ( context ) ? WQTools.nodeReturn( WQTools.removeDuplicated( result ), context ) : WQTools.removeDuplicated( result );
 		return newElement;
 
 	};
@@ -1413,7 +1419,7 @@ var WQConstructor;
 
 		};
 
-		newElement.elements = ( context ) ? WQTools.nodeReturn( newColl ) : newColl;
+		newElement.elements = ( context ) ? WQTools.nodeReturn( newColl, context ) : newColl;
 		return newElement; 
 
 	};
@@ -1556,7 +1562,7 @@ var WQConstructor;
 
 			results = WQTools.removeDuplicated( results )
 
-			newObject.elements = ( (context) ? WQTools.nodeReturn( results ) : results );
+			newObject.elements = ( (context) ? WQTools.nodeReturn( results, context ) : results );
 			return newObject;
 
 		} else {
@@ -1742,7 +1748,7 @@ var WQConstructor;
 
 		}
 
-		newObject.elements = ( ( context ) ? WQTools.nodeReturn( WQTools.removeDuplicated( result ) ) : WQTools.removeDuplicated( result ) );
+		newObject.elements = ( ( context ) ? WQTools.nodeReturn( WQTools.removeDuplicated( result ), context ) : WQTools.removeDuplicated( result ) );
 		return newObject;
 
 	};
@@ -1772,7 +1778,7 @@ var WQConstructor;
 
 			};
 
-			newElement.elements = (( context ) ? WQTools.nodeReturn(WQTools.removeDuplicated(parents)) : WQTools.removeDuplicated(parents) );
+			newElement.elements = (( context ) ? WQTools.nodeReturn( WQTools.removeDuplicated(parents), context ) : WQTools.removeDuplicated(parents) );
 			return newElement;
 
 		} else {
@@ -1808,7 +1814,7 @@ var WQConstructor;
 			};
 
 			var newElement = new wQueryObj();
-			newElement.elements = (( context ) ? WQTools.nodeReturn(WQTools.removeDuplicated(parents)) : WQTools.removeDuplicated(parents) );
+			newElement.elements = (( context ) ? WQTools.nodeReturn( WQTools.removeDuplicated(parents), context ) : WQTools.removeDuplicated(parents) );
 			return newElement;
 
 		}
@@ -1848,7 +1854,7 @@ var WQConstructor;
 
 			};
 
-			newElement.elements = ( (context) ? WQTools.nodeReturn(WQTools.removeDuplicated(parents)) : WQTools.removeDuplicated(parents));
+			newElement.elements = ( (context) ? WQTools.nodeReturn( WQTools.removeDuplicated(parents), context ) : WQTools.removeDuplicated(parents));
 			return newElement;
 
 		} else {
@@ -1890,7 +1896,7 @@ var WQConstructor;
 			};
 			
 			var newElement = new wQueryObj();
-			ewElement.elements = ( (context) ? WQTools.nodeReturn(WQTools.removeDuplicated(parents)) : WQTools.removeDuplicated(parents));
+			ewElement.elements = ( (context) ? WQTools.nodeReturn( WQTools.removeDuplicated(parents), context ) : WQTools.removeDuplicated(parents));
 			return newElement;
 
 		}
@@ -1905,6 +1911,7 @@ var WQConstructor;
 
 		var newObject = new wQueryObj(),
 			parents   = [];
+		
 		if ( context ) {
 
 			var eachNode = [];
@@ -1918,7 +1925,7 @@ var WQConstructor;
 
 						if ( node == context ) {
 
-							newObject.elements = ( (context) ? WQTools.nodeReturn(WQTools.removeDuplicated(parents)) : WQTools.removeDuplicated(parents));
+							newObject.elements = ( (context) ? WQTools.nodeReturn( WQTools.removeDuplicated(parents), context ) : WQTools.removeDuplicated(parents));
 							node = undefined;
 
 						} else if ( node == document.getElementsByTagName('body')[0] ) {
@@ -1966,7 +1973,7 @@ var WQConstructor;
 					while ( node ) {
 
 						if ( node[ matchesSelector ]( selector ) ) {
-							newObject.elements = ( (context) ? WQTools.nodeReturn(WQTools.removeDuplicated(parents)) : WQTools.removeDuplicated(parents));
+							newObject.elements = ( (context) ? WQTools.nodeReturn( WQTools.removeDuplicated(parents), context ) : WQTools.removeDuplicated(parents));
 							node = undefined;
 						} else {
 
@@ -2073,7 +2080,7 @@ var WQConstructor;
 
 		}
 
-		newObject.elements = ( context ) ? WQTools.nodeReturn( WQTools.removeDuplicated( result ) ) : WQTools.removeDuplicated( result );
+		newObject.elements = ( context ) ? WQTools.nodeReturn( WQTools.removeDuplicated( result ), context ) : WQTools.removeDuplicated( result );
 		return newObject;
 
 	};
@@ -2316,7 +2323,7 @@ var WQConstructor;
 
 			for (var i = 0; i < this.elements.length; i++) {
 
-				var parentContext = this.elements[i].parentNode,
+				var parentContext = this.elements[i].parentNode ? this.elements[i].parentNode : context,
 					children 	  = WQTools.convertToArray(parentContext.children),
 					index 		  = children.indexOf( this.elements[0] ) - 1,
 					element       = parentContext.children[ index ];
@@ -2328,7 +2335,7 @@ var WQConstructor;
 		} else {
 
 			for (var i = 0; i < this.elements.length; i++) {
-				var parentContext = this.elements[i].parentNode,
+				var parentContext = this.elements[i].parentNode ? this.elements[i].parentNode : context,
 					children 	  = WQTools.convertToArray(parentContext.children),
 					index 		  = children.indexOf( this.elements[0] ) - 1,
 					element       = parentContext.children[ index ];
@@ -2339,7 +2346,7 @@ var WQConstructor;
 
 		}
 
-		newObject.elements =  (( context ) ? WQTools.nodeReturn(result) : result);
+		newObject.elements =  (( context ) ? WQTools.nodeReturn(result, context) : result);
 		return newObject;
 
 	};
@@ -2355,7 +2362,7 @@ var WQConstructor;
 
 		for (var i = 0; i < this.elements.length; i++) {
 			
-			var parent    = this.elements[i].parentNode,
+			var parent    = this.elements[i].parentNode ? this.elements[i].parentNode : context,
 				children  = WQTools.convertToArray( parent.children ),
 				index 	  = children.indexOf( this.elements[i] );
 
@@ -2371,7 +2378,7 @@ var WQConstructor;
 
 		};
 
-		newObject.elements = ( ( context ) ? WQTools.nodeReturn( WQTools.removeDuplicated( result ) ) : WQTools.removeDuplicated( result ) );
+		newObject.elements = ( ( context ) ? WQTools.nodeReturn( WQTools.removeDuplicated( result ), context ) : WQTools.removeDuplicated( result ) );
 		return newObject;
 
 	};
@@ -2388,7 +2395,7 @@ var WQConstructor;
 		if ( selector ) {
 
 			for ( var i = 0; i < this.elements.length; i++ ) {
-				var parent 		= this.elements[i].parentNode,
+				var parent 		= this.elements[i].parentNode ? this.elements[i].parentNode : context,                                      
 					children 	= WQTools.convertToArray( parent.children ),
 					index 		= children.indexOf( this.elements[i] );
 
@@ -2410,7 +2417,7 @@ var WQConstructor;
 
 			};
 
-			newObject.elements = (( context ) ? WQTools.nodeReturn( WQTools.removeDuplicated( result ) ) : WQTools.removeDuplicated( result ) );
+			newObject.elements = (( context ) ? WQTools.nodeReturn( WQTools.removeDuplicated( result ), context ) : WQTools.removeDuplicated( result ) );
 			return newObject;
 
 		} else {
@@ -2426,7 +2433,7 @@ var WQConstructor;
 	wQueryObj.prototype.detach = function ( selector ) {
 
 		for (var i = 0; i < this.elements.length; i++) {
-			var parent = this.elements[i].parentNode;
+			var parent = this.elements[i].parentNode ? this.elements[i].parentNode : context;
 			if ( selector ) {
 				if ( this.elements[i][ matchesSelector ]( selector ) ) parent.removeChild( this.elements[i] );
 			} else {
@@ -2450,7 +2457,9 @@ var WQConstructor;
 
 		for (var i = 0; i < this.elements.length; i++) {
 			
-			var parent = this.elements[i].parentNode,
+			console.log(this.elements[i].parent)
+
+			var parent 	   = ( this.elements[i].parentNode ) ? this.elements[i].parentNode : context,
  				children   = WQTools.convertToArray( parent.children ),
 				index 	   = children.indexOf( this.elements[i] );
 
@@ -2472,7 +2481,7 @@ var WQConstructor;
 
 		};
 
-		newObject.elements = (( context ) ? WQTools.nodeReturn( WQTools.removeDuplicated( result ) ) : WQTools.removeDuplicated( result ) );
+		newObject.elements = (( context ) ? WQTools.nodeReturn( WQTools.removeDuplicated( result ), context ) : WQTools.removeDuplicated( result ) );
 		return newObject;
 
 	};
@@ -2500,7 +2509,7 @@ var WQConstructor;
 
 		};
 
-		newObject.elements = (( context ) ? WQTools.nodeReturn( result ) : result );
+		newObject.elements = (( context ) ? WQTools.nodeReturn( result, context ) : result );
 		return newObject;
 
 	};
@@ -2549,7 +2558,7 @@ var WQConstructor;
 
 				for ( var x = 0; x < this.elements.length; x++ ) {
 					
-					var parent = this.elements[x].parentNode;
+					var parent = this.elements[x].parentNode ? this.elements[x].parentNode : context ;
 					var text   = document.createTextNode( replace );
 					parent.replaceChild( text, this.elements[x] );
 
@@ -2567,7 +2576,7 @@ var WQConstructor;
 
 		for ( var x = 0; x < this.elements.length;  x++) {
 				
-			var parent = this.elements[x].parentNode;
+			var parent = this.elements[x].parentNode ? this.elements[x].parentNode : context ;
 
 			for (var i = 0; i < replace.length; i++) {
 
@@ -2618,7 +2627,7 @@ var WQConstructor;
 
 		for (var i = 0; i < this.elements.length; i++) {
 			
-			var children   = WQTools.convertToArray(this.elements[i].parentNode.children),
+			var children   = WQTools.convertToArray(this.elements[i].parentNode ? this.elements[i].parentNode.children : context.children ),
 			    initIndex  = children.indexOf( this.elements[i] );
 
 			for (var x = initIndex + 1; x < children.length; x++) {
@@ -2633,7 +2642,7 @@ var WQConstructor;
 
 		};
 
-		newObject.elements = (( context ) ? WQTools.nodeReturn( WQTools.removeDuplicated( result ) ) : WQTools.removeDuplicated( result ) );
+		newObject.elements = (( context ) ? WQTools.nodeReturn( WQTools.removeDuplicated( result ), context ) : WQTools.removeDuplicated( result ) );
 		return newObject;
 
 	};
@@ -2649,7 +2658,7 @@ var WQConstructor;
 
 		for (var i = 0; i < this.elements.length; i++) {
 			
-			var children = WQTools.convertToArray( this.elements[i].parentNode.children ),
+			var children = WQTools.convertToArray( this.elements[i].parentNode ? this.elements[i].parentNode.children : context.children ),
 				index    = children.indexOf( this.elements[ i ] ) + 1;
 
 			for (var i = index; i < children.length; i++) {
@@ -2676,7 +2685,7 @@ var WQConstructor;
 
 		};
 
-		newObject.elements = (( context ) ? WQTools.nodeReturn( WQTools.removeDuplicated( result ) ) : WQTools.removeDuplicated( result ) );
+		newObject.elements = (( context ) ? WQTools.nodeReturn( WQTools.removeDuplicated( result ), context ) : WQTools.removeDuplicated( result ) );
 		return newObject;
 
 	};
@@ -2695,7 +2704,7 @@ var WQConstructor;
 					
 					for (var i = 0; i < this.elements.length; i++) {
 								
-						var parent = this.elements[i].parentNode;
+						var parent = this.elements[i].parentNode ? this.elements[i].parentNode : context;
 						var clone  = WQTools.convertToHTML( element );
 						parent.appendChild( clone );
 						
@@ -2728,7 +2737,7 @@ var WQConstructor;
 						
 						for (var x = 0; x < this.elements.length; x++) {
 							
-							var parent = this.elements[x].parentNode;
+							var parent = this.elements[x].parentNode ? this.elements[i].parentNode : context;
 							var clone  = element[i].cloneNode( true );
 							var inbef  = parent.childNodes[( WQTools.convertToArray( parent.children ) ).indexOf( this.elements[x] ) + 1 ];
 
@@ -2764,7 +2773,7 @@ var WQConstructor;
 				for (var i = 0; i < this.elements.length; i++) {
 					
 					var clone  = element.apply( this.elements[i], [ i ] );
-					var parent = this.elements[x].parentNode;
+					var parent = this.elements[x].parentNode ? this.elements[i].parentNode : context;
 					var inbef  = parent.childNodes[( WQTools.convertToArray( parent.children ) ).indexOf( this.elements[x] ) + 1 ];
 
 					parent.insertBefore( clone, inbef );
@@ -2796,7 +2805,7 @@ var WQConstructor;
 					
 					for (var x = 0; x < this.elements.length; x++) {
 						
-						var parent = this.elements[x].parentNode;
+						var parent = this.elements[x].parentNode ? this.elements[i].parentNode : context;
 						var clone  = element.elements[i].cloneNode( true );
 						parent.appendChild( clone );
 						
@@ -2827,7 +2836,7 @@ var WQConstructor;
 
 				for (var i = 0; i < this.elements.length; i++) {
 							
-					var parent = this.elements[i].parentNode;
+					var parent = this.elements[i].parentNode ? this.elements[i].parentNode: context;
 					var clone  = element.cloneNode( true );
 					parent.appendChild( clone );
 					
@@ -2860,7 +2869,7 @@ var WQConstructor;
 						
 						if ( element[i].nodeType === 1 ) {
 
-							var parent = this.elements[x].parentNode;
+							var parent = this.elements[x].parentNode ? this.elements[i].parentNode : context;
 							var clone  = element.elements[i].cloneNode( true );
 							parent.appendChild( clone );
 							
