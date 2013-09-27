@@ -813,7 +813,7 @@ var WQConstructor;
 
 					for (var x = 0; x < this.elements.length; x++) {
 
-						( this.elements[x].parentNode ) this.elements[x].parentNode.insertBefore( arguments[i], this.elements[x] ) : context.parentNode.insertBefore( arguments[i], this.elements[x] );
+						( this.elements[x].parentNode ) ? this.elements[x].parentNode.insertBefore( arguments[i], this.elements[x] ) : context.parentNode.insertBefore( arguments[i], this.elements[x] );
 
 					};
 
@@ -1151,12 +1151,36 @@ var WQConstructor;
 	};
 
 	/* `prop` process
-	 * UNCOMPLETE
+	 * Get the value of a property for the first element in the set of matched elements or set one or more properties for every matched element.
 	 */
 
-	wQueryObj.prototype.prop = function () {
+	wQueryObj.prototype.prop = function ( property, value ) {
 
-		return function () {};
+		if ( property && typeof property == 'string' ) {
+			
+			if ( !value ) {
+				return this.elements[0][ property ];
+			} else {
+
+				for (var i = 0; i < this.elements.length; i++) {
+					
+					if ( typeof value == 'string' || typeof value == 'number' ) {
+						this.elements[i][ property ] =  value;
+					} else if ( typeof value == 'object' ) {
+						for ( index in value ) {
+							this.elements[i][ index ] = value[ index ];
+						}
+					} else if ( typeof value == 'function' ) {
+						this.elements[i][ property ] = value.apply( this.elements[i], [ i, this.elements[i][ property ] ] );
+					}
+
+				};
+
+			};
+
+		};
+
+		return this;
 
 	};
 
@@ -1248,9 +1272,19 @@ var WQConstructor;
 	 *  UNCOMPLETE
 	 */
 
-	wQueryObj.prototype.removeProp = function () {
+	wQueryObj.prototype.removeProp = function ( property ) {
 
 		return function () {};
+
+		if ( typeof property == 'string' ) {
+
+			for (var i = 0; i < this.elements.length; i++) {	
+				delete this.elements[i][ property ];
+			};
+
+		};
+
+		return this;
 
 	};
 
