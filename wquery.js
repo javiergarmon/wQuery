@@ -1317,12 +1317,40 @@ var WQConstructor;
 	};
 
 	/* `val` process
-	 * 	UNCOMPLETE
+	 *  Remove a property for the set of matched elements.
 	 */
 
-	wQueryObj.prototype.val = function () {
+	wQueryObj.prototype.val = function ( value ) {
 
-		return function () {};
+		if ( !value ) {
+			
+			if ( !this.elements[0].selectedOptions ) {
+				return this.elements[0].value;
+			} else {
+				var values = [];
+				for ( var i = 0; x < this.elements[0].selectedOptions; x++ ) {
+					values.push( this.elements[0].selectedOptions.value );
+				};
+				return values;
+			}
+
+		} else {
+
+			if ( typeof value == 'function' ) {
+				for (var i = 0; i < this.elements.length; i++) {
+					this.elements[i].value = value.apply( this.elements[i], [ i, this.elements[0].value ]);
+				};
+			} else if ( typeof value == 'string' ) {
+				for (var i = 0; i < this.elements.length; i++) {
+					this.elements[i].value = value;
+				};
+			} else if ( typeof value == 'object' ) {
+				for (var i = 0; i < this.elements.length; i++) {
+					this.elements[i].value = value.join(',');
+				};
+			}
+
+		};
 
 	};
 
