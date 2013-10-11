@@ -3244,6 +3244,28 @@ var WQConstructor;
 
 	};
 
+	/* `unwrap` function
+	 * remove the parent element of the current element collection
+	 */
+
+	wQueryObj.prototype.wrapAll = function ( wrapper ) {
+
+		if ( wrapper ) {
+
+			this.elements[0].parentNode.appendChild( WQTools.convertToHTML( wrapper ));
+			var container = this.elements[0].parentNode.children[ this.elements[0].parentNode.children.length - 1 ];
+
+			for (var i = 0; i < this.elements.length; i++) {
+				container.children.push( this.elements[i] );
+				this.elements[i].parentNode.removeChild( this.elements[i] );				
+			};
+
+		};
+
+		return this;
+
+	};
+
 	/* `delay` function
 	 * Set a timer to delay execution of subsequent items in the queue.
 	 */
